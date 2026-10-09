@@ -132,7 +132,9 @@
                 <option value="">Tutti i Tipi</option>
                 <option value="fotografia">📸 Studio Fotografico</option>
                 <option value="barbiere">💈 Barbiere / Parrucchiere</option>
-                <option value="estetica">💆‍♀️ Centro Estetico / Tatuaggi</option>
+                <option value="estetica">💅 Centro Estetico / Tatuaggi</option>
+                <option value="psicoterapia">🧠 Studio Psicoterapia / Counseling</option>
+                <option value="massaggi">💆‍♂️ Cabina Massaggi / Lettino Fisioterapia</option>
                 <option value="coworking">🏢 Postazione Coworking</option>
               </select>
             </div>
@@ -314,7 +316,7 @@
       <form id="addSpaceForm" onsubmit="salvaNuovaPoltrona(event)" class="space-y-3">
         <div>
           <label class="text-xs text-gray-400 uppercase">Nome Studio / Salone / Spazio</label>
-          <input id="newName" type="text" required placeholder="Es. Studio Fotografico Vesuvio / Barberia Duomo" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+          <input id="newName" type="text" required placeholder="Es. Studio Psicoterapia Toledo / Centro Massaggi Vomero" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -334,7 +336,9 @@
             <select id="newType" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white">
               <option value="fotografia">📸 Studio Fotografico</option>
               <option value="barbiere">💈 Barbiere / Parrucchiere</option>
-              <option value="estetica">💆‍♀️ Centro Estetico / Tatuaggi</option>
+              <option value="estetica">💅 Centro Estetico / Tatuaggi</option>
+              <option value="psicoterapia">🧠 Studio Psicoterapia / Counseling</option>
+              <option value="massaggi">💆‍♂️ Cabina Massaggi / Lettino Fisioterapia</option>
               <option value="coworking">🏢 Postazione Coworking</option>
             </select>
           </div>
@@ -572,11 +576,13 @@
     // Mappa Marker ID -> Istanza Marker Leaflet
     let activeMarkersMap = {};
 
-    // Spazi predefiniti
+    // Spazi predefiniti (Inclusi Studi Psicoterapeutici e Centri Massaggi)
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
       { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample' },
       { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample' },
-      { id: 'spz_3', name: 'Postazione Hairstylist Duomo', city: 'Milano', type: 'barbiere', price: 60, lat: 45.4642, lon: 9.1900, image: null, host_id: 'sample' }
+      { id: 'spz_3', name: 'Studio Psicoterapia & Counseling Toledo', city: 'Napoli', type: 'psicoterapia', price: 40, lat: 40.8420, lon: 14.2495, image: null, host_id: 'sample' },
+      { id: 'spz_4', name: 'Cabina Massaggi & Olistica Vomero', city: 'Napoli', type: 'massaggi', price: 50, lat: 40.8465, lon: 14.2320, image: null, host_id: 'sample' },
+      { id: 'spz_5', name: 'Postazione Hairstylist Duomo', city: 'Milano', type: 'barbiere', price: 60, lat: 45.4642, lon: 9.1900, image: null, host_id: 'sample' }
     ];
 
     let localBookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
@@ -1007,8 +1013,7 @@
         map.removeControl(currentRoutingControl);
       }
 
-      // Calcola la distanza diretta approssimativa in km
-      const R = 6371; // raggio terrestre in km
+      const R = 6371;
       const dLat = (space.lat - userLocation.lat) * Math.PI / 180;
       const dLon = (space.lon - userLocation.lon) * Math.PI / 180;
       const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -1017,12 +1022,11 @@
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       const distanceKm = R * c;
 
-      const isWalking = distanceKm <= 1.5; // Entro 1.5km si va a piedi (linea tratteggiata)
+      const isWalking = distanceKm <= 1.5;
 
-      // Configurazione stili linea verde
       const lineOptions = isWalking 
-        ? { styles: [{ color: '#10b981', opacity: 0.9, weight: 6, dashArray: '8, 12' }] } // Tratteggiata verde per vicini/a piedi
-        : { styles: [{ color: '#10b981', opacity: 0.9, weight: 6 }] }; // Continua verde per auto
+        ? { styles: [{ color: '#10b981', opacity: 0.9, weight: 6, dashArray: '8, 12' }] }
+        : { styles: [{ color: '#10b981', opacity: 0.9, weight: 6 }] };
 
       currentRoutingControl = L.Routing.control({
         waypoints: [
@@ -1033,13 +1037,12 @@
           profile: isWalking ? 'foot' : 'car'
         }),
         lineOptions: lineOptions,
-        createMarker: () => null, // Non duplica i marker di default
+        createMarker: () => null,
         addWaypoints: false,
         draggableWaypoints: false,
         fitSelectedRoutes: true
       }).addTo(map);
 
-      // Aggiorna Box Info in alto sulla Mappa
       const infoBox = document.getElementById('routeInfoBox');
       document.getElementById('routeModeIcon').innerText = isWalking ? '🚶‍♂️ (Vicino - A Piedi)' : '🚗 (In Auto)';
       document.getElementById('routeDistanceText').innerText = distanceKm.toFixed(2) + ' km';
@@ -1080,7 +1083,9 @@
         let iconEmoji = '🏢';
         if (space.type === 'fotografia') iconEmoji = '📸';
         else if (space.type === 'barbiere') iconEmoji = '💈';
-        else if (space.type === 'estetica') iconEmoji = '💆‍♀️';
+        else if (space.type === 'estetica') iconEmoji = '💅';
+        else if (space.type === 'psicoterapia') iconEmoji = '🧠';
+        else if (space.type === 'massaggi') iconEmoji = '💆‍♂️';
 
         const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
         
