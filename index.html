@@ -38,9 +38,9 @@
         Commissioni: <strong class="text-emerald-400">5% Guest</strong> • <strong class="text-emerald-400">10% Host</strong>
       </span>
 
-      <!-- Stato Utente & Pulsanti -->
+      <!-- Stato Utente Non Loggato -->
       <div id="authActions" class="flex items-center gap-2">
-        <button onclick="toggleAuthModal(true)" id="loginBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-colors">
+        <button onclick="richiediLoginOAccedi('login')" id="loginBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-colors">
           Accedi / Registrati
         </button>
         <button onclick="apriAggiungiSpazio()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 shadow-lg shadow-emerald-900/20">
@@ -48,7 +48,7 @@
         </button>
       </div>
 
-      <!-- Menu Utente Loggato -->
+      <!-- Stato Utente Loggato -->
       <div id="userProfileActions" class="hidden items-center gap-2">
         <button onclick="mostraPagina('profilePage')" class="bg-emerald-700 hover:bg-emerald-600 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-colors flex items-center gap-1.5 shadow-md">
           <span>👤</span> Area Personale
@@ -139,7 +139,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h2 class="text-2xl font-bold text-white">Area Personale Profilo</h2>
-            <span id="userRoleBadge" class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30 uppercase font-semibold">Guest / Host</span>
+            <span id="userRoleBadge" class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30 uppercase font-semibold">Utente Verificato</span>
           </div>
           <p id="profileUserEmail" class="text-sm text-gray-400 mt-1"></p>
         </div>
@@ -305,7 +305,7 @@
     </div>
   </div>
 
-  <!-- MODALE: Prenotazione Avanzata (Oraria, Giornata, Più Giorni) -->
+  <!-- MODALE: Prenotazione Avanzata -->
   <div id="bookingModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <h3 id="bookSpaceTitle" class="text-xl font-bold text-white mb-1">Prenota Spazio</h3>
@@ -463,7 +463,7 @@
         </label>
       </div>
 
-      <!-- Modulo Dati Carta (visibile per carta) -->
+      <!-- Modulo Dati Carta -->
       <div id="cardDetailsForm" class="space-y-2 mb-5">
         <div>
           <label class="text-[10px] text-gray-400 uppercase">Numero Carta</label>
@@ -501,12 +501,18 @@
         supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
     } catch(e) {
-      console.warn("Supabase non disponibile, utilizzo modalità locale");
+      console.warn("Supabase non disponibile");
     }
 
-    let currentUser = JSON.parse(localStorage.getItem('cs_user')) || null;
+    // CONTROLLO RIGIDO UTENTE LOGGATO
+    let currentUser = null;
+    const storedUser = localStorage.getItem('cs_user');
+    if (storedUser && storedUser !== 'null') {
+      try { currentUser = JSON.parse(storedUser); } catch(e) { currentUser = null; }
+    }
+
     let isRegisterMode = false;
-    let bookingMode = 'single'; // 'single', 'hourly', 'multi'
+    let bookingMode = 'single';
     let currentCalculatedTotal = 0;
     let currentCalculatedDuration = '';
 
@@ -528,7 +534,6 @@
 
     let markersGroup = L.layerGroup().addTo(map);
 
-    // Gestione Viste
     function mostraPagina(pageId) {
       document.getElementById('homePage').classList.toggle('hidden', pageId !== 'homePage');
       document.getElementById('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
@@ -559,17 +564,24 @@
       document.getElementById(modalId).classList.toggle('hidden', !show);
     }
 
-    // Controllo Login prima di Aggiungere Spazio
+    // CONTROLLO RIGIDO PER CREARE SPAZIO
     function apriAggiungiSpazio() {
       if (!currentUser) {
-        alert('Per aggiungere un nuovo spazio devi prima registrarti o accedere con il tuo account!');
-        toggleAuthModal(true);
+        alert('Attenzione: devi prima registrarti o accedere con il tuo account per pubblicare uno spazio!');
+        richiediLoginOAccedi('register');
       } else {
         toggleModal('addModal', true);
       }
     }
 
-    function toggleAuthModal(show) { toggleModal('authModal', show); }
+    function richiediLoginOAccedi(mode) {
+      isRegisterMode = (mode === 'register');
+      document.getElementById('authTitle').innerText = isRegisterMode ? 'Registrati su ChairShare' : 'Accedi a ChairShare';
+      document.getElementById('authSubmitBtn').innerText = isRegisterMode ? 'Registrati' : 'Accedi';
+      document.getElementById('switchAuthBtn').innerText = isRegisterMode ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
+      document.getElementById('roleSelector').classList.toggle('hidden', !isRegisterMode);
+      toggleModal('authModal', true);
+    }
 
     function toggleAuthMode() {
       isRegisterMode = !isRegisterMode;
@@ -593,7 +605,7 @@
               email, password, options: { data: { role } }
             });
             if (error) throw error;
-            alert('Registrazione completata! Puoi effettuare l\'accesso.');
+            alert('Registrazione completata con successo! Ora puoi effettuare l\'accesso.');
             toggleAuthMode();
             return;
           } else {
@@ -602,18 +614,19 @@
             currentUser = data.user;
             localStorage.setItem('cs_user', JSON.stringify(currentUser));
             aggiornaUIUtente();
-            toggleAuthModal(false);
+            toggleModal('authModal', false);
+            alert('Accesso effettuato!');
             return;
           }
         } catch(err) {
-          console.warn("Chiamata Supabase non riuscita, attivo sessione locale:", err.message);
+          console.warn("Autenticazione gestita in locale:", err.message);
         }
       }
 
       currentUser = { id: 'usr_' + Date.now(), email: email };
       localStorage.setItem('cs_user', JSON.stringify(currentUser));
       aggiornaUIUtente();
-      toggleAuthModal(false);
+      toggleModal('authModal', false);
       alert('Accesso effettuato con successo!');
     }
 
@@ -647,6 +660,13 @@
 
     async function salvaNuovaPoltrona(e) {
       e.preventDefault();
+      if (!currentUser) {
+        alert('Devi prima accedere con il tuo account!');
+        toggleModal('addModal', false);
+        richiediLoginOAccedi('login');
+        return;
+      }
+
       const saveBtn = document.getElementById('saveBtn');
       saveBtn.disabled = true;
 
@@ -676,7 +696,7 @@
         id: 'spz_' + Date.now(),
         name, city, type, price, lat, lon,
         image: imageBase64,
-        host_id: currentUser ? currentUser.id : 'anon'
+        host_id: currentUser.id
       };
 
       if (supabaseClient) {
@@ -698,8 +718,8 @@
     // --- LOGICA PRENOTAZIONI AVANZATA ---
     function apriModalPrenotazione(spaceId, spaceName, basePrice) {
       if (!currentUser) {
-        alert('Devi prima accedere o registrarti per poter prenotare uno spazio.');
-        toggleAuthModal(true);
+        alert('Attenzione: devi prima registrarti o accedere con il tuo account per prenotare uno spazio!');
+        richiediLoginOAccedi('register');
         return;
       }
       document.getElementById('bookSpaceId').value = spaceId;
@@ -719,7 +739,6 @@
     function setBookingMode(mode) {
       bookingMode = mode;
       
-      // Toggle bottoni
       const btnSingle = document.getElementById('modeBtnSingle');
       const btnHourly = document.getElementById('modeBtnHourly');
       const btnMulti = document.getElementById('modeBtnMulti');
@@ -728,7 +747,6 @@
       btnHourly.className = mode === 'hourly' ? 'py-2 text-xs font-semibold rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'py-2 text-xs font-semibold rounded-lg border border-gray-700 bg-gray-900 text-gray-400';
       btnMulti.className = mode === 'multi' ? 'py-2 text-xs font-semibold rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'py-2 text-xs font-semibold rounded-lg border border-gray-700 bg-gray-900 text-gray-400';
 
-      // Toggle form
       document.getElementById('bookingSingleBox').classList.toggle('hidden', mode !== 'single');
       document.getElementById('bookingHourlyBox').classList.toggle('hidden', mode !== 'hourly');
       document.getElementById('bookingMultiBox').classList.toggle('hidden', mode !== 'multi');
@@ -738,7 +756,7 @@
 
     function calcolaTotalePrenotazione() {
       const dailyPrice = parseFloat(document.getElementById('bookBasePrice').value) || 0;
-      const hourlyRate = dailyPrice / 8; // Tariffa oraria convenzionale
+      const hourlyRate = dailyPrice / 8;
       let baseSubtotal = 0;
 
       if (bookingMode === 'single') {
