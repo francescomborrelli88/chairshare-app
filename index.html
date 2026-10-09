@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- Leaflet Routing Machine CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -36,6 +40,10 @@
     }
     .leaflet-popup-tip {
       background-color: #1f2937;
+    }
+    /* Nasconde il pannello testuale predefinito del routing */
+    .leaflet-routing-container {
+      display: none !important;
     }
   </style>
 </head>
@@ -89,7 +97,7 @@
     </div>
   </header>
 
-  <!-- VISTA 1: HOME PAGE LAYOUT AIRBNB (Elenco Grande a SX, Mappa Ridotta a DX) -->
+  <!-- VISTA 1: HOME PAGE LAYOUT AIRBNB -->
   <div id="homePage" class="flex-1 flex flex-col">
     <!-- Hero Banner -->
     <section class="bg-gradient-to-b from-gray-800 to-gray-900 border-b border-gray-800 py-3 px-4 text-center">
@@ -144,7 +152,7 @@
         <div class="flex-1">
           <div class="flex justify-between items-center mb-3">
             <h3 class="text-sm font-bold text-gray-300">Spazi Disponibili (<span id="resultsCount" class="text-emerald-400">0</span>)</h3>
-            <span class="text-[11px] text-gray-500">Passa sui punti per individuare sulla mappa</span>
+            <span class="text-[11px] text-gray-500">Clicca su una scheda per tracciare il percorso GPS</span>
           </div>
           
           <div id="spacesList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -153,9 +161,23 @@
         </div>
       </div>
 
-      <!-- SEZIONE DESTRA: Mappa Più Piccola e Compatta (5 Colonne) -->
+      <!-- SEZIONE DESTRA: Mappa Più Piccola (5 Colonne) -->
       <div class="lg:col-span-5 h-[350px] lg:h-full relative z-0 border-l border-gray-800 shadow-2xl">
         <div id="map" class="w-full h-full"></div>
+        
+        <!-- Box info percorso sovrapposto sulla mappa -->
+        <div id="routeInfoBox" class="hidden absolute top-4 right-4 z-[999] bg-gray-900/90 backdrop-blur-md border border-emerald-500/50 p-3 rounded-xl shadow-2xl text-xs max-w-xs">
+          <div class="flex items-center gap-2 font-bold text-emerald-400 mb-1">
+            <span id="routeModeIcon">🚗</span>
+            <span id="routeTitle">Percorso Calcolato</span>
+          </div>
+          <div class="text-gray-300">
+            Distanza: <strong id="routeDistanceText" class="text-white">0 km</strong>
+          </div>
+          <div class="text-gray-400 text-[11px] mt-0.5" id="routeTimeText">
+            Tempo stimato: --
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -543,6 +565,10 @@
     let currentCalculatedTotal = 0;
     let currentCalculatedDuration = '';
 
+    // Posizione GPS Reale Utente
+    let userLocation = { lat: 40.8518, lon: 14.2681 };
+    let currentRoutingControl = null;
+
     // Mappa Marker ID -> Istanza Marker Leaflet
     let activeMarkersMap = {};
 
@@ -556,13 +582,32 @@
     let localBookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
 
     // Mappa Leaflet
-    const map = L.map('map').setView([40.8518, 14.2681], 12);
+    const map = L.map('map').setView([userLocation.lat, userLocation.lon], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
     let markersGroup = L.layerGroup().addTo(map);
+
+    // Rileva posizione GPS al caricamento
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        userLocation.lat = pos.coords.latitude;
+        userLocation.lon = pos.coords.longitude;
+        map.setView([userLocation.lat, userLocation.lon], 13);
+        
+        // Marker blu della mia posizione GPS
+        L.circleMarker([userLocation.lat, userLocation.lon], {
+          radius: 8,
+          fillColor: '#3b82f6',
+          color: '#ffffff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.9
+        }).addTo(map).bindPopup('<b>Tu sei qui</b>');
+      }, () => {});
+    }
 
     function mostraPagina(pageId) {
       document.getElementById('homePage').classList.toggle('hidden', pageId !== 'homePage');
@@ -575,17 +620,13 @@
       document.getElementById('typeSelect').value = '';
       document.getElementById('priceInput').value = '';
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            map.setView([position.coords.latitude, position.coords.longitude], 14);
-          },
-          () => map.setView([40.8518, 14.2681], 12)
-        );
-      } else {
-        map.setView([40.8518, 14.2681], 12);
+      if (currentRoutingControl) {
+        map.removeControl(currentRoutingControl);
+        currentRoutingControl = null;
       }
+      document.getElementById('routeInfoBox').classList.add('hidden');
 
+      map.setView([userLocation.lat, userLocation.lon], 12);
       cercaSpazi();
       mostraPagina('homePage');
     }
@@ -934,7 +975,6 @@
       document.getElementById('totalBookingsCount').innerText = myBookings.length;
     }
 
-    // Ricerca e Mappa
     async function cercaSpazi() {
       const city = document.getElementById('cityInput').value.trim().toLowerCase();
       const type = document.getElementById('typeSelect').value;
@@ -961,22 +1001,70 @@
       renderizzaRisultati(res);
     }
 
-    // INTERATTIVITÀ MAPPA ↔ ELENCO
+    // TRACCIAMENTO PERCORSO E DISTANZA
+    function tracciaPercorsoVerso(space) {
+      if (currentRoutingControl) {
+        map.removeControl(currentRoutingControl);
+      }
+
+      // Calcola la distanza diretta approssimativa in km
+      const R = 6371; // raggio terrestre in km
+      const dLat = (space.lat - userLocation.lat) * Math.PI / 180;
+      const dLon = (space.lon - userLocation.lon) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(userLocation.lat * Math.PI / 180) * Math.cos(space.lat * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distanceKm = R * c;
+
+      const isWalking = distanceKm <= 1.5; // Entro 1.5km si va a piedi (linea tratteggiata)
+
+      // Configurazione stili linea verde
+      const lineOptions = isWalking 
+        ? { styles: [{ color: '#10b981', opacity: 0.9, weight: 6, dashArray: '8, 12' }] } // Tratteggiata verde per vicini/a piedi
+        : { styles: [{ color: '#10b981', opacity: 0.9, weight: 6 }] }; // Continua verde per auto
+
+      currentRoutingControl = L.Routing.control({
+        waypoints: [
+          L.latLng(userLocation.lat, userLocation.lon),
+          L.latLng(space.lat, space.lon)
+        ],
+        router: L.Routing.osrmv1({
+          profile: isWalking ? 'foot' : 'car'
+        }),
+        lineOptions: lineOptions,
+        createMarker: () => null, // Non duplica i marker di default
+        addWaypoints: false,
+        draggableWaypoints: false,
+        fitSelectedRoutes: true
+      }).addTo(map);
+
+      // Aggiorna Box Info in alto sulla Mappa
+      const infoBox = document.getElementById('routeInfoBox');
+      document.getElementById('routeModeIcon').innerText = isWalking ? '🚶‍♂️ (Vicino - A Piedi)' : '🚗 (In Auto)';
+      document.getElementById('routeDistanceText').innerText = distanceKm.toFixed(2) + ' km';
+      document.getElementById('routeTimeText').innerText = isWalking 
+        ? `Tempo stimato a piedi: ~${Math.round(distanceKm * 12)} min`
+        : `Tempo stimato in auto: ~${Math.round(distanceKm * 2.5)} min`;
+      infoBox.classList.remove('hidden');
+    }
+
     function evidenziaSchedaEPopUp(spaceId) {
-      // 1. Rimuovi evidenziatura da tutte le schede
       document.querySelectorAll('.space-card').forEach(card => card.classList.remove('card-active'));
       
-      // 2. Evidenzia la scheda attiva
       const activeCard = document.getElementById('card_' + spaceId);
       if (activeCard) {
         activeCard.classList.add('card-active');
         activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
-      // 3. Apri il PopUp sulla Mappa
+      const spz = localSpazi.find(s => s.id === spaceId);
+      if (spz) {
+        tracciaPercorsoVerso(spz);
+      }
+
       const marker = activeMarkersMap[spaceId];
       if (marker) {
-        map.setView(marker.getLatLng(), 15);
         marker.openPopup();
       }
     }
@@ -989,16 +1077,13 @@
       document.getElementById('resultsCount').innerText = spaces.length;
 
       spaces.forEach(space => {
-        // Icona personalizzata PopUp
         let iconEmoji = '🏢';
         if (space.type === 'fotografia') iconEmoji = '📸';
         else if (space.type === 'barbiere') iconEmoji = '💈';
         else if (space.type === 'estetica') iconEmoji = '💆‍♀️';
 
-        // Creazione Marker Mappa
         const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
         
-        // Popup elegante con foto e bottone
         const popupContent = `
           <div class="text-center p-1">
             <div class="font-bold text-emerald-400 text-sm mb-1">${iconEmoji} ${space.name}</div>
@@ -1010,25 +1095,20 @@
         `;
         marker.bindPopup(popupContent);
         
-        // Cliccando sul Marker evidenzia la scheda a SX
         marker.on('click', () => {
           evidenziaSchedaEPopUp(space.id);
         });
 
         activeMarkersMap[space.id] = marker;
 
-        // Immagine grande della scheda
         const imgTag = space.image 
           ? `<img src="${space.image}" class="w-full h-36 object-cover rounded-xl border border-gray-700/80 mb-3" />`
           : `<div class="w-full h-36 bg-gray-900 border border-gray-700/80 rounded-xl flex items-center justify-center text-4xl mb-3">${iconEmoji}</div>`;
 
-        // SCHEDA GRANDE STILE AIRBNB
         const card = document.createElement('div');
         card.id = 'card_' + space.id;
         card.className = 'space-card bg-gray-800/90 border border-gray-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/60 shadow-lg';
         
-        // Hover/Click sulla scheda per illuminare il Marker sulla Mappa
-        card.onmouseenter = () => evidenziaSchedaEPopUp(space.id);
         card.onclick = () => evidenziaSchedaEPopUp(space.id);
 
         card.innerHTML = `
@@ -1042,7 +1122,7 @@
           </div>
 
           <div class="flex justify-between items-center border-t border-gray-700/60 pt-3 mt-1">
-            <span class="text-[11px] text-gray-400">Verificato • Disponibile</span>
+            <span class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">📍 Clicca per percorso</span>
             <button onclick="event.stopPropagation(); apriModalPrenotazione('${space.id}', '${space.name.replace(/'/g, "\\'")}', ${space.price})" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition-all shadow-md">
               Prenota Ora
             </button>
