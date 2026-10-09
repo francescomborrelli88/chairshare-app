@@ -268,7 +268,7 @@
     </div>
   </div>
 
-  <!-- MODALE: Login / Registrazione -->
+  <!-- MODALE: Login / Registrazione con Approvazione Note Legali -->
   <div id="authModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
       <h3 id="authTitle" class="text-xl font-bold text-white mb-1">Accedi a ChairShare</h3>
@@ -284,21 +284,31 @@
           <input id="authPassword" type="password" required placeholder="Minimo 6 caratteri" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
         </div>
 
-        <div id="roleSelector" class="hidden">
-          <label class="text-xs text-gray-400 uppercase block mb-1">Tipologia Profilo</label>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2 bg-gray-900 p-2.5 rounded-lg border border-gray-700 text-xs cursor-pointer">
-              <input type="radio" name="userRole" value="guest" checked class="text-emerald-500" />
-              <span>Guest (Lavoratore)</span>
-            </label>
-            <label class="flex items-center gap-2 bg-gray-900 p-2.5 rounded-lg border border-gray-700 text-xs cursor-pointer">
-              <input type="radio" name="userRole" value="host" class="text-emerald-500" />
-              <span>Host (Proprietario)</span>
+        <div id="roleSelector" class="hidden space-y-3">
+          <div>
+            <label class="text-xs text-gray-400 uppercase block mb-1">Tipologia Profilo</label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2 bg-gray-900 p-2.5 rounded-lg border border-gray-700 text-xs cursor-pointer">
+                <input type="radio" name="userRole" value="guest" checked class="text-emerald-500" />
+                <span>Guest (Lavoratore)</span>
+              </label>
+              <label class="flex items-center gap-2 bg-gray-900 p-2.5 rounded-lg border border-gray-700 text-xs cursor-pointer">
+                <input type="radio" name="userRole" value="host" class="text-emerald-500" />
+                <span>Host (Proprietario)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- CHECKBOX APPROVAZIONE NOTE LEGALI (IN REGISTRAZIONE) -->
+          <div class="bg-gray-900/90 p-3 rounded-xl border border-gray-700 text-[11px] text-gray-300">
+            <label class="flex items-start gap-2 cursor-pointer">
+              <input type="checkbox" id="registerLegalCheck" class="mt-0.5 text-emerald-500 rounded border-gray-700 bg-gray-800 focus:ring-emerald-500" />
+              <span>Dichiaro di aver letto e accetto integralmente i <button type="button" onclick="toggleModal('legalModal', true)" class="text-emerald-400 underline font-semibold">Termini di Servizio & Note Legali</button> e l'esonero di responsabilità della piattaforma.</span>
             </label>
           </div>
         </div>
 
-        <div class="flex justify-between items-center pt-3">
+        <div class="flex justify-between items-center pt-3 border-t border-gray-700/60">
           <button type="button" onclick="toggleAuthMode()" id="switchAuthBtn" class="text-xs text-emerald-400 hover:underline">
             Non hai un account? Registrati
           </button>
@@ -311,7 +321,7 @@
     </div>
   </div>
 
-  <!-- MODALE: Aggiungi Nuova Postazione / Spazio con Garanzie Legali Host -->
+  <!-- MODALE: Aggiungi Nuova Postazione / Spazio -->
   <div id="addModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <h3 class="text-xl font-bold text-white mb-1">Pubblica il tuo Spazio o Postazione</h3>
@@ -357,11 +367,10 @@
           <input id="newImageInput" type="file" accept="image/*" class="w-full mt-1 text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer" />
         </div>
 
-        <!-- DICHIARAZIONE DI IDONEITÀ HOST (OBBLIGATORIA PER LEGGE) -->
         <div class="bg-gray-900/90 p-3 rounded-xl border border-gray-700 text-[11px] text-gray-300 space-y-2">
           <label class="flex items-start gap-2 cursor-pointer">
             <input type="checkbox" id="hostLegalCheck" required class="mt-0.5 text-emerald-500 rounded border-gray-700 bg-gray-800 focus:ring-emerald-500" />
-            <span>Dichiaro sotto la mia responsabilità che lo spazio possiede le autorizzazioni amministrative, la destinazione d'uso idonea e i requisiti igienico-sanitari previsti dalle leggi vigenti per l'attività selezionata.</span>
+            <span>Dichiaro sotto la mia responsabilità che lo spazio possiede le autorizzazioni amministrative, la destinazione d'uso idonea e i requisiti igienico-sanitari previsti per l'attività selezionata.</span>
           </label>
         </div>
 
@@ -373,7 +382,7 @@
     </div>
   </div>
 
-  <!-- MODALE: Prenotazione Avanzata con Garanzie Legali Guest -->
+  <!-- MODALE: Prenotazione Avanzata -->
   <div id="bookingModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <h3 id="bookSpaceTitle" class="text-xl font-bold text-white mb-1">Prenota Spazio</h3>
@@ -435,11 +444,10 @@
           </div>
         </div>
 
-        <!-- DICHIARAZIONE DI ABILITAZIONE GUEST (OBBLIGATORIA PER LEGGE) -->
         <div class="bg-gray-900/90 p-3 rounded-xl border border-gray-700 text-[11px] text-gray-300 space-y-2">
           <label class="flex items-start gap-2 cursor-pointer">
             <input type="checkbox" id="guestLegalCheck" required class="mt-0.5 text-emerald-500 rounded border-gray-700 bg-gray-800 focus:ring-emerald-500" />
-            <span>Confermo sotto la mia responsabilità di possedere i requisiti professionali, titoli abilitanti/iscrizioni all'Albo o licenze necessarie per erogare la mia prestazione nello spazio.</span>
+            <span>Confermo sotto la mia responsabilità di possedere i requisiti professionali, titoli abilitanti o licenze necessarie per la prestazione nello spazio.</span>
           </label>
         </div>
 
@@ -629,7 +637,7 @@
     // Mappa Marker ID -> Istanza Marker Leaflet
     let activeMarkersMap = {};
 
-    // Spazi predefiniti (Inclusi Studi Psicoterapeutici e Centri Massaggi)
+    // Spazi predefiniti
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
       { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample' },
       { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample' },
@@ -708,7 +716,13 @@
       document.getElementById('authTitle').innerText = isRegisterMode ? 'Registrati su ChairShare' : 'Accedi a ChairShare';
       document.getElementById('authSubmitBtn').innerText = isRegisterMode ? 'Registrati' : 'Accedi';
       document.getElementById('switchAuthBtn').innerText = isRegisterMode ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
-      document.getElementById('roleSelector').classList.toggle('hidden', !isRegisterMode);
+      
+      const roleSelector = document.getElementById('roleSelector');
+      const legalCheck = document.getElementById('registerLegalCheck');
+      
+      roleSelector.classList.toggle('hidden', !isRegisterMode);
+      legalCheck.required = isRegisterMode;
+
       toggleModal('authModal', true);
     }
 
@@ -717,7 +731,12 @@
       document.getElementById('authTitle').innerText = isRegisterMode ? 'Registrati su ChairShare' : 'Accedi a ChairShare';
       document.getElementById('authSubmitBtn').innerText = isRegisterMode ? 'Registrati' : 'Accedi';
       document.getElementById('switchAuthBtn').innerText = isRegisterMode ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
-      document.getElementById('roleSelector').classList.toggle('hidden', !isRegisterMode);
+      
+      const roleSelector = document.getElementById('roleSelector');
+      const legalCheck = document.getElementById('registerLegalCheck');
+
+      roleSelector.classList.toggle('hidden', !isRegisterMode);
+      legalCheck.required = isRegisterMode;
     }
 
     async function handleAuth(e) {
@@ -725,12 +744,20 @@
       const email = document.getElementById('authEmail').value;
       const password = document.getElementById('authPassword').value;
 
+      if (isRegisterMode) {
+        const legalCheck = document.getElementById('registerLegalCheck');
+        if (!legalCheck.checked) {
+          alert('Attenzione: devi accettare i Termini di Servizio & Note Legali per completare la registrazione.');
+          return;
+        }
+      }
+
       if (supabaseClient) {
         try {
           if (isRegisterMode) {
             const role = document.querySelector('input[name="userRole"]:checked').value;
             const { data, error } = await supabaseClient.auth.signUp({
-              email, password, options: { data: { role } }
+              email, password, options: { data: { role, legal_accepted: true } }
             });
             if (error) throw error;
             alert('Registrazione completata con successo! Ora puoi effettuare l\'accesso.');
