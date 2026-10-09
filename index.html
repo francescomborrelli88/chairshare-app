@@ -21,13 +21,21 @@
   <header class="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-40 flex justify-between items-center shadow-md">
     <!-- Logo & Reset Home con Geolocalizzazione Dispositivo -->
     <div onclick="resetToHome()" class="flex items-center gap-3 cursor-pointer group">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-cyan-500 p-2 flex items-center justify-center shadow-lg shadow-emerald-500/30 border border-emerald-400/30 group-hover:scale-105 transition-transform">
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-white fill-none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-    <line x1="12" y1="22.08" x2="12" y2="12"></line>
-  </svg>
-</div>
+      
+      <!-- LOGO CHAIRSHARE (Stile App Mobile: Poltrona + Sgabello Studio & Stativi) -->
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 p-2 flex items-center justify-center shadow-lg shadow-emerald-900/40 border border-emerald-300/30 group-hover:scale-105 group-hover:shadow-emerald-500/50 transition-all duration-300 shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-none stroke-white" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Stativo / Softbox Studio Fotografico -->
+          <path d="M4 3l4 2-2 3-4-2z" fill="rgba(255,255,255,0.3)" /> 
+          <path d="M6 8v12M3 20l3-2 3 2" opacity="0.85" />
+
+          <!-- Poltrona / Sgabello Regolabile da Studio -->
+          <path d="M11 10c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2H11v-2z" fill="white" /> 
+          <path d="M10 12h10v2a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-2z" fill="white" /> 
+          <path d="M15 15v3M12 18h6M13 21l2-3 2 3" stroke-width="2" /> 
+        </svg>
+      </div>
+
       <div>
         <h1 class="text-xl font-bold tracking-wide text-white group-hover:text-emerald-400 transition-colors">ChairShare</h1>
         <span class="text-[10px] text-gray-400 block -mt-1">Piattaforma Spazi & Postazioni</span>
@@ -66,7 +74,6 @@
 
   <!-- VISTA 1: HOME PAGE (Mappa & Ricerca) -->
   <div id="homePage" class="flex-1 flex flex-col">
-    <!-- Hero Banner -->
     <section class="bg-gradient-to-b from-gray-800 to-gray-900 border-b border-gray-800 py-4 px-4 text-center">
       <h2 class="text-xl md:text-2xl font-extrabold text-white mb-1 tracking-tight">
         Trova e prenota il tuo spazio, studio o poltrona ideale
@@ -505,7 +512,6 @@
       console.warn("Supabase non disponibile");
     }
 
-    // CONTROLLO RIGIDO UTENTE LOGGATO
     let currentUser = null;
     const storedUser = localStorage.getItem('cs_user');
     if (storedUser && storedUser !== 'null') {
@@ -565,7 +571,6 @@
       document.getElementById(modalId).classList.toggle('hidden', !show);
     }
 
-    // CONTROLLO RIGIDO PER CREARE SPAZIO
     function apriAggiungiSpazio() {
       if (!currentUser) {
         alert('Attenzione: devi prima registrarti o accedere con il tuo account per pubblicare uno spazio!');
@@ -592,7 +597,6 @@
       document.getElementById('roleSelector').classList.toggle('hidden', !isRegisterMode);
     }
 
-    // Login / Registrazione
     async function handleAuth(e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value;
@@ -649,7 +653,6 @@
       }
     }
 
-    // Salva Nuova Postazione / Spazio
     function convertFileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -716,7 +719,6 @@
       saveBtn.disabled = false;
     }
 
-    // --- LOGICA PRENOTAZIONI AVANZATA ---
     function apriModalPrenotazione(spaceId, spaceName, basePrice) {
       if (!currentUser) {
         alert('Attenzione: devi prima registrarti o accedere con il tuo account per prenotare uno spazio!');
@@ -795,7 +797,6 @@
       document.getElementById('summaryTotal').innerText = currentCalculatedTotal.toFixed(2) + ' €';
     }
 
-    // --- FLUSSO PAGAMENTO ---
     function procediAlPagamento(e) {
       e.preventDefault();
       document.getElementById('payModalAmount').innerText = currentCalculatedTotal.toFixed(2) + ' €';
@@ -859,7 +860,6 @@
       }, 1200);
     }
 
-    // Carica Profilo
     function caricaDatiProfilo() {
       if (!currentUser) return;
       document.getElementById('profileUserEmail').innerText = currentUser.email;
@@ -915,7 +915,6 @@
       document.getElementById('totalBookingsCount').innerText = myBookings.length;
     }
 
-    // Ricerca e Mappa
     async function cercaSpazi() {
       const city = document.getElementById('cityInput').value.trim().toLowerCase();
       const type = document.getElementById('typeSelect').value;
