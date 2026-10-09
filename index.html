@@ -68,6 +68,10 @@
     </div>
     
     <div class="flex items-center gap-3">
+      <button onclick="toggleModal('legalModal', true)" class="hidden md:inline text-xs text-gray-400 hover:text-emerald-400 underline transition-colors">
+        Note Legali & Normative
+      </button>
+
       <span class="hidden md:inline text-xs text-gray-400 bg-gray-900/60 px-3 py-1.5 rounded-full border border-gray-700">
         Commissioni: <strong class="text-emerald-400">5% Guest</strong> • <strong class="text-emerald-400">10% Host</strong>
       </span>
@@ -307,7 +311,7 @@
     </div>
   </div>
 
-  <!-- MODALE: Aggiungi Nuova Postazione / Spazio -->
+  <!-- MODALE: Aggiungi Nuova Postazione / Spazio con Garanzie Legali Host -->
   <div id="addModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <h3 class="text-xl font-bold text-white mb-1">Pubblica il tuo Spazio o Postazione</h3>
@@ -353,6 +357,14 @@
           <input id="newImageInput" type="file" accept="image/*" class="w-full mt-1 text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer" />
         </div>
 
+        <!-- DICHIARAZIONE DI IDONEITÀ HOST (OBBLIGATORIA PER LEGGE) -->
+        <div class="bg-gray-900/90 p-3 rounded-xl border border-gray-700 text-[11px] text-gray-300 space-y-2">
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" id="hostLegalCheck" required class="mt-0.5 text-emerald-500 rounded border-gray-700 bg-gray-800 focus:ring-emerald-500" />
+            <span>Dichiaro sotto la mia responsabilità che lo spazio possiede le autorizzazioni amministrative, la destinazione d'uso idonea e i requisiti igienico-sanitari previsti dalle leggi vigenti per l'attività selezionata.</span>
+          </label>
+        </div>
+
         <div class="flex justify-end gap-2 mt-6">
           <button type="button" onclick="toggleModal('addModal', false)" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm">Annulla</button>
           <button type="submit" id="saveBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 font-medium rounded-lg text-sm">Pubblica Spazio</button>
@@ -361,7 +373,7 @@
     </div>
   </div>
 
-  <!-- MODALE: Prenotazione Avanzata -->
+  <!-- MODALE: Prenotazione Avanzata con Garanzie Legali Guest -->
   <div id="bookingModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <h3 id="bookSpaceTitle" class="text-xl font-bold text-white mb-1">Prenota Spazio</h3>
@@ -421,6 +433,14 @@
             <label class="text-xs text-gray-400 uppercase">Data Fine</label>
             <input id="bookEndDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
           </div>
+        </div>
+
+        <!-- DICHIARAZIONE DI ABILITAZIONE GUEST (OBBLIGATORIA PER LEGGE) -->
+        <div class="bg-gray-900/90 p-3 rounded-xl border border-gray-700 text-[11px] text-gray-300 space-y-2">
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" id="guestLegalCheck" required class="mt-0.5 text-emerald-500 rounded border-gray-700 bg-gray-800 focus:ring-emerald-500" />
+            <span>Confermo sotto la mia responsabilità di possedere i requisiti professionali, titoli abilitanti/iscrizioni all'Albo o licenze necessarie per erogare la mia prestazione nello spazio.</span>
+          </label>
         </div>
 
         <!-- Quadro Riepilogo Prezzi -->
@@ -541,6 +561,39 @@
         <button type="button" onclick="toggleModal('paymentModal', false)" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs">Annulla</button>
         <button onclick="confermaEPay()" id="payNowBtn" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-lg text-xs transition-colors shadow-lg">
           Paga Ora e Conferma
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE: Termini di Servizio & Note Legali -->
+  <div id="legalModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[85vh] overflow-y-auto text-xs text-gray-300 space-y-4">
+      <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-2">⚖️ Termini di Servizio & Esonero di Responsabilità Legale</h3>
+      
+      <div>
+        <h4 class="font-bold text-emerald-400 mb-1">1. Natura del Servizio ChairShare</h4>
+        <p>ChairShare opera esclusivamente come piattaforma digitale e marketplace tecnologico per facilitare l'incontro tra proprietari/gestori di spazi (Host) e lavoratori autonomi/professionisti (Guest). ChairShare non è proprietaria degli immobili né eroga servizi sanitari, estetici o professionali.</p>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-emerald-400 mb-1">2. Idoneità dei Locali (Host)</h4>
+        <p>L'Host dichiara sotto la propria ed esclusiva responsabilità che lo spazio messo a disposizione rispetta le normative vigenti in materia di destinazione d'uso, agibilità, sicurezza nei luoghi di lavoro e autorizzazioni igienico-sanitarie (ASL/Comune).</p>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-emerald-400 mb-1">3. Abilitazioni e Requisiti Professionali (Guest)</h4>
+        <p>Il Guest dichiara e garantisce di possedere i titoli abilitanti, le iscrizioni agli Albi o elenchi professionali (es. Albo degli Psicologi e Psicoterapeuti) e le licenze/Partite IVA necessarie per legge. ChairShare non risponde dell'eventuale esercizio abusivo della professione svolto dagli utenti.</p>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-emerald-400 mb-1">4. Privacy e Riservatezza (GDPR)</h4>
+        <p>I professionisti della salute e del benessere che condividono gli spazi sono direttamente responsabili della protezione dei dati personali e particolari dei propri clienti o pazienti, garantendo il segreto professionale.</p>
+      </div>
+
+      <div class="flex justify-end pt-3 border-t border-gray-700">
+        <button onclick="toggleModal('legalModal', false)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs">
+          Ho Compreso
         </button>
       </div>
     </div>
