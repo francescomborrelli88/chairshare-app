@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ChairShare - Trova e Prenota Spazi e Poltrone</title>
+  <title>ChairShare - Trova e Prenota Spazi e Postazioni</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -29,7 +29,7 @@
       </div>
       <div>
         <h1 class="text-xl font-bold tracking-wide text-white group-hover:text-emerald-400 transition-colors">ChairShare</h1>
-        <span class="text-[10px] text-gray-400 block -mt-1">Piattaforma Spazi & Poltrone</span>
+        <span class="text-[10px] text-gray-400 block -mt-1">Piattaforma Spazi & Postazioni</span>
       </div>
     </div>
     
@@ -43,8 +43,8 @@
         <button onclick="toggleAuthModal(true)" id="loginBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-colors">
           Accedi / Registrati
         </button>
-        <button onclick="toggleModal('addModal', true)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 shadow-lg shadow-emerald-900/20">
-          <span>+</span> Aggiungi Poltrona
+        <button onclick="apriAggiungiSpazio()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 shadow-lg shadow-emerald-900/20">
+          <span>+</span> Aggiungi Spazio
         </button>
       </div>
 
@@ -52,6 +52,9 @@
       <div id="userProfileActions" class="hidden items-center gap-2">
         <button onclick="mostraPagina('profilePage')" class="bg-emerald-700 hover:bg-emerald-600 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-colors flex items-center gap-1.5 shadow-md">
           <span>👤</span> Area Personale
+        </button>
+        <button onclick="apriAggiungiSpazio()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-colors flex items-center gap-1.5 shadow-md">
+          <span>+</span> Aggiungi Spazio
         </button>
         <button onclick="logout()" class="text-xs text-gray-400 hover:text-red-400 px-2 py-1">
           Esci
@@ -65,7 +68,7 @@
     <!-- Hero Banner -->
     <section class="bg-gradient-to-b from-gray-800 to-gray-900 border-b border-gray-800 py-4 px-4 text-center">
       <h2 class="text-xl md:text-2xl font-extrabold text-white mb-1 tracking-tight">
-        Trova e prenota la tua poltrona o spazio ideale
+        Trova e prenota il tuo spazio, studio o poltrona ideale
       </h2>
       <p class="text-emerald-400 text-xs md:text-sm font-medium max-w-2xl mx-auto">
         Registrazione gratuita • Zero canoni mensili • Paghi solo quando lavori
@@ -79,7 +82,7 @@
         <!-- Box Ricerca -->
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg">
           <h3 class="text-base font-semibold mb-3 flex items-center gap-2">
-            🔍 Cerca la tua postazione
+            🔍 Cerca il tuo spazio di lavoro
           </h3>
           
           <div class="space-y-3">
@@ -93,9 +96,10 @@
                 <label class="text-xs text-gray-400 uppercase font-medium">Tipo Spazio</label>
                 <select id="typeSelect" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white">
                   <option value="">Tutti</option>
-                  <option value="barbiere">Barbiere / Parrucchiere</option>
-                  <option value="fotografia">Studio Fotografico</option>
-                  <option value="estetica">Centro Estetico</option>
+                  <option value="fotografia">📸 Studio Fotografico</option>
+                  <option value="barbiere">💈 Barbiere / Parrucchiere</option>
+                  <option value="estetica">💆‍♀️ Centro Estetico / Tatuaggi</option>
+                  <option value="coworking">🏢 Postazione Coworking</option>
                 </select>
               </div>
               <div>
@@ -112,7 +116,7 @@
 
         <!-- Risultati / Lista Spazi -->
         <div class="flex-1">
-          <h3 class="text-sm font-semibold text-gray-400 mb-2">Spazi e Poltrone Disponibili (<span id="resultsCount">0</span>)</h3>
+          <h3 class="text-sm font-semibold text-gray-400 mb-2">Spazi e Postazioni Disponibili (<span id="resultsCount">0</span>)</h3>
           <div id="spacesList" class="flex flex-col gap-3">
             <!-- Schede dinamiche -->
           </div>
@@ -165,18 +169,18 @@
         </div>
       </div>
 
-      <!-- SEZIONE 1: LE MIE POLTRONE CREATE (HOST) -->
+      <!-- SEZIONE 1: I MIEI SPAZI CREATI (HOST) -->
       <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-lg">
         <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
           <h3 class="text-lg font-bold text-white flex items-center gap-2">
-            💈 Le Tue Poltrone Disponibili (Host)
+            🏢 I Tuoi Spazi e Postazioni Pubblicati (Host)
           </h3>
-          <button onclick="toggleModal('addModal', true)" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
-            + Aggiungi Nuova
+          <button onclick="apriAggiungiSpazio()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+            + Aggiungi Spazio
           </button>
         </div>
         <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Carte Poltrone create dall'utente -->
+          <!-- Carte Spazi create dall'utente -->
         </div>
       </div>
 
@@ -189,7 +193,7 @@
           <table class="w-full text-left text-sm text-gray-300">
             <thead class="text-xs text-gray-400 uppercase bg-gray-900/60 border-b border-gray-700">
               <tr>
-                <th class="p-3">Spazio / Poltrona</th>
+                <th class="p-3">Spazio / Postazione</th>
                 <th class="p-3">Data Prenotata</th>
                 <th class="p-3">Durata</th>
                 <th class="p-3">Importo Totale</th>
@@ -210,7 +214,7 @@
   <div id="authModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
       <h3 id="authTitle" class="text-xl font-bold text-white mb-1">Accedi a ChairShare</h3>
-      <p class="text-xs text-gray-400 mb-4">Gestisci le tue prenotazioni o pubblica le tue poltrone.</p>
+      <p id="authSubTitle" class="text-xs text-gray-400 mb-4">Gestisci le tue prenotazioni o pubblica i tuoi spazi.</p>
 
       <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3">
         <div>
@@ -249,16 +253,16 @@
     </div>
   </div>
 
-  <!-- MODALE: Aggiungi Nuova Poltrona -->
+  <!-- MODALE: Aggiungi Nuova Postazione / Spazio -->
   <div id="addModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <h3 class="text-xl font-bold text-white mb-1">Aggiungi Nuova Poltrona</h3>
-      <p class="text-xs text-gray-400 mb-4">Pubblica gratuitamente il tuo spazio e inizia a guadagnare.</p>
+      <h3 class="text-xl font-bold text-white mb-1">Pubblica il tuo Spazio o Postazione</h3>
+      <p class="text-xs text-gray-400 mb-4">Pubblica gratuitamente il tuo studio, salone o postazione e inizia a guadagnare.</p>
       
       <form id="addSpaceForm" onsubmit="salvaNuovaPoltrona(event)" class="space-y-3">
         <div>
-          <label class="text-xs text-gray-400 uppercase">Nome Salone / Spazio</label>
-          <input id="newName" type="text" required placeholder="Es. Barberia Napoletana" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+          <label class="text-xs text-gray-400 uppercase">Nome Studio / Salone / Spazio</label>
+          <input id="newName" type="text" required placeholder="Es. Studio Fotografico Vesuvio / Barberia Duomo" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -276,9 +280,10 @@
           <div>
             <label class="text-xs text-gray-400 uppercase">Tipo Spazio</label>
             <select id="newType" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white">
-              <option value="barbiere">Barbiere / Parrucchiere</option>
-              <option value="fotografia">Studio Fotografico</option>
-              <option value="estetica">Centro Estetico</option>
+              <option value="fotografia">📸 Studio Fotografico</option>
+              <option value="barbiere">💈 Barbiere / Parrucchiere</option>
+              <option value="estetica">💆‍♀️ Centro Estetico / Tatuaggi</option>
+              <option value="coworking">🏢 Postazione Coworking</option>
             </select>
           </div>
           <div>
@@ -288,7 +293,7 @@
         </div>
 
         <div>
-          <label class="text-xs text-gray-400 uppercase">Foto Salone / Spazio</label>
+          <label class="text-xs text-gray-400 uppercase">Foto Spazio / Postazione</label>
           <input id="newImageInput" type="file" accept="image/*" class="w-full mt-1 text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer" />
         </div>
 
@@ -340,7 +345,7 @@
   </div>
 
   <script>
-    // Configurazione Supabase sicura con fallback locale
+    // Configurazione Supabase
     const SUPABASE_URL = 'https://eyghtnxuhxdqsayjygi.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5Z2h0bnh1aHhkeXFzYXlqeWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0Njc3NDgsImV4cCI6MjEwNzA0Mzc0OH0.uzupM1khyMAshMfgmGqjITPBLCr0t72pEirryibTyMY';
     
@@ -356,10 +361,10 @@
     let currentUser = JSON.parse(localStorage.getItem('cs_user')) || null;
     let isRegisterMode = false;
 
-    // Spazi predefiniti iniziali
+    // Spazi predefiniti
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
-      { id: '1', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample' },
-      { id: '2', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample' },
+      { id: '1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample' },
+      { id: '2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample' },
       { id: '3', name: 'Postazione Hairstylist Duomo', city: 'Milano', type: 'barbiere', price: 60, lat: 45.4642, lon: 9.1900, image: null, host_id: 'sample' }
     ];
 
@@ -405,6 +410,16 @@
       document.getElementById(modalId).classList.toggle('hidden', !show);
     }
 
+    // Controllo Login prima di Aggiungere Spazio
+    function apriAggiungiSpazio() {
+      if (!currentUser) {
+        alert('Per aggiungere un nuovo spazio devi prima registrarti o accedere con il tuo account!');
+        toggleAuthModal(true);
+      } else {
+        toggleModal('addModal', true);
+      }
+    }
+
     function toggleAuthModal(show) { toggleModal('authModal', show); }
 
     function toggleAuthMode() {
@@ -415,7 +430,7 @@
       document.getElementById('roleSelector').classList.toggle('hidden', !isRegisterMode);
     }
 
-    // Gestione Login / Registrazione con Fallback Sicuro
+    // Login / Registrazione
     async function handleAuth(e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value;
@@ -446,7 +461,6 @@
         }
       }
 
-      // Fallback Locale
       currentUser = { id: 'usr_' + Date.now(), email: email };
       localStorage.setItem('cs_user', JSON.stringify(currentUser));
       aggiornaUIUtente();
@@ -472,7 +486,7 @@
       }
     }
 
-    // Salva Nuova Poltrona
+    // Salva Nuova Postazione / Spazio
     function convertFileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -525,7 +539,7 @@
       localSpazi.push(newSpace);
       localStorage.setItem('cs_spazi', JSON.stringify(localSpazi));
 
-      alert('Poltrona pubblicata con successo!');
+      alert('Spazio / Postazione pubblicata con successo!');
       document.getElementById('addSpaceForm').reset();
       toggleModal('addModal', false);
       cercaSpazi();
@@ -535,7 +549,7 @@
     // Prenotazioni
     function apriModalPrenotazione(spaceId, spaceName, basePrice) {
       if (!currentUser) {
-        alert('Devi prima accedere con il tuo account per prenotare.');
+        alert('Devi prima accedere o registrarti per poter prenotare uno spazio.');
         toggleAuthModal(true);
         return;
       }
@@ -570,7 +584,7 @@
       const guest_fee = basePrice * 0.05;
       const total_price = basePrice + guest_fee;
 
-      const spz = localSpazi.find(s => s.id === space_id) || { name: 'Poltrona', city: '' };
+      const spz = localSpazi.find(s => s.id === space_id) || { name: 'Spazio', city: '' };
 
       const newBooking = {
         id: 'bk_' + Date.now(),
@@ -608,7 +622,7 @@
       spacesGrid.innerHTML = '';
 
       if (mySpaces.length === 0) {
-        spacesGrid.innerHTML = '<p class="text-sm text-gray-500 italic col-span-3">Non hai ancora pubblicato nessuna poltrona.</p>';
+        spacesGrid.innerHTML = '<p class="text-sm text-gray-500 italic col-span-3">Non hai ancora pubblicato nessuno spazio.</p>';
       } else {
         mySpaces.forEach(s => {
           const card = document.createElement('div');
@@ -616,7 +630,7 @@
           card.innerHTML = `
             <div>
               <h4 class="font-bold text-emerald-400 text-sm mb-1">${s.name}</h4>
-              <p class="text-xs text-gray-400 mb-2">${s.city} • ${s.type}</p>
+              <p class="text-xs text-gray-400 mb-2">${s.city} • <span class="capitalize">${s.type}</span></p>
             </div>
             <div class="text-right border-t border-gray-800 pt-2">
               <span class="text-lg font-extrabold text-white">${s.price}€</span>
@@ -691,9 +705,14 @@
         const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
         marker.bindPopup(`<b>${space.name}</b><br>${space.price}€ / giorno`);
 
+        let iconType = '🏢';
+        if (space.type === 'fotografia') iconType = '📸';
+        else if (space.type === 'barbiere') iconType = '💈';
+        else if (space.type === 'estetica') iconType = '💆‍♀️';
+
         const imgTag = space.image 
           ? `<img src="${space.image}" class="w-16 h-16 object-cover rounded-lg border border-gray-700 shrink-0" />`
-          : `<div class="w-16 h-16 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center text-xl shrink-0">✂️</div>`;
+          : `<div class="w-16 h-16 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center text-xl shrink-0">${iconType}</div>`;
 
         const card = document.createElement('div');
         card.className = 'bg-gray-800 p-3 rounded-xl border border-gray-700 flex items-center gap-3 hover:border-emerald-500/50 transition-colors cursor-pointer';
