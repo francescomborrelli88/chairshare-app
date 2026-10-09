@@ -165,7 +165,7 @@
         <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 shadow-lg">
           <span class="text-xs text-gray-400 uppercase font-medium">Prenotazioni Totali</span>
           <div id="totalBookingsCount" class="text-3xl font-extrabold text-emerald-400 mt-2">0</div>
-          <span class="text-[11px] text-gray-500 block mt-1">Giornate prenotate o erogate</span>
+          <span class="text-[11px] text-gray-500 block mt-1">Ore o giornate prenotate/erogate</span>
         </div>
       </div>
 
@@ -194,8 +194,8 @@
             <thead class="text-xs text-gray-400 uppercase bg-gray-900/60 border-b border-gray-700">
               <tr>
                 <th class="p-3">Spazio / Postazione</th>
-                <th class="p-3">Data Prenotata</th>
-                <th class="p-3">Durata</th>
+                <th class="p-3">Data / Periodo</th>
+                <th class="p-3">Durata / Fascia</th>
                 <th class="p-3">Importo Totale</th>
                 <th class="p-3">Stato</th>
               </tr>
@@ -305,42 +305,188 @@
     </div>
   </div>
 
-  <!-- MODALE: Prenotazione Spazio -->
+  <!-- MODALE: Prenotazione Avanzata (Oraria, Giornata, Più Giorni) -->
   <div id="bookingModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
-      <h3 id="bookSpaceTitle" class="text-xl font-bold text-white mb-1">Prenota Postazione</h3>
-      <p id="bookSpaceSub" class="text-xs text-gray-400 mb-4">Seleziona la data di lavoro e calcola il totale.</p>
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <h3 id="bookSpaceTitle" class="text-xl font-bold text-white mb-1">Prenota Spazio</h3>
+      <p id="bookSpaceSub" class="text-xs text-gray-400 mb-4">Scegli la modalità di prenotazione desiderata.</p>
 
-      <form id="bookingForm" onsubmit="confermaPrenotazione(event)" class="space-y-4">
+      <form id="bookingForm" onsubmit="procediAlPagamento(event)" class="space-y-4">
         <input type="hidden" id="bookSpaceId" />
         <input type="hidden" id="bookBasePrice" />
 
+        <!-- Selezione Modalità -->
         <div>
-          <label class="text-xs text-gray-400 uppercase">Data Prenotazione</label>
-          <input id="bookDate" type="date" required onchange="calcolaTotalePrenotazione()" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+          <label class="text-xs text-gray-400 uppercase font-medium">Modalità di Prenotazione</label>
+          <div class="grid grid-cols-3 gap-2 mt-1">
+            <button type="button" onclick="setBookingMode('single')" id="modeBtnSingle" class="py-2 text-xs font-semibold rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-400 transition-all">
+              1 Giorno
+            </button>
+            <button type="button" onclick="setBookingMode('hourly')" id="modeBtnHourly" class="py-2 text-xs font-semibold rounded-lg border border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600 transition-all">
+              Fascia Oraria
+            </button>
+            <button type="button" onclick="setBookingMode('multi')" id="modeBtnMulti" class="py-2 text-xs font-semibold rounded-lg border border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600 transition-all">
+              Più Giorni
+            </button>
+          </div>
         </div>
 
-        <div class="bg-gray-900/80 p-3 rounded-lg border border-gray-700 space-y-1.5 text-xs">
+        <!-- Opzione 1: Singolo Giorno -->
+        <div id="bookingSingleBox">
+          <label class="text-xs text-gray-400 uppercase">Data Prenotazione</label>
+          <input id="bookDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+        </div>
+
+        <!-- Opzione 2: Fascia Oraria -->
+        <div id="bookingHourlyBox" class="hidden space-y-3">
+          <div>
+            <label class="text-xs text-gray-400 uppercase">Data</label>
+            <input id="bookHourlyDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs text-gray-400 uppercase">Dalle Ore</label>
+              <input id="bookTimeStart" type="time" value="09:00" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-400 uppercase">Alle Ore</label>
+              <input id="bookTimeEnd" type="time" value="13:00" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Opzione 3: Più Giorni -->
+        <div id="bookingMultiBox" class="hidden grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-gray-400 uppercase">Data Inizio</label>
+            <input id="bookStartDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+          </div>
+          <div>
+            <label class="text-xs text-gray-400 uppercase">Data Fine</label>
+            <input id="bookEndDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+          </div>
+        </div>
+
+        <!-- Quadro Riepilogo Prezzi -->
+        <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-700 space-y-2 text-xs">
           <div class="flex justify-between">
-            <span class="text-gray-400">Costo giornaliero (1 giorno / 8 ore):</span>
-            <span id="summaryBasePrice" class="font-medium">0,00 €</span>
+            <span class="text-gray-400">Durata Selezionata:</span>
+            <span id="summaryDurationText" class="font-medium text-white">1 Giorno (8 ore)</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-400">Commissione servizio Guest (5%):</span>
+            <span class="text-gray-400">Subtotale Spazio:</span>
+            <span id="summaryBasePrice" class="font-medium text-white">0,00 €</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Commissione Servizio Guest (5%):</span>
             <span id="summaryGuestFee" class="text-emerald-400 font-medium">+ 0,00 €</span>
           </div>
-          <hr class="border-gray-800 my-1">
+          <hr class="border-gray-800 my-2">
           <div class="flex justify-between text-sm font-bold">
-            <span>Totale da Pagare:</span>
-            <span id="summaryTotal" class="text-emerald-400">0,00 €</span>
+            <span>Totale Complessivo:</span>
+            <span id="summaryTotal" class="text-emerald-400 text-base">0,00 €</span>
           </div>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="toggleModal('bookingModal', false)" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm">Annulla</button>
-          <button type="submit" id="bookSubmitBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 font-medium rounded-lg text-sm">Conferma Prenotazione</button>
+          <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-lg text-sm shadow-lg flex items-center gap-2">
+            <span>💳</span> Procedi al Pagamento
+          </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODALE: Portale di Pagamento (Checkout) -->
+  <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+      <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          🔒 Checkout Pagamento Sicuro
+        </h3>
+        <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/30">SSL 256-bit</span>
+      </div>
+
+      <div class="bg-gray-900 p-3 rounded-xl mb-4 border border-gray-700 flex justify-between items-center">
+        <div>
+          <span class="text-xs text-gray-400 block">Totale da autorizzare</span>
+          <span id="payModalAmount" class="text-xl font-extrabold text-emerald-400">0,00 €</span>
+        </div>
+        <div class="text-right text-[11px] text-gray-400">
+          ChairShare Protection Inc.
+        </div>
+      </div>
+
+      <!-- Selezione Metodo di Pagamento -->
+      <div class="space-y-2 mb-5">
+        <label class="text-xs text-gray-400 uppercase font-medium block mb-1">Scegli il metodo di pagamento</label>
+        
+        <label onclick="selectPayMethod('card')" class="pay-option flex items-center justify-between p-3 rounded-xl border border-emerald-500 bg-emerald-500/10 cursor-pointer">
+          <div class="flex items-center gap-3">
+            <input type="radio" name="payMethod" value="card" checked class="text-emerald-500" />
+            <span class="text-xs font-semibold">Carta di Credito / Debito</span>
+          </div>
+          <span class="text-xs opacity-70">💳 Visa/MC</span>
+        </label>
+
+        <label onclick="selectPayMethod('apple')" class="pay-option flex items-center justify-between p-3 rounded-xl border border-gray-700 bg-gray-900 cursor-pointer hover:border-gray-600">
+          <div class="flex items-center gap-3">
+            <input type="radio" name="payMethod" value="apple" class="text-emerald-500" />
+            <span class="text-xs font-semibold">Apple Pay</span>
+          </div>
+          <span class="text-sm font-bold"> Pay</span>
+        </label>
+
+        <label onclick="selectPayMethod('paypal')" class="pay-option flex items-center justify-between p-3 rounded-xl border border-gray-700 bg-gray-900 cursor-pointer hover:border-gray-600">
+          <div class="flex items-center gap-3">
+            <input type="radio" name="payMethod" value="paypal" class="text-emerald-500" />
+            <span class="text-xs font-semibold">PayPal</span>
+          </div>
+          <span class="text-xs font-bold text-blue-400">PayPal</span>
+        </label>
+
+        <label onclick="selectPayMethod('google')" class="pay-option flex items-center justify-between p-3 rounded-xl border border-gray-700 bg-gray-900 cursor-pointer hover:border-gray-600">
+          <div class="flex items-center gap-3">
+            <input type="radio" name="payMethod" value="google" class="text-emerald-500" />
+            <span class="text-xs font-semibold">Google Pay</span>
+          </div>
+          <span class="text-xs font-bold text-emerald-400">G Pay</span>
+        </label>
+
+        <label onclick="selectPayMethod('amazon')" class="pay-option flex items-center justify-between p-3 rounded-xl border border-gray-700 bg-gray-900 cursor-pointer hover:border-gray-600">
+          <div class="flex items-center gap-3">
+            <input type="radio" name="payMethod" value="amazon" class="text-emerald-500" />
+            <span class="text-xs font-semibold">Amazon Pay</span>
+          </div>
+          <span class="text-xs font-bold text-amber-400">Amazon Pay</span>
+        </label>
+      </div>
+
+      <!-- Modulo Dati Carta (visibile per carta) -->
+      <div id="cardDetailsForm" class="space-y-2 mb-5">
+        <div>
+          <label class="text-[10px] text-gray-400 uppercase">Numero Carta</label>
+          <input type="text" placeholder="4532 •••• •••• 8892" value="4532 8812 9901 8892" class="w-full mt-0.5 bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] text-gray-400 uppercase">Scadenza</label>
+            <input type="text" placeholder="MM/YY" value="12/28" class="w-full mt-0.5 bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white" />
+          </div>
+          <div>
+            <label class="text-[10px] text-gray-400 uppercase">CVC / CVV</label>
+            <input type="text" placeholder="123" value="882" class="w-full mt-0.5 bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-gray-700">
+        <button type="button" onclick="toggleModal('paymentModal', false)" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs">Annulla</button>
+        <button onclick="confermaEPay()" id="payNowBtn" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-lg text-xs transition-colors shadow-lg">
+          Paga Ora e Conferma
+        </button>
+      </div>
     </div>
   </div>
 
@@ -360,6 +506,9 @@
 
     let currentUser = JSON.parse(localStorage.getItem('cs_user')) || null;
     let isRegisterMode = false;
+    let bookingMode = 'single'; // 'single', 'hourly', 'multi'
+    let currentCalculatedTotal = 0;
+    let currentCalculatedDuration = '';
 
     // Spazi predefiniti
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
@@ -546,7 +695,7 @@
       saveBtn.disabled = false;
     }
 
-    // Prenotazioni
+    // --- LOGICA PRENOTAZIONI AVANZATA ---
     function apriModalPrenotazione(spaceId, spaceName, basePrice) {
       if (!currentUser) {
         alert('Devi prima accedere o registrarti per poter prenotare uno spazio.');
@@ -558,58 +707,137 @@
       document.getElementById('bookSpaceTitle').innerText = 'Prenota: ' + spaceName;
       
       const today = new Date().toISOString().split('T')[0];
-      const dateInput = document.getElementById('bookDate');
-      dateInput.min = today;
-      dateInput.value = today;
+      document.getElementById('bookDate').value = today;
+      document.getElementById('bookHourlyDate').value = today;
+      document.getElementById('bookStartDate').value = today;
+      document.getElementById('bookEndDate').value = today;
 
-      calcolaTotalePrenotazione();
+      setBookingMode('single');
       toggleModal('bookingModal', true);
     }
 
-    function calcolaTotalePrenotazione() {
-      const basePrice = parseFloat(document.getElementById('bookBasePrice').value) || 0;
-      const guestFee = basePrice * 0.05;
-      const total = basePrice + guestFee;
+    function setBookingMode(mode) {
+      bookingMode = mode;
+      
+      // Toggle bottoni
+      const btnSingle = document.getElementById('modeBtnSingle');
+      const btnHourly = document.getElementById('modeBtnHourly');
+      const btnMulti = document.getElementById('modeBtnMulti');
 
-      document.getElementById('summaryBasePrice').innerText = basePrice.toFixed(2) + ' €';
-      document.getElementById('summaryGuestFee').innerText = '+ ' + guestFee.toFixed(2) + ' €';
-      document.getElementById('summaryTotal').innerText = total.toFixed(2) + ' €';
+      btnSingle.className = mode === 'single' ? 'py-2 text-xs font-semibold rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'py-2 text-xs font-semibold rounded-lg border border-gray-700 bg-gray-900 text-gray-400';
+      btnHourly.className = mode === 'hourly' ? 'py-2 text-xs font-semibold rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'py-2 text-xs font-semibold rounded-lg border border-gray-700 bg-gray-900 text-gray-400';
+      btnMulti.className = mode === 'multi' ? 'py-2 text-xs font-semibold rounded-lg border border-emerald-500 bg-emerald-500/20 text-emerald-400' : 'py-2 text-xs font-semibold rounded-lg border border-gray-700 bg-gray-900 text-gray-400';
+
+      // Toggle form
+      document.getElementById('bookingSingleBox').classList.toggle('hidden', mode !== 'single');
+      document.getElementById('bookingHourlyBox').classList.toggle('hidden', mode !== 'hourly');
+      document.getElementById('bookingMultiBox').classList.toggle('hidden', mode !== 'multi');
+
+      calcolaTotalePrenotazione();
     }
 
-    async function confermaPrenotazione(e) {
-      e.preventDefault();
-      const space_id = document.getElementById('bookSpaceId').value;
-      const booking_date = document.getElementById('bookDate').value;
-      const basePrice = parseFloat(document.getElementById('bookBasePrice').value);
-      const guest_fee = basePrice * 0.05;
-      const total_price = basePrice + guest_fee;
+    function calcolaTotalePrenotazione() {
+      const dailyPrice = parseFloat(document.getElementById('bookBasePrice').value) || 0;
+      const hourlyRate = dailyPrice / 8; // Tariffa oraria convenzionale
+      let baseSubtotal = 0;
 
-      const spz = localSpazi.find(s => s.id === space_id) || { name: 'Spazio', city: '' };
-
-      const newBooking = {
-        id: 'bk_' + Date.now(),
-        space_id,
-        space_name: spz.name,
-        space_city: spz.city,
-        guest_id: currentUser.id,
-        booking_date,
-        total_price: total_price.toFixed(2)
-      };
-
-      if (supabaseClient) {
-        try {
-          await supabaseClient.from('prenotazioni').insert([{
-            space_id, guest_id: currentUser.id, booking_date, base_price: basePrice,
-            guest_fee, host_fee: basePrice * 0.10, total_price, status: 'confermato'
-          }]);
-        } catch(err) {}
+      if (bookingMode === 'single') {
+        baseSubtotal = dailyPrice;
+        currentCalculatedDuration = '1 Giorno (8 ore)';
+      } else if (bookingMode === 'hourly') {
+        const start = document.getElementById('bookTimeStart').value;
+        const end = document.getElementById('bookTimeEnd').value;
+        let hours = 0;
+        if (start && end) {
+          const h1 = parseInt(start.split(':')[0]) + parseInt(start.split(':')[1])/60;
+          const h2 = parseInt(end.split(':')[0]) + parseInt(end.split(':')[1])/60;
+          hours = Math.max(0.5, h2 - h1);
+        }
+        baseSubtotal = hours * hourlyRate;
+        currentCalculatedDuration = `${hours.toFixed(1)} Ore (${start} - ${end})`;
+      } else if (bookingMode === 'multi') {
+        const d1 = new Date(document.getElementById('bookStartDate').value);
+        const d2 = new Date(document.getElementById('bookEndDate').value);
+        let days = 1;
+        if (d2 >= d1) {
+          const diffTime = Math.abs(d2 - d1);
+          days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        }
+        baseSubtotal = days * dailyPrice;
+        currentCalculatedDuration = `${days} Giorni`;
       }
 
-      localBookings.push(newBooking);
-      localStorage.setItem('cs_bookings', JSON.stringify(localBookings));
+      const guestFee = baseSubtotal * 0.05;
+      currentCalculatedTotal = baseSubtotal + guestFee;
 
-      alert('Prenotazione confermata!');
+      document.getElementById('summaryDurationText').innerText = currentCalculatedDuration;
+      document.getElementById('summaryBasePrice').innerText = baseSubtotal.toFixed(2) + ' €';
+      document.getElementById('summaryGuestFee').innerText = '+ ' + guestFee.toFixed(2) + ' €';
+      document.getElementById('summaryTotal').innerText = currentCalculatedTotal.toFixed(2) + ' €';
+    }
+
+    // --- FLUSSO PAGAMENTO ---
+    function procediAlPagamento(e) {
+      e.preventDefault();
+      document.getElementById('payModalAmount').innerText = currentCalculatedTotal.toFixed(2) + ' €';
       toggleModal('bookingModal', false);
+      toggleModal('paymentModal', true);
+    }
+
+    function selectPayMethod(method) {
+      document.querySelectorAll('.pay-option').forEach(el => {
+        el.classList.remove('border-emerald-500', 'bg-emerald-500/10');
+        el.classList.add('border-gray-700', 'bg-gray-900');
+      });
+      event.currentTarget.classList.remove('border-gray-700', 'bg-gray-900');
+      event.currentTarget.classList.add('border-emerald-500', 'bg-emerald-500/10');
+
+      document.getElementById('cardDetailsForm').classList.toggle('hidden', method !== 'card');
+    }
+
+    async function confermaEPay() {
+      const payBtn = document.getElementById('payNowBtn');
+      payBtn.disabled = true;
+      payBtn.innerText = 'Elaborazione in corso...';
+
+      setTimeout(async () => {
+        const space_id = document.getElementById('bookSpaceId').value;
+        const spz = localSpazi.find(s => s.id === space_id) || { name: 'Spazio', city: '' };
+
+        let dateText = document.getElementById('bookDate').value;
+        if (bookingMode === 'hourly') dateText = document.getElementById('bookHourlyDate').value;
+        else if (bookingMode === 'multi') dateText = document.getElementById('bookStartDate').value + ' al ' + document.getElementById('bookEndDate').value;
+
+        const newBooking = {
+          id: 'bk_' + Date.now(),
+          space_id,
+          space_name: spz.name,
+          space_city: spz.city,
+          guest_id: currentUser.id,
+          booking_date: dateText,
+          duration: currentCalculatedDuration,
+          total_price: currentCalculatedTotal.toFixed(2)
+        };
+
+        if (supabaseClient) {
+          try {
+            await supabaseClient.from('prenotazioni').insert([{
+              space_id, guest_id: currentUser.id, booking_date: dateText,
+              total_price: currentCalculatedTotal, status: 'confermato'
+            }]);
+          } catch(err) {}
+        }
+
+        localBookings.push(newBooking);
+        localStorage.setItem('cs_bookings', JSON.stringify(localBookings));
+
+        payBtn.disabled = false;
+        payBtn.innerText = 'Paga Ora e Conferma';
+        toggleModal('paymentModal', false);
+
+        alert('🎉 Pagamento riuscito con successo! La tua prenotazione è confermata.');
+        mostraPagina('profilePage');
+      }, 1200);
     }
 
     // Carica Profilo
@@ -654,9 +882,9 @@
           tr.innerHTML = `
             <td class="p-3 font-medium text-white">${b.space_name} (${b.space_city})</td>
             <td class="p-3">${b.booking_date}</td>
-            <td class="p-3">1 Giorno (8 ore)</td>
-            <td class="p-3 font-bold text-emerald-400">${b.total_price} €</td>
-            <td class="p-3"><span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded border border-emerald-500/30">Confermato</span></td>
+            <td class="p-3 font-medium text-emerald-400">${b.duration || '1 Giorno (8 ore)'}</td>
+            <td class="p-3 font-bold text-white">${b.total_price} €</td>
+            <td class="p-3"><span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded border border-emerald-500/30">Pagato & Confermato</span></td>
           `;
           tableBody.appendChild(tr);
         });
