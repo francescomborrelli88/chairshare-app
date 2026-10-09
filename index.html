@@ -14,6 +14,30 @@
 
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Transizioni ed evidenziazioni stile Airbnb */
+    .space-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .space-card.card-active {
+      border-color: #10b981 !important;
+      background-color: #1f2937 !important;
+      transform: scale(1.02);
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.3);
+    }
+    /* Stile Custom PopUp Leaflet */
+    .leaflet-popup-content-wrapper {
+      background-color: #1f2937;
+      color: #ffffff;
+      border-radius: 0.75rem;
+      border: 1px solid #374151;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+    .leaflet-popup-tip {
+      background-color: #1f2937;
+    }
+  </style>
 </head>
 <body class="bg-gray-900 text-white font-sans antialiased min-h-screen flex flex-col">
 
@@ -65,67 +89,72 @@
     </div>
   </header>
 
-  <!-- VISTA 1: HOME PAGE (Mappa & Ricerca) -->
+  <!-- VISTA 1: HOME PAGE LAYOUT AIRBNB (Elenco Grande a SX, Mappa Ridotta a DX) -->
   <div id="homePage" class="flex-1 flex flex-col">
-    <section class="bg-gradient-to-b from-gray-800 to-gray-900 border-b border-gray-800 py-4 px-4 text-center">
-      <h2 class="text-xl md:text-2xl font-extrabold text-white mb-1 tracking-tight">
+    <!-- Hero Banner -->
+    <section class="bg-gradient-to-b from-gray-800 to-gray-900 border-b border-gray-800 py-3 px-4 text-center">
+      <h2 class="text-lg md:text-xl font-extrabold text-white mb-0.5 tracking-tight">
         Trova e prenota il tuo spazio, studio o poltrona ideale
       </h2>
-      <p class="text-emerald-400 text-xs md:text-sm font-medium max-w-2xl mx-auto">
+      <p class="text-emerald-400 text-xs font-medium max-w-2xl mx-auto">
         Registrazione gratuita • Zero canoni mensili • Paghi solo quando lavori
       </p>
     </section>
 
-    <!-- Main Content -->
+    <!-- Main Content Layout Airbnb -->
     <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden relative">
-      <!-- Sidebar / Filtri & Risultati -->
-      <div class="lg:col-span-5 p-4 overflow-y-auto flex flex-col gap-4 max-h-[calc(100vh-170px)]">
+      
+      <!-- SEZIONE SINISTRA: Elenco Schede Grandi (7 Colonne) -->
+      <div class="lg:col-span-7 p-4 md:p-6 overflow-y-auto flex flex-col gap-5 max-h-[calc(100vh-140px)]">
         <!-- Box Ricerca -->
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg">
-          <h3 class="text-base font-semibold mb-3 flex items-center gap-2">
-            🔍 Cerca il tuo spazio di lavoro
+        <div class="bg-gray-800 p-4 rounded-2xl border border-gray-700 shadow-xl">
+          <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+            🔍 Cerca la tua postazione o studio
           </h3>
           
-          <div class="space-y-3">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <label class="text-xs text-gray-400 uppercase font-medium">Città / Posizione</label>
-              <input id="cityInput" type="text" placeholder="Es. Napoli, Milano, Roma..." class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
+              <label class="text-[10px] text-gray-400 uppercase font-semibold">Città / Posizione</label>
+              <input id="cityInput" type="text" placeholder="Es. Napoli, Milano..." class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-xl p-2.5 text-xs focus:outline-none focus:border-emerald-500 text-white" />
             </div>
 
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="text-xs text-gray-400 uppercase font-medium">Tipo Spazio</label>
-                <select id="typeSelect" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white">
-                  <option value="">Tutti</option>
-                  <option value="fotografia">📸 Studio Fotografico</option>
-                  <option value="barbiere">💈 Barbiere / Parrucchiere</option>
-                  <option value="estetica">💆‍♀️ Centro Estetico / Tatuaggi</option>
-                  <option value="coworking">🏢 Postazione Coworking</option>
-                </select>
-              </div>
-              <div>
-                <label class="text-xs text-gray-400 uppercase font-medium">Prezzo Max (€/giorno)</label>
-                <input id="priceInput" type="number" placeholder="Es. 80" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-500 text-white" />
-              </div>
+            <div>
+              <label class="text-[10px] text-gray-400 uppercase font-semibold">Tipo Spazio</label>
+              <select id="typeSelect" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-xl p-2.5 text-xs focus:outline-none focus:border-emerald-500 text-white">
+                <option value="">Tutti i Tipi</option>
+                <option value="fotografia">📸 Studio Fotografico</option>
+                <option value="barbiere">💈 Barbiere / Parrucchiere</option>
+                <option value="estetica">💆‍♀️ Centro Estetico / Tatuaggi</option>
+                <option value="coworking">🏢 Postazione Coworking</option>
+              </select>
             </div>
 
-            <button onclick="cercaSpazi()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-lg transition-colors shadow-md">
-              Cerca sulla Mappa
-            </button>
+            <div>
+              <label class="text-[10px] text-gray-400 uppercase font-semibold">Prezzo Max (€/giorno)</label>
+              <input id="priceInput" type="number" placeholder="Es. 80" class="w-full mt-1 bg-gray-900 border border-gray-700 rounded-xl p-2.5 text-xs focus:outline-none focus:border-emerald-500 text-white" />
+            </div>
           </div>
+
+          <button onclick="cercaSpazi()" class="w-full mt-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl transition-all shadow-md text-xs">
+            Filtra Risultati
+          </button>
         </div>
 
-        <!-- Risultati / Lista Spazi -->
+        <!-- Risultati / Lista Spazi Stile Airbnb -->
         <div class="flex-1">
-          <h3 class="text-sm font-semibold text-gray-400 mb-2">Spazi e Postazioni Disponibili (<span id="resultsCount">0</span>)</h3>
-          <div id="spacesList" class="flex flex-col gap-3">
-            <!-- Schede dinamiche -->
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-bold text-gray-300">Spazi Disponibili (<span id="resultsCount" class="text-emerald-400">0</span>)</h3>
+            <span class="text-[11px] text-gray-500">Passa sui punti per individuare sulla mappa</span>
+          </div>
+          
+          <div id="spacesList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Schede dinamiche grandi -->
           </div>
         </div>
       </div>
 
-      <!-- Mappa Interattiva -->
-      <div class="lg:col-span-7 h-[400px] lg:h-full relative z-0">
+      <!-- SEZIONE DESTRA: Mappa Più Piccola e Compatta (5 Colonne) -->
+      <div class="lg:col-span-5 h-[350px] lg:h-full relative z-0 border-l border-gray-800 shadow-2xl">
         <div id="map" class="w-full h-full"></div>
       </div>
     </main>
@@ -501,9 +530,7 @@
       if (typeof supabase !== 'undefined') {
         supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
-    } catch(e) {
-      console.warn("Supabase non disponibile");
-    }
+    } catch(e) { console.warn("Supabase non disponibile"); }
 
     let currentUser = null;
     const storedUser = localStorage.getItem('cs_user');
@@ -516,11 +543,14 @@
     let currentCalculatedTotal = 0;
     let currentCalculatedDuration = '';
 
+    // Mappa Marker ID -> Istanza Marker Leaflet
+    let activeMarkersMap = {};
+
     // Spazi predefiniti
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
-      { id: '1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample' },
-      { id: '2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample' },
-      { id: '3', name: 'Postazione Hairstylist Duomo', city: 'Milano', type: 'barbiere', price: 60, lat: 45.4642, lon: 9.1900, image: null, host_id: 'sample' }
+      { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample' },
+      { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample' },
+      { id: 'spz_3', name: 'Postazione Hairstylist Duomo', city: 'Milano', type: 'barbiere', price: 60, lat: 45.4642, lon: 9.1900, image: null, host_id: 'sample' }
     ];
 
     let localBookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
@@ -616,9 +646,7 @@
             alert('Accesso effettuato!');
             return;
           }
-        } catch(err) {
-          console.warn("Autenticazione gestita in locale:", err.message);
-        }
+        } catch(err) { console.warn("Autenticazione gestita in locale:", err.message); }
       }
 
       currentUser = { id: 'usr_' + Date.now(), email: email };
@@ -697,9 +725,7 @@
       };
 
       if (supabaseClient) {
-        try {
-          await supabaseClient.from('spazi').insert([newSpace]);
-        } catch(e) {}
+        try { await supabaseClient.from('spazi').insert([newSpace]); } catch(e) {}
       }
 
       localSpazi.push(newSpace);
@@ -908,6 +934,7 @@
       document.getElementById('totalBookingsCount').innerText = myBookings.length;
     }
 
+    // Ricerca e Mappa
     async function cercaSpazi() {
       const city = document.getElementById('cityInput').value.trim().toLowerCase();
       const type = document.getElementById('typeSelect').value;
@@ -934,41 +961,91 @@
       renderizzaRisultati(res);
     }
 
+    // INTERATTIVITÀ MAPPA ↔ ELENCO
+    function evidenziaSchedaEPopUp(spaceId) {
+      // 1. Rimuovi evidenziatura da tutte le schede
+      document.querySelectorAll('.space-card').forEach(card => card.classList.remove('card-active'));
+      
+      // 2. Evidenzia la scheda attiva
+      const activeCard = document.getElementById('card_' + spaceId);
+      if (activeCard) {
+        activeCard.classList.add('card-active');
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // 3. Apri il PopUp sulla Mappa
+      const marker = activeMarkersMap[spaceId];
+      if (marker) {
+        map.setView(marker.getLatLng(), 15);
+        marker.openPopup();
+      }
+    }
+
     function renderizzaRisultati(spaces) {
       markersGroup.clearLayers();
+      activeMarkersMap = {};
       const listContainer = document.getElementById('spacesList');
       listContainer.innerHTML = '';
       document.getElementById('resultsCount').innerText = spaces.length;
 
       spaces.forEach(space => {
+        // Icona personalizzata PopUp
+        let iconEmoji = '🏢';
+        if (space.type === 'fotografia') iconEmoji = '📸';
+        else if (space.type === 'barbiere') iconEmoji = '💈';
+        else if (space.type === 'estetica') iconEmoji = '💆‍♀️';
+
+        // Creazione Marker Mappa
         const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
-        marker.bindPopup(`<b>${space.name}</b><br>${space.price}€ / giorno`);
-
-        let iconType = '🏢';
-        if (space.type === 'fotografia') iconType = '📸';
-        else if (space.type === 'barbiere') iconType = '💈';
-        else if (space.type === 'estetica') iconType = '💆‍♀️';
-
-        const imgTag = space.image 
-          ? `<img src="${space.image}" class="w-16 h-16 object-cover rounded-lg border border-gray-700 shrink-0" />`
-          : `<div class="w-16 h-16 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center text-xl shrink-0">${iconType}</div>`;
-
-        const card = document.createElement('div');
-        card.className = 'bg-gray-800 p-3 rounded-xl border border-gray-700 flex items-center gap-3 hover:border-emerald-500/50 transition-colors cursor-pointer';
-        card.onclick = () => map.setView([space.lat, space.lon], 16);
         
-        card.innerHTML = `
-          ${imgTag}
-          <div class="flex-1 min-w-0">
-            <h4 class="font-bold text-emerald-400 truncate text-sm">${space.name}</h4>
-            <p class="text-xs text-gray-400">${space.city} • <span class="capitalize">${space.type}</span></p>
-            <button onclick="event.stopPropagation(); apriModalPrenotazione('${space.id}', '${space.name.replace(/'/g, "\\'")}', ${space.price})" class="mt-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-medium px-2.5 py-1 rounded transition-colors">
+        // Popup elegante con foto e bottone
+        const popupContent = `
+          <div class="text-center p-1">
+            <div class="font-bold text-emerald-400 text-sm mb-1">${iconEmoji} ${space.name}</div>
+            <div class="text-xs text-gray-300 font-medium mb-2">${space.city} • <strong class="text-white">${space.price}€/giorno</strong></div>
+            <button onclick="apriModalPrenotazione('${space.id}', '${space.name.replace(/'/g, "\\'")}', ${space.price})" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow">
               Prenota Ora
             </button>
           </div>
-          <div class="text-right shrink-0">
-            <span class="text-base font-extrabold">${space.price}€</span>
-            <span class="text-[10px] text-gray-400 block">/giorno</span>
+        `;
+        marker.bindPopup(popupContent);
+        
+        // Cliccando sul Marker evidenzia la scheda a SX
+        marker.on('click', () => {
+          evidenziaSchedaEPopUp(space.id);
+        });
+
+        activeMarkersMap[space.id] = marker;
+
+        // Immagine grande della scheda
+        const imgTag = space.image 
+          ? `<img src="${space.image}" class="w-full h-36 object-cover rounded-xl border border-gray-700/80 mb-3" />`
+          : `<div class="w-full h-36 bg-gray-900 border border-gray-700/80 rounded-xl flex items-center justify-center text-4xl mb-3">${iconEmoji}</div>`;
+
+        // SCHEDA GRANDE STILE AIRBNB
+        const card = document.createElement('div');
+        card.id = 'card_' + space.id;
+        card.className = 'space-card bg-gray-800/90 border border-gray-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/60 shadow-lg';
+        
+        // Hover/Click sulla scheda per illuminare il Marker sulla Mappa
+        card.onmouseenter = () => evidenziaSchedaEPopUp(space.id);
+        card.onclick = () => evidenziaSchedaEPopUp(space.id);
+
+        card.innerHTML = `
+          <div>
+            ${imgTag}
+            <div class="flex justify-between items-start mb-1">
+              <h4 class="font-extrabold text-white text-base leading-tight hover:text-emerald-400 transition-colors">${space.name}</h4>
+              <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md font-semibold shrink-0 border border-emerald-500/30">${space.price}€ /gg</span>
+            </div>
+            <p class="text-xs text-gray-400 mb-3">${space.city} • <span class="capitalize text-gray-300 font-medium">${space.type}</span></p>
+          </div>
+
+          <div class="flex justify-between items-center border-t border-gray-700/60 pt-3 mt-1">
+            <span class="text-[11px] text-gray-400">Verificato • Disponibile</span>
+            <button onclick="event.stopPropagation(); apriModalPrenotazione('${space.id}', '${space.name.replace(/'/g, "\\'")}', ${space.price})" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition-all shadow-md">
+              Prenota Ora
+            </button>
           </div>
         `;
         listContainer.appendChild(card);
