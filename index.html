@@ -29,8 +29,6 @@
 
   <!-- Leaflet Routing Machine CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -833,41 +831,51 @@
 
       <div class="flex justify-end pt-3 border-t border-gray-100">
         <button onclick="toggleModal('legalModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">Chiudi</button>
-      </div>
-    </div>
-  </div>
+let currentRouteLine = null;
 
-  <script>
-    // DICTIONARY SERVIZI
-    const SERVICES_MASTER = {
-      wifi: { name: 'Wi-Fi ad alta velocità', icon: '📶', category: 'General' },
-      ac: { name: 'Aria Condizionata', icon: '❄️', category: 'General' },
-      heating: { name: 'Riscaldamento', icon: '🔥', category: 'General' },
-      waiting_room: { name: 'Sala d\'attesa clienti', icon: '🛋️', category: 'General' },
-      music: { name: 'Filodiffusione / Bluetooth', icon: '🎵', category: 'General' },
-      disabled: { name: 'Accesso disabili', icon: '♿', category: 'General' },
-      elevator: { name: 'Ascensore', icon: '🛗', category: 'General' },
-      parking: { name: 'Parcheggio riservato', icon: '🅿️', category: 'General' },
-      pos: { name: 'POS Card per Pagamenti', icon: '💳', category: 'General' },
-      coffee: { name: 'Area Break / Macchina Caffè', icon: '☕', category: 'General' },
-      cleaning: { name: 'Pulizia giornaliera', icon: '🧹', category: 'General' },
-      sterilizer: { name: 'Sanificazione / Sterilizzazione UV', icon: '🧪', category: 'General' },
+function tracciaPercorsoVerso(space) {
+  // Rimuove eventuale linea precedente sulla mappa
+  if (currentRouteLine) {
+    map.removeLayer(currentRouteLine);
+  }
 
-      // Barberia
-      reclining_chair: { name: 'Poltrona reclinabile', icon: '💺', category: 'barbiere' },
-      mirror_led: { name: 'Specchio con LED', icon: '🪞', category: 'barbiere' },
-      hair_wash: { name: 'Lavatesta ergonomico', icon: '🚿', category: 'barbiere' },
-      climazon: { name: 'Casco Climazon', icon: '💈', category: 'barbiere' },
-      towels_included: { name: 'Asciugamani inclusi', icon: '🧺', category: 'barbiere' },
-      ring_light: { name: 'Ring Light per Foto/Social', icon: '💡', category: 'barbiere' },
+  // Calcolo distanza (Formula di Haversine)
+  const R = 6371;
+  const dLat = (space.lat - userLocation.lat) * Math.PI / 180;
+  const dLon = (space.lon - userLocation.lon) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(userLocation.lat * Math.PI / 180) * Math.cos(space.lat * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distanceKm = R * c;
 
-      // Estetica
-      nails_table: { name: 'Tavolo Nails con aspiratore', icon: '💅', category: 'estetica' },
-      uv_lamp: { name: 'Lampada UV/LED Unghie', icon: '💡', category: 'estetica' },
-      aesthetic_bed: { name: 'Lettino Estetico', icon: '🛏️', category: 'estetica' },
-      makeup_station: { name: 'Postazione Makeup Camerino', icon: '💄', category: 'estetica' },
-      wax_warmer: { name: 'Scaldacera / Manipolo', icon: '🕯️', category: 'estetica' },
+  const isWalking = distanceKm <= 1.5;
 
+  // Disegna la rotta diretta sulla mappa stile Apple/Google Maps
+  const latlngs = [
+    [userLocation.lat, userLocation.lon],
+    [space.lat, space.lon]
+  ];
+
+  currentRouteLine = L.polyline(latlngs, {
+    color: '#FF385C',
+    weight: 5,
+    opacity: 0.8,
+    dashArray: '8, 8' // effetto linea tratteggiata moderna
+  }).addTo(map);
+
+  // Adatta lo zoom per mostrare sia l'utente che lo spazio
+  map.fitBounds(currentRouteLine.getBounds(), { padding: [50, 50] });
+
+  // Aggiorna il box informativo in alto a destra
+  const infoBox = document.getElementById('routeInfoBox');
+  document.getElementById('routeModeIcon').innerText = isWalking ? '🚶‍♂️' : '🚗';
+  document.getElementById('routeDistanceText').innerText = distanceKm.toFixed(2) + ' km';
+  document.getElementById('routeTimeText').innerText = isWalking 
+    ? `A piedi: ~${Math.round(distanceKm * 12)} min`
+    : `In auto: ~${Math.round(distanceKm * 2.5)} min`;
+  infoBox.classList.remove('hidden');
+}
       // Massaggi
       massage_bed: { name: 'Lettino massaggio regolabile', icon: '🛋️', category: 'massaggi' },
       oil_warmer: { name: 'Scalda-olio / Scalda-asciugamani', icon: '🪔', category: 'massaggi' },
