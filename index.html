@@ -66,10 +66,6 @@
         ❓ Come Funziona
       </button>
 
-      <button onclick="toggleModal('legalModal', true)" class="hidden md:inline text-xs text-gray-400 hover:text-emerald-400 underline transition-colors">
-        Note Legali
-      </button>
-
       <div id="authActions" class="flex items-center gap-2">
         <button onclick="richiediLoginOAccedi('login')" id="loginBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-colors">
           Accedi
@@ -176,7 +172,7 @@
     </main>
 
     <!-- FLOATING BUTTON SWITCH MAPPA/LISTA PER MOBILE -->
-    <div class="lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[9999]">
+    <div class="lg:hidden fixed bottom-16 left-1/2 -translate-x-1/2 z-[9999]">
       <button onclick="toggleMobileView()" id="mobileSwitchBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-3 rounded-full shadow-2xl border border-emerald-400/40 flex items-center gap-2 text-xs uppercase tracking-wider backdrop-blur-md">
         <span>🗺️ Mostra Mappa</span>
       </button>
@@ -253,9 +249,28 @@
     </div>
   </div>
 
+  <!-- FOOTER CON NOTE LEGALI IN FONDO -->
+  <footer class="bg-gray-800 border-t border-gray-700 py-6 px-4 text-center text-xs text-gray-400 mt-auto">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+      <div>
+        <span class="font-bold text-white">ChairShare</span> © 2026 - Piattaforma per la condivisione di spazi e postazioni di lavoro.
+      </div>
+      <div class="flex gap-4">
+        <button onclick="toggleModal('howItWorksModal', true)" class="hover:text-emerald-400 transition-colors">Come Funziona</button>
+        <button onclick="toggleModal('legalModal', true)" class="hover:text-emerald-400 underline transition-colors">Termini & Note Legali</button>
+      </div>
+    </div>
+  </footer>
+
   <!-- MODALE: COME FUNZIONA & COMMISSIONI -->
   <div id="howItWorksModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative text-xs text-gray-300 space-y-4">
+      
+      <!-- Pulsante Chiusura X -->
+      <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-700/50 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">
+        ✕
+      </button>
+
       <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-2 flex items-center gap-2">
         💡 Come Funziona ChairShare
       </h3>
@@ -297,12 +312,17 @@
     </div>
   </div>
 
-  <!-- MODALE: STEPPER FORM AGGIUNGI SPAZIO (3 PASSI) -->
+  <!-- MODALE: STEPPER FORM AGGIUNGI SPAZIO (CON PULSANTE CHIUSURA X) -->
   <div id="addModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
       
+      <!-- Pulsante Chiusura X -->
+      <button type="button" onclick="toggleModal('addModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-700/50 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">
+        ✕
+      </button>
+
       <!-- Stepper Header Indicator -->
-      <div class="mb-5">
+      <div class="mb-5 pr-6">
         <h3 class="text-xl font-bold text-white mb-1">Pubblica il tuo Spazio</h3>
         <p class="text-xs text-gray-400">Metti a disposizione la tua struttura e inizia a guadagnare.</p>
         
@@ -428,6 +448,12 @@
   <!-- MODALE LOGIN / REGISTRAZIONE -->
   <div id="authModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
+      
+      <!-- Pulsante Chiusura X -->
+      <button onclick="toggleModal('authModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-700/50 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">
+        ✕
+      </button>
+
       <h3 id="authTitle" class="text-xl font-bold text-white mb-1">Accedi a ChairShare</h3>
       <p id="authSubTitle" class="text-xs text-gray-400 mb-4">Gestisci le tue prenotazioni o pubblica i tuoi spazi.</p>
 
@@ -480,6 +506,12 @@
   <!-- MODALE: PRENOTAZIONE -->
   <div id="bookingModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      
+      <!-- Pulsante Chiusura X -->
+      <button onclick="toggleModal('bookingModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-700/50 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">
+        ✕
+      </button>
+
       <h3 id="bookSpaceTitle" class="text-xl font-bold text-white mb-1">Prenota Spazio</h3>
       <p id="bookSpaceSub" class="text-xs text-gray-400 mb-4">Scegli la modalità di prenotazione desiderata.</p>
 
@@ -575,7 +607,13 @@
   <!-- MODALE: PAGAMENTO / CHECKOUT -->
   <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
-      <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
+      
+      <!-- Pulsante Chiusura X -->
+      <button onclick="toggleModal('paymentModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-700/50 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">
+        ✕
+      </button>
+
+      <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-3 pr-6">
         <h3 class="text-lg font-bold text-white flex items-center gap-2">
           🔒 Checkout Pagamento Sicuro
         </h3>
@@ -649,6 +687,12 @@
   <!-- MODALE: TERMINI E NOTE LEGALI -->
   <div id="legalModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[85vh] overflow-y-auto text-xs text-gray-300 space-y-4">
+      
+      <!-- Pulsante Chiusura X -->
+      <button onclick="toggleModal('legalModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-700/50 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">
+        ✕
+      </button>
+
       <h3 class="text-lg font-bold text-white border-b border-gray-700 pb-2">⚖️ Termini di Servizio & Note Legali</h3>
       
       <div>
@@ -1248,7 +1292,6 @@
           ? `<img src="${space.image}" class="w-full h-40 object-cover rounded-xl border border-gray-700/80 mb-3" />`
           : `<div class="w-full h-40 bg-gray-900 border border-gray-700/80 rounded-xl flex items-center justify-center text-4xl mb-3">${iconEmoji}</div>`;
 
-        // Generazione Badge Servizi Inclusi
         let featuresBadges = '';
         if (space.features && space.features.length > 0) {
           featuresBadges = '<div class="flex flex-wrap gap-1.5 mb-3">';
