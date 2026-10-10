@@ -119,7 +119,7 @@
         </div>
 
         <div id="userProfileActions" class="hidden items-center gap-2">
-          <button onclick="mostraPagina('profilePage')" class="flex items-center gap-2 border border-gray-300 hover:shadow-md px-3 py-1.5 rounded-full transition-all">
+          <button onclick="gestisciClickProfilo()" class="flex items-center gap-2 border border-gray-300 hover:shadow-md px-3 py-1.5 rounded-full transition-all">
             <span class="text-xs font-bold text-gray-700" id="headerUserInitial">👤</span>
             <div class="w-6 h-6 rounded-full bg-gray-800 text-white flex items-center justify-center text-[10px] font-bold">U</div>
           </button>
@@ -127,6 +127,13 @@
       </div>
     </div>
   </header>
+
+  <!-- APPLE-STYLE SLOGAN / TAGLINE BAR -->
+  <div class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white py-2 px-4 text-center border-b border-gray-800">
+    <p class="text-xs md:text-sm italic font-light tracking-wide opacity-95">
+      “Condividi il tuo spazio, fai crescere la tua professione: la libertà di lavorare dove e quando vuoi.”
+    </p>
+  </div>
 
   <!-- HOME PAGE -->
   <div id="homePage" class="flex-1 flex flex-col">
@@ -231,7 +238,7 @@
       <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-base -mt-2 shadow-md">+</div>
       <span class="text-[10px] font-medium">Affitta</span>
     </button>
-    <button onclick="mostraPagina('profilePage')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800">
+    <button onclick="gestisciClickProfilo()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800">
       <span class="text-lg">👤</span>
       <span class="text-[10px] font-medium">Profilo</span>
     </button>
@@ -248,9 +255,14 @@
           </div>
           <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
         </div>
-        <button onclick="mostraPagina('homePage')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition-colors">
-          ← Torna alla Mappa
-        </button>
+        <div class="flex items-center gap-3">
+          <button onclick="mostraPagina('homePage')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition-colors">
+            ← Torna alla Mappa
+          </button>
+          <button onclick="effettuaLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl text-xs transition-colors border border-red-200">
+            🚪 Logout
+          </button>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -277,7 +289,7 @@
       </div>
 
       <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">📅 Storico Prenotazioni</h3>
+        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">📅 Storico Prenotazioni & Chat</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-gray-700">
             <thead class="text-xs text-gray-400 uppercase bg-gray-50 border-b border-gray-200">
@@ -286,7 +298,7 @@
                 <th class="p-3">Data</th>
                 <th class="p-3">Durata</th>
                 <th class="p-3">Totale</th>
-                <th class="p-3">Stato</th>
+                <th class="p-3">Chat Host</th>
               </tr>
             </thead>
             <tbody id="myBookingsTableBody" class="divide-y divide-gray-100"></tbody>
@@ -308,6 +320,29 @@
   </footer>
 
   <!-- ==================== MODALI ==================== -->
+
+  <!-- MODALE CHAT -->
+  <div id="chatModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative flex flex-col h-[500px]">
+      <button onclick="toggleModal('chatModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <h3 id="chatSpaceTitle" class="font-extrabold text-gray-900 text-base">Chat Spazio</h3>
+        <p class="text-xs text-emerald-600 font-semibold flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Host Online • Risponde di solito entro 1 ora
+        </p>
+      </div>
+
+      <div id="chatMessagesBox" class="flex-1 overflow-y-auto space-y-3 p-2 bg-gray-50 rounded-2xl border border-gray-100 mb-3 text-xs">
+        <!-- Messaggi dinamici -->
+      </div>
+
+      <form onsubmit="inviaMessaggioChat(event)" class="flex gap-2">
+        <input id="chatInputText" type="text" placeholder="Scrivi un messaggio all'Host..." required class="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand" />
+        <button type="submit" class="bg-brand text-white font-bold px-4 py-2 rounded-xl text-xs hover:bg-brand-hover transition-colors">Invia</button>
+      </form>
+    </div>
+  </div>
 
   <!-- MODALE: COME FUNZIONA -->
   <div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
@@ -355,14 +390,14 @@
     </div>
   </div>
 
-  <!-- MODALE: AGGIUNGI SPAZIO -->
+  <!-- MODALE: AGGIUNGI / MODIFICA SPAZIO -->
   <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
     <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-lg shadow-2xl relative h-full sm:h-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
       
       <button onclick="toggleModal('addModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <div class="mb-5 pr-6">
-        <h3 class="text-xl font-extrabold text-gray-900">Pubblica il tuo Spazio</h3>
+        <h3 id="modalSpaceTitle" class="text-xl font-extrabold text-gray-900">Pubblica il tuo Spazio</h3>
         <p class="text-xs text-gray-500">Metti a disposizione la tua struttura in 3 semplici passaggi.</p>
         
         <div class="flex items-center justify-between mt-4 relative">
@@ -374,6 +409,8 @@
       </div>
       
       <form id="addSpaceForm" onsubmit="salvaNuovaPoltrona(event)">
+        <input type="hidden" id="editingSpaceId" />
+
         <!-- STEP 1 -->
         <div id="stepSection1" class="space-y-3">
           <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 1: Informazioni Generali</h4>
@@ -460,7 +497,7 @@
           <div class="flex justify-between pt-3">
             <button type="button" onclick="goToStep(2)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
             <button type="submit" id="saveBtn" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
-              🚀 Pubblica Annuncio
+              🚀 Salva e Pubblica
             </button>
           </div>
         </div>
@@ -692,20 +729,22 @@
     let currentCalculatedDuration = '';
     let currentStep = 1;
     let isMapViewMobile = false;
+    let currentActiveChatBookingId = null;
 
     let userLocation = { lat: 40.8518, lon: 14.2681 };
     let currentRoutingControl = null;
     let activeMarkersMap = {};
 
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
-      { id: 'spz_1', name: 'Studio Fotografico Vesuvio', city: 'Napoli', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample', features: ['wifi', 'ac'], available: true },
-      { id: 'spz_2', name: 'Barberia Spaccanapoli', city: 'Napoli', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample', features: ['wifi', 'ac', 'sterilizer'], available: false },
-      { id: 'spz_3', name: 'Studio Psicoterapia Toledo', city: 'Napoli', type: 'psicoterapia', price: 40, lat: 40.8420, lon: 14.2495, image: null, host_id: 'sample', features: ['wifi', 'ac'], available: true },
-      { id: 'spz_4', name: 'Cabina Massaggi Vomero', city: 'Napoli', type: 'massaggi', price: 50, lat: 40.8465, lon: 14.2320, image: null, host_id: 'sample', features: ['wifi', 'ac', 'kit'], available: true },
-      { id: 'spz_5', name: 'Postazione Hair Milano', city: 'Milano', type: 'barbiere', price: 60, lat: 45.4642, lon: 9.1900, image: null, host_id: 'sample', features: ['wifi', 'ac', 'sterilizer', 'kit'], available: false }
+      { id: 'spz_1', name: 'Studio Fotografico Vesuvio', city: 'Napoli', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample', features: ['wifi', 'ac'], available: true },
+      { id: 'spz_2', name: 'Barberia Spaccanapoli', city: 'Napoli', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample', features: ['wifi', 'ac', 'sterilizer'], available: false },
+      { id: 'spz_3', name: 'Studio Psicoterapia Toledo', city: 'Napoli', address: 'Via Chiaia 88', type: 'psicoterapia', price: 40, lat: 40.8420, lon: 14.2495, image: null, host_id: 'sample', features: ['wifi', 'ac'], available: true },
+      { id: 'spz_4', name: 'Cabina Massaggi Vomero', city: 'Napoli', address: 'Via Scarlatti 102', type: 'massaggi', price: 50, lat: 40.8465, lon: 14.2320, image: null, host_id: 'sample', features: ['wifi', 'ac', 'kit'], available: true },
+      { id: 'spz_5', name: 'Postazione Hair Milano', city: 'Milano', address: 'Corso Buenos Aires 15', type: 'barbiere', price: 60, lat: 45.4642, lon: 9.1900, image: null, host_id: 'sample', features: ['wifi', 'ac', 'sterilizer', 'kit'], available: false }
     ];
 
     let localBookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
+    let localChats = JSON.parse(localStorage.getItem('cs_chats')) || {};
 
     const map = L.map('map').setView([userLocation.lat, userLocation.lon], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -727,7 +766,23 @@
       }, () => {});
     }
 
-    // GESTIONE MODALI E INTERFACCIA
+    // GESTIONE PROFILO E NAVIGATIONE SMARTPHONE
+    function gestisciClickProfilo() {
+      if (!currentUser) {
+        richiediLoginOAccedi('login');
+      } else {
+        mostraPagina('profilePage');
+      }
+    }
+
+    function effettuaLogout() {
+      currentUser = null;
+      localStorage.removeItem('cs_user');
+      aggiornaUIUtente();
+      mostraPagina('homePage');
+      alert('Logout effettuato con successo!');
+    }
+
     function toggleModal(modalId, show) {
       const modal = document.getElementById(modalId);
       if (modal) {
@@ -828,9 +883,50 @@
         alert('Attenzione: accedi o registrati per pubblicare uno spazio!');
         richiediLoginOAccedi('register');
       } else {
+        document.getElementById('editingSpaceId').value = '';
+        document.getElementById('modalSpaceTitle').innerText = 'Pubblica il tuo Spazio';
+        document.getElementById('addSpaceForm').reset();
         goToStep(1);
         toggleModal('addModal', true);
       }
+    }
+
+    function apriModificaSpazio(spaceId) {
+      const spz = localSpazi.find(s => s.id === spaceId);
+      if (!spz) return;
+
+      document.getElementById('editingSpaceId').value = spz.id;
+      document.getElementById('modalSpaceTitle').innerText = 'Modifica Spazio';
+
+      document.getElementById('newName').value = spz.name;
+      document.getElementById('newCity').value = spz.city;
+      document.getElementById('newAddress').value = spz.address || '';
+      document.getElementById('newType').value = spz.type;
+      document.getElementById('newPrice').value = spz.price;
+
+      document.getElementById('featureWifi').checked = spz.features ? spz.features.includes('wifi') : false;
+      document.getElementById('featureAc').checked = spz.features ? spz.features.includes('ac') : false;
+      document.getElementById('featureSterilizer').checked = spz.features ? spz.features.includes('sterilizer') : false;
+      document.getElementById('featureKit').checked = spz.features ? spz.features.includes('kit') : false;
+
+      goToStep(1);
+      toggleModal('addModal', true);
+    }
+
+    function eliminaSpazioHost(spaceId) {
+      if (confirm('Sei sicuro di voler eliminare definitivamente questo spazio?')) {
+        localSpazi = localSpazi.filter(s => s.id !== spaceId);
+        localStorage.setItem('cs_spazi', JSON.stringify(localSpazi));
+        caricaDatiProfilo();
+        cercaSpazi();
+      }
+    }
+
+    function vaiASchedaEVisualizza(spaceId) {
+      mostraPagina('homePage');
+      setTimeout(() => {
+        evidenziaSchedaEPopUp(spaceId);
+      }, 300);
     }
 
     function richiediLoginOAccedi(mode) {
@@ -922,6 +1018,7 @@
       const saveBtn = document.getElementById('saveBtn');
       saveBtn.disabled = true;
 
+      const editingId = document.getElementById('editingSpaceId').value;
       const name = document.getElementById('newName').value;
       const city = document.getElementById('newCity').value;
       const address = document.getElementById('newAddress').value;
@@ -950,21 +1047,39 @@
         }
       } catch (err) {}
 
-      const newSpace = {
-        id: 'spz_' + Date.now(),
-        name, city, type, price, lat, lon, features,
-        image: imageBase64,
-        host_id: currentUser.id,
-        available: true
-      };
+      if (editingId) {
+        // MODIFICA SPAZIO ESISTENTE
+        const index = localSpazi.findIndex(s => s.id === editingId);
+        if (index !== -1) {
+          localSpazi[index].name = name;
+          localSpazi[index].city = city;
+          localSpazi[index].address = address;
+          localSpazi[index].type = type;
+          localSpazi[index].price = price;
+          localSpazi[index].features = features;
+          localSpazi[index].lat = lat;
+          localSpazi[index].lon = lon;
+          if (imageBase64) localSpazi[index].image = imageBase64;
+        }
+        alert('Spazio aggiornato con successo!');
+      } else {
+        // CREAZIONE NUOVO SPAZIO
+        const newSpace = {
+          id: 'spz_' + Date.now(),
+          name, city, address, type, price, lat, lon, features,
+          image: imageBase64,
+          host_id: currentUser.id,
+          available: true
+        };
+        localSpazi.push(newSpace);
+        alert('Spazio pubblicato con successo!');
+      }
 
-      localSpazi.push(newSpace);
       localStorage.setItem('cs_spazi', JSON.stringify(localSpazi));
-
-      alert('Spazio pubblicato con successo!');
       document.getElementById('addSpaceForm').reset();
       toggleModal('addModal', false);
       cercaSpazi();
+      caricaDatiProfilo();
       saveBtn.disabled = false;
     }
 
@@ -1074,8 +1189,9 @@
         if (bookingMode === 'hourly') dateText = document.getElementById('bookHourlyDate').value;
         else if (bookingMode === 'multi') dateText = document.getElementById('bookStartDate').value + ' al ' + document.getElementById('bookEndDate').value;
 
+        const bookingId = 'bk_' + Date.now();
         const newBooking = {
-          id: 'bk_' + Date.now(),
+          id: bookingId,
           space_id,
           space_name: spz.name,
           space_city: spz.city,
@@ -1088,6 +1204,12 @@
         localBookings.push(newBooking);
         localStorage.setItem('cs_bookings', JSON.stringify(localBookings));
 
+        // Inizializza Chat con messaggio di benvenuto dall'Host
+        localChats[bookingId] = [
+          { sender: 'host', text: `Ciao! Grazie per aver prenotato ${spz.name}. Mandami pure un messaggio qui per metterci d'accordo sull'orario d'arrivo o su eventuali dettagli!`, time: 'Adesso' }
+        ];
+        localStorage.setItem('cs_chats', JSON.stringify(localChats));
+
         payBtn.disabled = false;
         payBtn.innerText = 'Paga Ora e Conferma';
         toggleModal('paymentModal', false);
@@ -1097,10 +1219,61 @@
       }, 1000);
     }
 
+    // GESTIONE CHAT TRA GUEST E HOST
+    function apriChatConHost(bookingId) {
+      currentActiveChatBookingId = bookingId;
+      const bk = localBookings.find(b => b.id === bookingId);
+      if (bk) document.getElementById('chatSpaceTitle').innerText = 'Chat: ' + bk.space_name;
+
+      renderizzaMessaggiChat();
+      toggleModal('chatModal', true);
+    }
+
+    function renderizzaMessaggiChat() {
+      const chatBox = document.getElementById('chatMessagesBox');
+      chatBox.innerHTML = '';
+      const msgs = localChats[currentActiveChatBookingId] || [];
+
+      msgs.forEach(m => {
+        const isMe = m.sender === 'guest';
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+        msgDiv.innerHTML = `
+          <div class="max-w-[80%] p-2.5 rounded-2xl ${isMe ? 'bg-brand text-white rounded-br-none' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'}">
+            ${m.text}
+          </div>
+          <span class="text-[9px] text-gray-400 mt-0.5 px-1">${m.time}</span>
+        `;
+        chatBox.appendChild(msgDiv);
+      });
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function inviaMessaggioChat(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInputText');
+      const val = input.value.trim();
+      if (!val || !currentActiveChatBookingId) return;
+
+      if (!localChats[currentActiveChatBookingId]) localChats[currentActiveChatBookingId] = [];
+
+      localChats[currentActiveChatBookingId].push({
+        sender: 'guest',
+        text: val,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+
+      localStorage.setItem('cs_chats', JSON.stringify(localChats));
+      input.value = '';
+      renderizzaMessaggiChat();
+    }
+
     function caricaDatiProfilo() {
       if (!currentUser) return;
       document.getElementById('profileUserEmail').innerText = currentUser.email;
 
+      // Spazi pubblicati dall'Host
       const mySpaces = localSpazi.filter(s => s.host_id === currentUser.id);
       const spacesGrid = document.getElementById('myHostSpacesGrid');
       spacesGrid.innerHTML = '';
@@ -1110,18 +1283,28 @@
       } else {
         mySpaces.forEach(s => {
           const card = document.createElement('div');
-          card.className = 'bg-gray-50 border border-gray-200 rounded-2xl p-4 flex justify-between items-center';
+          card.className = 'bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col justify-between space-y-3';
           card.innerHTML = `
-            <div>
-              <h4 class="font-bold text-gray-900 text-sm">${s.name}</h4>
+            <div onclick="vaiASchedaEVisualizza('${s.id}')" class="cursor-pointer">
+              <h4 class="font-bold text-gray-900 text-sm hover:text-brand transition-colors">${s.name}</h4>
               <p class="text-xs text-gray-500">${s.city} • <span class="capitalize">${s.type}</span></p>
+              <div class="text-sm font-extrabold text-brand mt-1">${s.price}€ /giorno</div>
             </div>
-            <span class="text-sm font-extrabold text-brand">${s.price}€ /gg</span>
+            <div class="flex gap-2 border-t border-gray-200 pt-2">
+              <button onclick="apriModificaSpazio('${s.id}')" class="flex-1 bg-white hover:bg-gray-100 text-gray-700 text-xs font-bold py-1.5 rounded-xl border border-gray-300 transition-colors">
+                ✏️ Modifica
+              </button>
+
+              <button onclick="eliminaSpazioHost('${s.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-3 py-1.5 rounded-xl border border-red-200 transition-colors">
+                🗑️ Elimina
+              </button>
+            </div>
           `;
           spacesGrid.appendChild(card);
         });
       }
 
+      // Prenotazioni fatte dal Guest
       const myBookings = localBookings.filter(b => b.guest_id === currentUser.id);
       const tableBody = document.getElementById('myBookingsTableBody');
       tableBody.innerHTML = '';
@@ -1137,7 +1320,11 @@
             <td class="p-3">${b.booking_date}</td>
             <td class="p-3 text-brand font-semibold">${b.duration || '1 Giorno'}</td>
             <td class="p-3 font-bold">${b.total_price} €</td>
-            <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Confermato</span></td>
+            <td class="p-3">
+              <button onclick="apriChatConHost('${b.id}')" class="bg-pink-50 hover:bg-pink-100 text-brand border border-pink-200 text-xs font-bold px-3 py-1 rounded-xl transition-all shadow-sm">
+                💬 Chat con Host
+              </button>
+            </td>
           `;
           tableBody.appendChild(tr);
         });
@@ -1248,7 +1435,7 @@
     }
 
     // ==========================================
-    // RENDER RISULTATI CON SVG VECTOR ICONS (GRADIENTI)
+    // RENDER RISULTATI CON NUOVE ICONE VETTORIALI ULTRA-RICONOSCIBILI
     // ==========================================
     function renderizzaRisultati(spaces) {
       markersGroup.clearLayers();
@@ -1268,32 +1455,36 @@
       }
 
       spaces.forEach(space => {
-        // ID univoco per il gradiente dell'SVG per evitare conflitti nel DOM
         const gradId = 'grad-' + space.id;
         const svgDefs = `
           <defs>
             <linearGradient id="${gradId}" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stop-color="#FF385C"/>
-              <stop offset="100%" stop-color="#FF9EAD"/>
+              <stop offset="100%" stop-color="#FF8095"/>
             </linearGradient>
           </defs>
         `;
 
-        // SCELTA DELL'ICONA SVG VETTORIALE IN BASE ALLA CATEGORIA (Con Stroke Gradiente)
+        // NUOVE ICONE VETTORIALI DEDICATE E ULTRA-RICONOSCIBILI
         let vectorIconSVG = '';
-        if (space.type === 'fotografia') {
-          vectorIconSVG = `<svg class="w-20 h-20 opacity-60" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.2">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" /></svg>`;
-        } else if (space.type === 'barbiere') {
-          vectorIconSVG = `<svg class="w-20 h-20 opacity-60" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.2">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M14.348 14.348 12 12m0 0 5.652-5.652M12 12l-5.652 5.652m0 0a2.121 2.121 0 1 1-3 3 2.121 2.121 0 0 1 3-3Zm0 0a2.121 2.121 0 1 0-3-3 2.121 2.121 0 0 0 3 3Zm9-9a2.121 2.121 0 1 1-3 3 2.121 2.121 0 0 1 3-3Zm0 0a2.121 2.121 0 1 0-3-3 2.121 2.121 0 0 0 3 3Z" /></svg>`;
-        } else if (space.type === 'estetica') {
-          vectorIconSVG = `<svg class="w-20 h-20 opacity-60" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.2">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09l2.846.813-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" /></svg>`;
+        if (space.type === 'barbiere') {
+          // FORBICI E PETTINE BARBIERE
+          vectorIconSVG = `<svg class="w-20 h-20 opacity-70" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.3">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M7.875 6.012a3 3 0 1 0-4.242 4.243 3 3 0 0 0 4.242-4.243ZM7.875 6.012 18 16.136m-10.125-10.124L18 6.012M3.633 10.255 13.757 20.38M18 16.136a3 3 0 1 0 4.243 4.242 3 3 0 0 0-4.243-4.242ZM21 3v4.5M18 3v4.5M15 3v4.5M12 3v4.5" /></svg>`;
         } else if (space.type === 'psicoterapia') {
-          vectorIconSVG = `<svg class="w-20 h-20 opacity-60" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.2">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>`;
+          // MENTE E BENESSERE (BRAIN / MIND)
+          vectorIconSVG = `<svg class="w-20 h-20 opacity-70" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.3">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.997 8.997 0 0 1-7.843-4.582M12 21a8.997 8.997 0 0 0 7.843-4.582m-15.686 0A11.953 11.953 0 0 1 12 10.5c2.998 0 5.74 1.1 7.843 2.918m-15.686 0A8.959 8.959 0 0 1 3 12c0-2.386.927-4.555 2.441-6.166m13.118 0A8.959 8.959 0 0 1 21 12c0 2.386-.927 4.555-2.441 6.166" /></svg>`;
         } else if (space.type === 'massaggi') {
-          vectorIconSVG = `<svg class="w-20 h-20 opacity-60" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.2">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>`;
+          // MANI TERAPEUTICHE E MASSAGGIO
+          vectorIconSVG = `<svg class="w-20 h-20 opacity-70" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.3">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M10.05 4.575a1.575 1.575 0 1 0-3.15 0v3.15M13.2 5.1a1.575 1.575 0 1 0-3.15 0v3.15M16.35 6.15a1.575 1.575 0 1 0-3.15 0v3.15M6.9 7.2a1.575 1.575 0 1 0-3.15 0v5.25a7.35 7.35 0 0 0 13.565 3.82l2.38-4.285a1.575 1.575 0 0 0-2.75-1.53l-1.995 3.59a.525.525 0 0 1-.913-.487l.955-4.296a1.575 1.575 0 0 0-1.537-1.921H10.05" /></svg>`;
+        } else if (space.type === 'estetica') {
+          // SMALTO E PENNELLO BEAUTY
+          vectorIconSVG = `<svg class="w-20 h-20 opacity-70" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.3">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19 14.5M14.25 3.104c.251.023.501.05.75.082M19 14.5l-3.328 3.328a2.25 2.25 0 0 1-1.591.659H9.919a2.25 2.25 0 0 1-1.591-.659L5 14.5m14 0V21a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-6.5" /></svg>`;
+        } else if (space.type === 'fotografia') {
+          // CAMERA REFLEX FOTOGRAFIA
+          vectorIconSVG = `<svg class="w-20 h-20 opacity-70" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.3">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" /></svg>`;
         } else {
-          // Coworking o default
-          vectorIconSVG = `<svg class="w-20 h-20 opacity-60" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.2">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" /></svg>`;
+          // COWORKING (SCRIVANIA E LAPTOP)
+          vectorIconSVG = `<svg class="w-20 h-20 opacity-70" fill="none" stroke="url(#${gradId})" viewBox="0 0 24 24" stroke-width="1.3">${svgDefs}<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>`;
         }
 
         const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
@@ -1301,7 +1492,6 @@
         marker.on('click', () => evidenziaSchedaEPopUp(space.id));
         activeMarkersMap[space.id] = marker;
 
-        // Immagine utente oppure Placeholder grigio chiaro con icona sfumata
         const imgTag = space.image 
           ? `<img src="${space.image}" class="w-full h-48 object-cover rounded-2xl mb-2" />`
           : `<div class="w-full h-48 bg-gray-100 rounded-2xl flex items-center justify-center mb-2">${vectorIconSVG}</div>`;
