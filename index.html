@@ -34,11 +34,21 @@
     .search-pill-shadow {
       box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     }
+    
+    /* STILE SCHEDA E FIX SELEZIONE UNIFORME PER IOS SAFARI */
     .space-card {
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid rgba(229, 231, 235, 0.9); /* Bordo base 2px costante */
+      box-sizing: border-box;
     }
     .space-card:hover {
       transform: translateY(-3px);
+    }
+
+    /* FIX BORDO E SELEZIONE UNIFORME SU IOS SAFARI */
+    .space-card.selected-card {
+      border-color: #FF385C !important;
+      box-shadow: 0 0 0 1px #FF385C, 0 10px 25px -5px rgba(255, 56, 92, 0.2) !important;
     }
 
     /* MAPPA STILE APPLE MAPS / MINIMAL */
@@ -199,7 +209,7 @@
           <span>Massaggi</span>
         </button>
 
-        <!-- SOLO FORBICI (Niente Pettine) -->
+        <!-- SOLO FORBICI -->
         <button onclick="selectCategory('barbiere')" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-600 hover:text-gray-900 pb-1.5 text-xs font-medium transition-all">
           <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="7.5" cy="17.5" r="3" />
@@ -287,73 +297,60 @@
     </button>
   </nav>
 
-  <!-- ==================== MODALI ... STESSO CODICE ... ==================== -->
-  <!-- Modale Dettagli Spazio -->
+  <!-- MODALI -->
+  <div id="favoritesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-center space-y-4">
+      <button onclick="toggleModal('favoritesModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <div class="w-14 h-14 bg-pink-50 text-brand rounded-full flex items-center justify-center mx-auto text-2xl shadow-sm border border-pink-100">❤️</div>
+      <div>
+        <h3 class="text-xl font-extrabold text-gray-900">Preferiti</h3>
+        <p class="text-xs text-gray-500 mt-1">Salva i tuoi spazi migliori qui!</p>
+      </div>
+      <button onclick="toggleModal('favoritesModal', false)" class="w-full py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">Ho Capito</button>
+    </div>
+  </div>
+
   <div id="detailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
       <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-
       <div class="border-b border-gray-100 pb-3">
         <h3 id="detailSpaceTitle" class="text-xl font-extrabold text-gray-900">Nome Spazio</h3>
         <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-0.5">Città • Indirizzo</p>
       </div>
-
       <div>
         <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Tutti i Servizi Inclusi nello Spazio</h4>
         <div id="detailServicesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
       </div>
-
       <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
         <div>
           <span class="text-xs text-gray-400 uppercase font-bold block">Tariffa Spazio</span>
           <span id="detailSpacePrice" class="text-lg font-extrabold text-brand">0 € /giorno</span>
         </div>
-        <button id="detailBookBtn" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-6 py-3 rounded-xl shadow-md transition-all">
-          Prenota Ora
-        </button>
+        <button id="detailBookBtn" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-6 py-3 rounded-xl shadow-md">Prenota Ora</button>
       </div>
     </div>
   </div>
-  <!-- (TUTTI GLI ALTRI MODALI RIMANGONO IDENTICI ALLA VERSIONE PRECEDENTE: PREFERITI, CHAT, LOGIN, CHECKOUT, ECC) -->
 
   <script>
-    // DICTIONARY SERVIZI
     const SERVICES_MASTER = {
-      wifi: { name: 'Wi-Fi ad alta velocità', icon: '📶', category: 'General' },
-      ac: { name: 'Aria Condizionata', icon: '❄️', category: 'General' },
-      heating: { name: 'Riscaldamento', icon: '🔥', category: 'General' },
-      waiting_room: { name: 'Sala d\'attesa clienti', icon: '🛋️', category: 'General' },
-      music: { name: 'Filodiffusione / Bluetooth', icon: '🎵', category: 'General' },
-      disabled: { name: 'Accesso disabili', icon: '♿', category: 'General' },
-      elevator: { name: 'Ascensore', icon: '🛗', category: 'General' },
-      parking: { name: 'Parcheggio riservato', icon: '🅿️', category: 'General' },
-      pos: { name: 'POS Card per Pagamenti', icon: '💳', category: 'General' },
-      coffee: { name: 'Area Break / Macchina Caffè', icon: '☕', category: 'General' },
-      cleaning: { name: 'Pulizia giornaliera', icon: '🧹', category: 'General' },
-      sterilizer: { name: 'Sanificazione / Sterilizzazione UV', icon: '🧪', category: 'General' },
-      // ... altri servizi (identici alla versione precedente)
+      wifi: { name: 'Wi-Fi ad alta velocità', icon: '📶' },
+      ac: { name: 'Aria Condizionata', icon: '❄️' },
+      heating: { name: 'Riscaldamento', icon: '🔥' },
+      waiting_room: { name: 'Sala d\'attesa', icon: '🛋️' }
     };
 
     let currentUser = null;
-    let isRegisterMode = false;
-    let bookingMode = 'single';
     let selectedCategory = '';
-    let currentCalculatedTotal = 0;
-    let currentCalculatedDuration = '';
-    let currentStep = 1;
     let isMapViewMobile = false;
-    let currentActiveChatBookingId = null;
 
-    // Default su Napoli come da tuo profilo
     let userLocation = { lat: 40.8518, lon: 14.2681 }; 
     let currentRouteLine = null;
     let activeMarkersMap = {};
 
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
-      { id: 'spz_1', name: 'Studio Fotografico Vesuvio', city: 'Napoli', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, available: true, features: ['wifi'] },
+      { id: 'spz_1', name: 'Studio Foodish', city: 'Napoli', address: 'Via Toledo 12', type: 'fotografia', price: 47, lat: 40.8359, lon: 14.2488, available: true, features: ['wifi', 'ac', 'heating', 'waiting_room'] },
       { id: 'spz_2', name: 'Barberia Spaccanapoli', city: 'Napoli', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, available: true, features: ['wifi'] },
-      { id: 'spz_3', name: 'Studio Psicoterapia Toledo', city: 'Napoli', address: 'Via Chiaia 88', type: 'psicoterapia', price: 40, lat: 40.8420, lon: 14.2495, available: true, features: ['wifi'] },
-      { id: 'spz_4', name: 'Cabina Massaggi Vomero', city: 'Napoli', address: 'Via Scarlatti 102', type: 'massaggi', price: 50, lat: 40.8465, lon: 14.2320, available: true, features: ['wifi'] }
+      { id: 'spz_3', name: 'Studio Psicoterapia Toledo', city: 'Napoli', address: 'Via Chiaia 88', type: 'psicoterapia', price: 40, lat: 40.8420, lon: 14.2495, available: true, features: ['wifi'] }
     ];
 
     const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
@@ -383,6 +380,8 @@
       if (modal) modal.classList.toggle('hidden', !show);
     }
 
+    function apriModalFavorites() { toggleModal('favoritesModal', true); }
+
     function toggleMobileView() {
       isMapViewMobile = !isMapViewMobile;
       const listSec = document.getElementById('listSection');
@@ -402,13 +401,11 @@
       }
     }
 
-    // MAP LOGIC - DISTANCE & ROUTE CALCULATION
     function tracciaPercorsoVerso(space) {
       if (currentRouteLine) {
         map.removeLayer(currentRouteLine);
       }
 
-      // Formula Haversine
       const R = 6371;
       const dLat = (space.lat - userLocation.lat) * Math.PI / 180;
       const dLon = (space.lon - userLocation.lon) * Math.PI / 180;
@@ -418,7 +415,6 @@
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       const distanceKm = R * c;
 
-      // RULE: se <= 1.5km -> a piedi (verde), se > 1.5km -> auto (rosso brand)
       const isWalking = distanceKm <= 1.5;
 
       const latlngs = [
@@ -445,12 +441,15 @@
       infoBox.classList.remove('hidden');
     }
 
+    // FIX SELEZIONE E BORDO IOS UNIFORME
     function evidenziaSchedaEPopUp(spaceId) {
-      document.querySelectorAll('.space-card').forEach(card => card.classList.remove('ring-2', 'ring-brand'));
+      document.querySelectorAll('.space-card').forEach(card => {
+        card.classList.remove('selected-card', 'ring-2', 'ring-brand');
+      });
       
       const activeCard = document.getElementById('card_' + spaceId);
       if (activeCard) {
-        activeCard.classList.add('ring-2', 'ring-brand');
+        activeCard.classList.add('selected-card');
         activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
@@ -472,14 +471,6 @@
       document.getElementById('detailSpaceLocation').innerText = `📍 ${spz.address || 'Indirizzo'}, ${spz.city}`;
       document.getElementById('detailSpacePrice').innerText = `${spz.price} € /giorno`;
 
-      // (Codice servizi omesso per brevità nel mockup)
-
-      const bookBtn = document.getElementById('detailBookBtn');
-      bookBtn.onclick = () => {
-        toggleModal('detailModal', false);
-        apriModalPrenotazione(spz.id, spz.name, spz.price, spz.available);
-      };
-
       toggleModal('detailModal', true);
     }
 
@@ -491,63 +482,39 @@
       document.getElementById('resultsCount').innerText = spaces.length;
 
       spaces.forEach(space => {
-        let catSvgIcon = '';
-        let placeholderGradient = '';
-
-        if (space.type === 'barbiere') {
-          // SOLO FORBICI IN SVG COME DA RICHIESTA
-          catSvgIcon = `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="7.5" cy="17.5" r="3" />
-            <circle cx="16.5" cy="17.5" r="3" />
-            <line x1="9.5" y1="15.5" x2="18.5" y2="4.5" />
-            <line x1="14.5" y1="15.5" x2="5.5" y2="4.5" />
-            <circle cx="12" cy="11.5" r="1" fill="currentColor" />
-          </svg>`;
-          placeholderGradient = 'bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300';
-        } else if (space.type === 'psicoterapia') {
-          // Icona psicoterapia...
-        }
-        // ... (altre icone come in precedenza)
-
         const popupHTML = `
-          <div class="p-0 overflow-hidden text-gray-800">
-            <div class="p-3 space-y-1.5">
-              <h4 class="font-extrabold text-xs text-gray-900 leading-tight">${space.name}</h4>
-              <button onclick="mostraDettagliSpazio('${space.id}')" class="w-full mt-2 bg-brand hover:bg-brand-hover text-white font-bold py-1.5 px-2 rounded-lg text-xs shadow-sm transition-all">
-                Vedi Dettagli
-              </button>
-            </div>
+          <div class="p-2 space-y-1">
+            <h4 class="font-extrabold text-xs text-gray-900">${space.name}</h4>
+            <button onclick="mostraDettagliSpazio('${space.id}')" class="w-full mt-1 bg-brand text-white font-bold py-1 px-2 rounded-lg text-xs">Vedi Dettagli</button>
           </div>
         `;
 
         const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
         marker.bindPopup(popupHTML);
-        marker.on('click', () => {
-          evidenziaSchedaEPopUp(space.id);
-        });
+        marker.on('click', () => evidenziaSchedaEPopUp(space.id));
         activeMarkersMap[space.id] = marker;
-
-        const imgHeaderTag = `<div class="w-full h-52 ${placeholderGradient} rounded-t-3xl flex items-center justify-center border-b border-gray-100">${catSvgIcon}</div>`;
 
         const card = document.createElement('div');
         card.id = 'card_' + space.id;
-        card.className = 'space-card cursor-pointer bg-white rounded-3xl border border-gray-200/80 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden relative';
+        card.className = 'space-card cursor-pointer bg-white rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden relative';
         
-        // LOGICA DI SELEZIONE: Cliccando la scheda si seleziona sulla mappa e calcola il percorso automaticamente
         card.onclick = () => {
-          evidenziaSchedaEPopUp(space.id); // Centra, apre popup, traccia route
-          
+          evidenziaSchedaEPopUp(space.id);
           if (window.innerWidth < 1024 && !isMapViewMobile) {
-            // Su mobile, forza il passaggio alla vista mappa così l'utente vede il percorso
             toggleMobileView();
           }
         };
 
         card.innerHTML = `
           <div>
-            ${imgHeaderTag}
-            <div class="p-4 pb-2">
-              <h4 class="text-base font-bold text-gray-900 leading-snug">${space.name}</h4>
+            <div class="w-full h-48 bg-gradient-to-br from-amber-50 to-pink-100 rounded-t-3xl flex items-center justify-center relative">
+              <span class="text-3xl">❤️</span>
+              <div class="absolute top-3 right-3 bg-white/95 rounded-full w-8 h-8 flex items-center justify-center shadow-sm">
+                <span class="text-xs">🚗</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h4 class="text-base font-bold text-gray-900">${space.name}</h4>
               <p class="text-xs text-gray-500 mt-0.5">${space.city}</p>
             </div>
           </div>
@@ -556,8 +523,8 @@
               <span class="text-base font-extrabold text-gray-900">${space.price} €</span>
               <span class="text-xs text-gray-500 font-normal"> /giorno</span>
             </div>
-            <button onclick="event.stopPropagation(); mostraDettagliSpazio('${space.id}')" class="bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all">
-              Dettagli
+            <button onclick="event.stopPropagation(); mostraDettagliSpazio('${space.id}')" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-xl">
+              Prenota
             </button>
           </div>
         `;
@@ -566,7 +533,6 @@
     }
 
     function cercaSpazi() {
-      // (Stessa logica di filtro)
       renderizzaRisultati(localSpazi);
     }
 
