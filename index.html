@@ -31,9 +31,6 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -91,7 +88,6 @@
         </select>
         <span class="text-gray-300">|</span>
         
-        <!-- NUOVO FILTRO PREZZO A SCAGLIONI DESKTOP -->
         <select id="priceSelect" onchange="toggleCustomPrice('priceSelect', 'priceInput')" class="text-xs font-semibold text-gray-600 bg-transparent focus:outline-none cursor-pointer">
           <option value="">Qualsiasi prezzo</option>
           <option value="30">Fino a 30€</option>
@@ -100,7 +96,6 @@
           <option value="100">Fino a 100€</option>
           <option value="custom">Altro...</option>
         </select>
-        <!-- Input manuale visibile solo se si seleziona "Altro..." -->
         <input id="priceInput" type="number" placeholder="Max €" onkeyup="if(event.key==='Enter') cercaSpazi()" class="hidden text-xs font-semibold text-gray-800 bg-gray-100 rounded-full focus:outline-none w-16 px-2 py-1" />
         
         <button onclick="cercaSpazi()" class="w-7 h-7 rounded-full bg-brand hover:bg-brand-hover flex items-center justify-center text-white ml-1 shrink-0">
@@ -137,7 +132,7 @@
   <!-- HOME PAGE -->
   <div id="homePage" class="flex-1 flex flex-col">
     
-    <!-- BARRA RICERCA MOBILE (CON FILTRO PREZZO) -->
+    <!-- BARRA RICERCA MOBILE -->
     <div class="md:hidden px-4 pt-3 pb-2 bg-white border-b border-gray-200 sticky top-[61px] z-30 shadow-sm space-y-2">
       <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-full p-2 shadow-sm search-pill-shadow">
         <span class="text-base ml-1">🔍</span>
@@ -147,7 +142,6 @@
         </button>
       </div>
       
-      <!-- NUOVO FILTRO PREZZO MOBILE -->
       <div class="flex items-center gap-2 justify-between">
         <select id="mobilePriceSelect" onchange="toggleCustomPrice('mobilePriceSelect', 'mobilePriceInput')" class="text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full px-3 py-1.5 shadow-sm focus:outline-none w-1/2 cursor-pointer">
           <option value="">Qualsiasi prezzo</option>
@@ -157,7 +151,6 @@
           <option value="100">Fino a 100€</option>
           <option value="custom">Altro...</option>
         </select>
-        <!-- Input manuale visibile solo se "Altro" è selezionato -->
         <input id="mobilePriceInput" type="number" placeholder="Es. 85€" onkeyup="if(event.key==='Enter') cercaSpazi()" class="hidden text-xs font-semibold text-gray-900 border border-gray-300 rounded-full px-3 py-1.5 shadow-sm focus:outline-none w-1/2 bg-gray-50" />
       </div>
     </div>
@@ -258,8 +251,6 @@
     </button>
   </nav>
 
-  <!-- [Tutte le Modali Precedenti rimangono identiche e inalterate, omesse per brevità visuale ma incluse qui nel codice completo per sicurezza] -->
-
   <!-- AREA PERSONALE -->
   <div id="profilePage" class="hidden flex-1 max-w-5xl mx-auto w-full p-4 md:p-8">
     <div class="space-y-6">
@@ -275,6 +266,7 @@
           ← Torna alla Mappa
         </button>
       </div>
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
           <span class="text-xs text-gray-400 uppercase font-bold">Guadagni Totali (Host)</span>
@@ -292,11 +284,410 @@
           <span class="text-[11px] text-gray-400 block mt-1">Spazi e giornate prenotati</span>
         </div>
       </div>
-      <!-- Spazi e Storico Omissis ma completi in esecuzione -->
+
+      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+        <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+          <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi Pubblicati</h3>
+          <button onclick="apriAggiungiSpazio()" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Aggiungi</button>
+        </div>
+        <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">📅 Storico Prenotazioni</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-700">
+            <thead class="text-xs text-gray-400 uppercase bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th class="p-3">Spazio</th>
+                <th class="p-3">Data</th>
+                <th class="p-3">Durata</th>
+                <th class="p-3">Totale</th>
+                <th class="p-3">Stato</th>
+              </tr>
+            </thead>
+            <tbody id="myBookingsTableBody" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- MODALI OMMESSE PER BREVITA (TUTTE ESATTAMENTE UGUALI ALLA VERSIONE PRECEDENTE) -->
+  <!-- FOOTER DESKTOP -->
+  <footer class="bg-white border-t border-gray-200 py-6 px-4 text-center text-xs text-gray-500 mt-auto hidden lg:block">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div>© 2026 ChairShare Inc. • Tutti i diritti riservati</div>
+      <div class="flex gap-4">
+        <button onclick="toggleModal('howItWorksModal', true)" class="hover:underline">Come funziona</button>
+        <button onclick="toggleModal('legalModal', true)" class="hover:underline">Privacy & Note Legali</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TUTTE LE MODALI (RIPRISTINATE INTEGRALMENTE) -->
+
+  <!-- MODALE: INFO COME FUNZIONA -->
+  <div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative text-xs text-gray-700 space-y-4">
+      <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <h3 class="text-lg font-extrabold text-gray-900 border-b border-gray-100 pb-2">💡 Come Funziona ChairShare</h3>
+
+      <div class="space-y-3">
+        <div class="flex gap-3 items-start">
+          <span class="text-2xl">🔍</span>
+          <div>
+            <strong class="text-gray-900 block text-sm">1. Cerca e Trova</strong>
+            Trova stanze per psicoterapeuti, cabine per massaggi, poltrone per barberia, studi fotografici o postazioni coworking vicine a te.
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start">
+          <span class="text-2xl">📅</span>
+          <div>
+            <strong class="text-gray-900 block text-sm">2. Prenota Senza Canoni</strong>
+            Paga solo il tempo che usi (ore o giornate). Nessun abbonamento né vincolo contrattuale.
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start">
+          <span class="text-2xl">💰</span>
+          <div>
+            <strong class="text-gray-900 block text-sm">3. Commissioni Trasparenti</strong>
+            • <strong>Guest:</strong> Fee di servizio del 5%.<br>
+            • <strong>Host:</strong> Pubblicazione gratis, trattenuta del 10% sui guadagni.
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-3 border-t border-gray-100">
+        <button onclick="toggleModal('howItWorksModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">Ho Capito</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE: STEPPER AGGIUNGI SPAZIO -->
+  <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-lg shadow-2xl relative h-full sm:h-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
+      
+      <button onclick="toggleModal('addModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <div class="mb-5 pr-6">
+        <h3 class="text-xl font-extrabold text-gray-900">Pubblica il tuo Spazio</h3>
+        <p class="text-xs text-gray-500">Metti a disposizione la tua struttura in 3 semplici passaggi.</p>
+        
+        <div class="flex items-center justify-between mt-4 relative">
+          <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -z-0"></div>
+          <div id="stepDot1" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10">1</div>
+          <div id="stepDot2" class="w-8 h-8 rounded-full bg-gray-200 text-gray-50 flex items-center justify-center font-bold text-xs z-10">2</div>
+          <div id="stepDot3" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10">3</div>
+        </div>
+      </div>
+      
+      <form id="addSpaceForm" onsubmit="salvaNuovaPoltrona(event)">
+        <!-- STEP 1 -->
+        <div id="stepSection1" class="space-y-3">
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 1: Informazioni Generali</h4>
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Nome dello Spazio</label>
+            <input id="newName" type="text" required placeholder="Es. Studio Psicoterapia Toledo" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Città</label>
+              <input id="newCity" type="text" required placeholder="Napoli" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo</label>
+              <input id="newAddress" type="text" required placeholder="Via Toledo 10" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            </div>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Tipologia Spazio</label>
+            <select id="newType" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white">
+              <option value="psicoterapia">🧠 Studio Psicoterapia / Counseling</option>
+              <option value="massaggi">💆‍♂️ Cabina Massaggi / Fisioterapia</option>
+              <option value="barbiere">💈 Barbiere / Parrucchiere</option>
+              <option value="estetica">💅 Centro Estetico / Tatuaggi</option>
+              <option value="fotografia">📸 Studio Fotografico</option>
+              <option value="coworking">🏢 Postazione Coworking</option>
+            </select>
+          </div>
+          <div class="flex justify-end pt-3">
+            <button type="button" onclick="goToStep(2)" class="w-full sm:w-auto px-6 py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">
+              Avanti: Prezzi & Servizi →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="stepSection2" class="hidden space-y-3">
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Tariffe, Servizi & Foto</h4>
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Prezzo Giornaliero (€/giorno)</label>
+            <input id="newPrice" type="number" required placeholder="Es. 50" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            <span class="text-[10px] text-gray-400 block mt-0.5">Trattenuta Host: 10% sui guadagni erogati</span>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold block mb-1">Servizi inclusi nella postazione</label>
+            <div class="grid grid-cols-2 gap-2 text-xs text-gray-700">
+              <label class="flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200 cursor-pointer">
+                <input type="checkbox" id="featureWifi" checked class="accent-brand" />
+                <span>📶 Wi-Fi Veloce</span>
+              </label>
+              <label class="flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200 cursor-pointer">
+                <input type="checkbox" id="featureAc" checked class="accent-brand" />
+                <span>❄️ Aria Condizionata</span>
+              </label>
+              <label class="flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200 cursor-pointer">
+                <input type="checkbox" id="featureSterilizer" class="accent-brand" />
+                <span>🧪 Sterilizzatore UV</span>
+              </label>
+              <label class="flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200 cursor-pointer">
+                <input type="checkbox" id="featureKit" class="accent-brand" />
+                <span>🧼 Kit Monouso</span>
+              </label>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Foto dello Spazio</label>
+            <input id="newImageInput" type="file" accept="image/*" class="w-full mt-1 text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-brand file:text-white cursor-pointer" />
+          </div>
+          <div class="flex justify-between pt-3">
+            <button type="button" onclick="goToStep(1)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
+            <button type="button" onclick="goToStep(3)" class="px-6 py-2.5 bg-brand text-white font-bold rounded-xl text-xs">Avanti →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="stepSection3" class="hidden space-y-4">
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 3: Conformità e Pubblicazione</h4>
+          <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 text-xs text-gray-600 space-y-2">
+            <label class="flex items-start gap-2 cursor-pointer">
+              <input type="checkbox" id="hostLegalCheck" required class="mt-0.5 accent-brand" />
+              <span>Dichiaro sotto la mia responsabilità che lo spazio rispetta le normative vigenti in materia di idoneità dei locali, agibilità e requisiti igienico-sanitari.</span>
+            </label>
+          </div>
+          <div class="flex justify-between pt-3">
+            <button type="button" onclick="goToStep(2)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
+            <button type="submit" id="saveBtn" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
+              🚀 Pubblica Annuncio
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODALE: PRENOTAZIONE -->
+  <div id="bookingModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-lg shadow-2xl relative h-full sm:h-auto overflow-y-auto">
+      <button onclick="toggleModal('bookingModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <h3 id="bookSpaceTitle" class="text-xl font-extrabold text-gray-900 mb-1">Prenota Spazio</h3>
+      <p id="bookSpaceSub" class="text-xs text-gray-500 mb-4">Scegli le date e la modalità di prenotazione.</p>
+
+      <form id="bookingForm" onsubmit="procediAlPagamento(event)" class="space-y-4">
+        <input type="hidden" id="bookSpaceId" />
+        <input type="hidden" id="bookBasePrice" />
+
+        <div>
+          <label class="text-xs text-gray-500 uppercase font-bold">Modalità</label>
+          <div class="grid grid-cols-3 gap-2 mt-1">
+            <button type="button" onclick="setBookingMode('single')" id="modeBtnSingle" class="py-2.5 text-xs font-bold rounded-xl border border-brand bg-pink-50 text-brand">1 Giorno</button>
+            <button type="button" onclick="setBookingMode('hourly')" id="modeBtnHourly" class="py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600">Fascia Oraria</button>
+            <button type="button" onclick="setBookingMode('multi')" id="modeBtnMulti" class="py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600">Più Giorni</button>
+          </div>
+        </div>
+
+        <div id="bookingSingleBox">
+          <label class="text-xs text-gray-500 uppercase font-bold">Data Prenotazione</label>
+          <input id="bookDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+        </div>
+
+        <div id="bookingHourlyBox" class="hidden space-y-3">
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Data</label>
+            <input id="bookHourlyDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Dalle Ore</label>
+              <input id="bookTimeStart" type="time" value="09:00" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Alle Ore</label>
+              <input id="bookTimeEnd" type="time" value="13:00" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+            </div>
+          </div>
+        </div>
+
+        <div id="bookingMultiBox" class="hidden grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Data Inizio</label>
+            <input id="bookStartDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Data Fine</label>
+            <input id="bookEndDate" type="date" onchange="calcolaTotalePrenotazione()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 text-xs text-gray-600">
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" id="guestLegalCheck" required class="mt-0.5 accent-brand" />
+            <span>Confermo sotto la mia responsabilità il possesso dei requisiti e dei titoli abilitanti professionali.</span>
+          </label>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-2 text-xs">
+          <div class="flex justify-between">
+            <span class="text-gray-500">Durata:</span>
+            <span id="summaryDurationText" class="font-bold text-gray-900">1 Giorno (8 ore)</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Subtotale Spazio:</span>
+            <span id="summaryBasePrice" class="font-bold text-gray-900">0,00 €</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Fee Servizio Guest (5%):</span>
+            <span id="summaryGuestFee" class="text-brand font-bold">+ 0,00 €</span>
+          </div>
+          <hr class="border-gray-200 my-2">
+          <div class="flex justify-between text-sm font-extrabold">
+            <span>Totale Complessivo:</span>
+            <span id="summaryTotal" class="text-brand text-base">0,00 €</span>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="toggleModal('bookingModal', false)" class="px-4 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">Annulla</button>
+          <button type="submit" class="flex-1 py-3 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">
+            Procedi al Pagamento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODALE: CHECKOUT -->
+  <div id="paymentModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+      <button onclick="toggleModal('paymentModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <h3 class="text-lg font-extrabold text-gray-900 mb-3 border-b border-gray-100 pb-2">🔒 Pagamento Sicuro Stripe</h3>
+
+      <div class="bg-pink-50 p-3 rounded-2xl mb-4 border border-pink-100 flex justify-between items-center">
+        <div>
+          <span class="text-xs text-gray-500 block">Totale autorizzato</span>
+          <span id="payModalAmount" class="text-xl font-extrabold text-brand">0,00 €</span>
+        </div>
+        <div class="text-right text-[10px] text-gray-400">
+          Pagamento SSL 256-bit
+        </div>
+      </div>
+
+      <div class="space-y-2 mb-4">
+        <label onclick="selectPayMethod('card')" class="pay-option flex items-center justify-between p-3 rounded-2xl border-2 border-brand bg-pink-50/50 cursor-pointer">
+          <div class="flex items-center gap-3">
+            <input type="radio" name="payMethod" value="card" checked class="accent-brand" />
+            <span class="text-xs font-bold text-gray-900">Carta di Credito</span>
+          </div>
+          <span class="text-xs text-gray-500">💳 Visa/MC</span>
+        </label>
+      </div>
+
+      <div id="cardDetailsForm" class="space-y-2 mb-5">
+        <div>
+          <label class="text-[10px] text-gray-500 uppercase font-bold">Numero Carta</label>
+          <input type="text" value="4532 8812 9901 8892" class="w-full mt-0.5 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] text-gray-500 uppercase font-bold">Scadenza</label>
+            <input type="text" value="12/28" class="w-full mt-0.5 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900" />
+          </div>
+          <div>
+            <label class="text-[10px] text-gray-500 uppercase font-bold">CVC</label>
+            <input type="text" value="882" class="w-full mt-0.5 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+        <button type="button" onclick="toggleModal('paymentModal', false)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">Annulla</button>
+        <button onclick="confermaEPay()" id="payNowBtn" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">
+          Paga Ora e Conferma
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE: AUTH LOGIN/REGISTRAZIONE -->
+  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+      <button onclick="toggleModal('authModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <h3 id="authTitle" class="text-xl font-extrabold text-gray-900 mb-1">Accedi a ChairShare</h3>
+      <p id="authSubTitle" class="text-xs text-gray-500 mb-4">Gestisci le tue prenotazioni o pubblica i tuoi spazi.</p>
+
+      <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3">
+        <div>
+          <label class="text-xs text-gray-500 uppercase font-bold">Email</label>
+          <input id="authEmail" type="email" required placeholder="tuamail@esempio.it" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 uppercase font-bold">Password</label>
+          <input id="authPassword" type="password" required placeholder="••••••••" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+        </div>
+
+        <div id="roleSelector" class="hidden space-y-3">
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold block mb-1">Ruolo</label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-xs cursor-pointer font-medium">
+                <input type="radio" name="userRole" value="guest" checked class="accent-brand" />
+                <span>Guest (Lavoratore)</span>
+              </label>
+              <label class="flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-xs cursor-pointer font-medium">
+                <input type="radio" name="userRole" value="host" class="accent-brand" />
+                <span>Host (Proprietario)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs text-gray-600">
+            <label class="flex items-start gap-2 cursor-pointer">
+              <input type="checkbox" id="registerLegalCheck" class="mt-0.5 accent-brand" />
+              <span>Accetto i <button type="button" onclick="toggleModal('legalModal', true)" class="text-brand underline font-bold">Termini di Servizio & Note Legali</button>.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+          <button type="button" onclick="toggleAuthMode()" id="switchAuthBtn" class="text-xs text-brand font-bold hover:underline">
+            Non hai un account? Registrati
+          </button>
+          <button type="submit" id="authSubmitBtn" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">Accedi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODALE: PRIVACY E NOTE LEGALI -->
+  <div id="legalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xl shadow-2xl relative max-h-[85vh] overflow-y-auto text-xs text-gray-600 space-y-3">
+      <button onclick="toggleModal('legalModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <h3 class="text-lg font-extrabold text-gray-900 border-b border-gray-100 pb-2">⚖️ Termini di Servizio & Note Legali</h3>
+      
+      <p>ChairShare è un marketplace tecnologico che facilita la condivisione temporanea di spazi tra professionisti (Guest) e proprietari (Host). Gli Host garantiscono l'idoneità dei locali e le autorizzazioni igienico-sanitarie. I Guest sono responsabili del possesso dei titoli professionali e delle abilitazioni necessarie per svolgere la propria attività.</p>
+
+      <div class="flex justify-end pt-3 border-t border-gray-100">
+        <button onclick="toggleModal('legalModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">Chiudi</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     let currentUser = null;
@@ -317,7 +708,6 @@
     let currentRoutingControl = null;
     let activeMarkersMap = {};
 
-    // DATI DEMO AGGIORNATI CON "available: true/false"
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
       { id: 'spz_1', name: 'Studio Fotografico Vesuvio', city: 'Napoli', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample', features: ['wifi', 'ac'], available: true },
       { id: 'spz_2', name: 'Barberia Spaccanapoli', city: 'Napoli', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample', features: ['wifi', 'ac', 'sterilizer'], available: false },
@@ -348,7 +738,14 @@
       }, () => {});
     }
 
-    // LOGICA PER MOSTRARE/NASCONDERE L'INPUT CUSTOM DEL PREZZO
+    // UTILITIES & MODALS
+    function toggleModal(modalId, show) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.toggle('hidden', !show);
+      }
+    }
+
     function toggleCustomPrice(selectId, inputId) {
       const selectElem = document.getElementById(selectId);
       const inputElem = document.getElementById(inputId);
@@ -358,7 +755,7 @@
         inputElem.focus();
       } else {
         inputElem.classList.add('hidden');
-        inputElem.value = ''; // pulisco il campo se seleziono altro
+        inputElem.value = '';
         cercaSpazi();
       }
     }
@@ -409,7 +806,6 @@
       document.getElementById('mobileCityInput').value = '';
       document.getElementById('typeSelect').value = '';
       
-      // Resetto i prezzi
       document.getElementById('priceSelect').value = '';
       document.getElementById('priceInput').value = '';
       document.getElementById('priceInput').classList.add('hidden');
@@ -424,6 +820,7 @@
     function mostraPagina(pageId) {
       document.getElementById('homePage').classList.toggle('hidden', pageId !== 'homePage');
       document.getElementById('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
+      if (pageId === 'profilePage') caricaDatiProfilo();
     }
 
     function resetToHome() {
@@ -437,6 +834,154 @@
       mostraPagina('homePage');
     }
 
+    // AUTH
+    function apriAggiungiSpazio() {
+      if (!currentUser) {
+        alert('Attenzione: accedi o registrati per pubblicare uno spazio!');
+        richiediLoginOAccedi('register');
+      } else {
+        goToStep(1);
+        toggleModal('addModal', true);
+      }
+    }
+
+    function richiediLoginOAccedi(mode) {
+      isRegisterMode = (mode === 'register');
+      document.getElementById('authTitle').innerText = isRegisterMode ? 'Registrati su ChairShare' : 'Accedi a ChairShare';
+      document.getElementById('authSubmitBtn').innerText = isRegisterMode ? 'Registrati' : 'Accedi';
+      document.getElementById('switchAuthBtn').innerText = isRegisterMode ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
+      
+      const roleSelector = document.getElementById('roleSelector');
+      const legalCheck = document.getElementById('registerLegalCheck');
+      
+      roleSelector.classList.toggle('hidden', !isRegisterMode);
+      legalCheck.required = isRegisterMode;
+
+      toggleModal('authModal', true);
+    }
+
+    function toggleAuthMode() {
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('authTitle').innerText = isRegisterMode ? 'Registrati su ChairShare' : 'Accedi a ChairShare';
+      document.getElementById('authSubmitBtn').innerText = isRegisterMode ? 'Registrati' : 'Accedi';
+      document.getElementById('switchAuthBtn').innerText = isRegisterMode ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati';
+      
+      const roleSelector = document.getElementById('roleSelector');
+      const legalCheck = document.getElementById('registerLegalCheck');
+
+      roleSelector.classList.toggle('hidden', !isRegisterMode);
+      legalCheck.required = isRegisterMode;
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value;
+
+      if (isRegisterMode) {
+        const legalCheck = document.getElementById('registerLegalCheck');
+        if (!legalCheck.checked) {
+          alert('Attenzione: devi accettare i Termini di Servizio.');
+          return;
+        }
+      }
+
+      currentUser = { id: 'usr_' + Date.now(), email: email };
+      localStorage.setItem('cs_user', JSON.stringify(currentUser));
+      aggiornaUIUtente();
+      toggleModal('authModal', false);
+      alert('Accesso completato!');
+    }
+
+    function aggiornaUIUtente() {
+      const loggedIn = !!currentUser;
+      document.getElementById('authActions').classList.toggle('hidden', loggedIn);
+      document.getElementById('userProfileActions').classList.toggle('hidden', !loggedIn);
+      if (loggedIn) {
+        document.getElementById('userProfileActions').classList.add('flex');
+        document.getElementById('profileUserEmail').innerText = currentUser.email;
+      }
+    }
+
+    // STEPPER AGGIUNGI SPAZIO
+    function goToStep(step) {
+      currentStep = step;
+      document.getElementById('stepSection1').classList.toggle('hidden', step !== 1);
+      document.getElementById('stepSection2').classList.toggle('hidden', step !== 2);
+      document.getElementById('stepSection3').classList.toggle('hidden', step !== 3);
+
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById('stepDot' + i);
+        if (i <= step) {
+          dot.className = 'w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10';
+        } else {
+          dot.className = 'w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10';
+        }
+      }
+    }
+
+    function convertFileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    async function salvaNuovaPoltrona(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.disabled = true;
+
+      const name = document.getElementById('newName').value;
+      const city = document.getElementById('newCity').value;
+      const address = document.getElementById('newAddress').value;
+      const type = document.getElementById('newType').value;
+      const price = parseFloat(document.getElementById('newPrice').value);
+      const fileInput = document.getElementById('newImageInput');
+
+      const features = [];
+      if (document.getElementById('featureWifi').checked) features.push('wifi');
+      if (document.getElementById('featureAc').checked) features.push('ac');
+      if (document.getElementById('featureSterilizer').checked) features.push('sterilizer');
+      if (document.getElementById('featureKit').checked) features.push('kit');
+
+      let imageBase64 = null;
+      if (fileInput.files && fileInput.files[0]) {
+        try { imageBase64 = await convertFileToBase64(fileInput.files[0]); } catch (err) {}
+      }
+
+      let lat = 40.8518, lon = 14.2681;
+      try {
+        const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', ' + city)}`);
+        const geoData = await geoRes.json();
+        if (geoData.length > 0) {
+          lat = parseFloat(geoData[0].lat);
+          lon = parseFloat(geoData[0].lon);
+        }
+      } catch (err) {}
+
+      const newSpace = {
+        id: 'spz_' + Date.now(),
+        name, city, type, price, lat, lon, features,
+        image: imageBase64,
+        host_id: currentUser.id,
+        available: true
+      };
+
+      localSpazi.push(newSpace);
+      localStorage.setItem('cs_spazi', JSON.stringify(localSpazi));
+
+      alert('Spazio pubblicato con successo!');
+      document.getElementById('addSpaceForm').reset();
+      toggleModal('addModal', false);
+      cercaSpazi();
+      saveBtn.disabled = false;
+    }
+
+    // PRENOTAZIONE E PAGAMENTO
     function apriModalPrenotazione(spaceId, spaceName, basePrice, isAvailable) {
       if (!isAvailable) {
         alert('Mi dispiace, questo spazio al momento non è disponibile per la prenotazione.');
@@ -444,12 +989,181 @@
       }
       if (!currentUser) {
         alert('Attenzione: accedi o registrati per prenotare uno spazio!');
+        richiediLoginOAccedi('register');
         return;
       }
-      // ... logica modale pre-esistente ...
+      document.getElementById('bookSpaceId').value = spaceId;
+      document.getElementById('bookBasePrice').value = basePrice;
+      document.getElementById('bookSpaceTitle').innerText = 'Prenota: ' + spaceName;
+      
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('bookDate').value = today;
+      document.getElementById('bookHourlyDate').value = today;
+      document.getElementById('bookStartDate').value = today;
+      document.getElementById('bookEndDate').value = today;
+
+      setBookingMode('single');
+      toggleModal('bookingModal', true);
     }
 
-    // FUNZIONE DI RICERCA CORRETTA E CENTRALIZZATA CON LOGICA PREZZO "ALTRO"
+    function setBookingMode(mode) {
+      bookingMode = mode;
+      
+      const btnSingle = document.getElementById('modeBtnSingle');
+      const btnHourly = document.getElementById('modeBtnHourly');
+      const btnMulti = document.getElementById('modeBtnMulti');
+
+      btnSingle.className = mode === 'single' ? 'py-2.5 text-xs font-bold rounded-xl border border-brand bg-pink-50 text-brand' : 'py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600';
+      btnHourly.className = mode === 'hourly' ? 'py-2.5 text-xs font-bold rounded-xl border border-brand bg-pink-50 text-brand' : 'py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600';
+      btnMulti.className = mode === 'multi' ? 'py-2.5 text-xs font-bold rounded-xl border border-brand bg-pink-50 text-brand' : 'py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600';
+
+      document.getElementById('bookingSingleBox').classList.toggle('hidden', mode !== 'single');
+      document.getElementById('bookingHourlyBox').classList.toggle('hidden', mode !== 'hourly');
+      document.getElementById('bookingMultiBox').classList.toggle('hidden', mode !== 'multi');
+
+      calcolaTotalePrenotazione();
+    }
+
+    function calcolaTotalePrenotazione() {
+      const dailyPrice = parseFloat(document.getElementById('bookBasePrice').value) || 0;
+      const hourlyRate = dailyPrice / 8;
+      let baseSubtotal = 0;
+
+      if (bookingMode === 'single') {
+        baseSubtotal = dailyPrice;
+        currentCalculatedDuration = '1 Giorno (8 ore)';
+      } else if (bookingMode === 'hourly') {
+        const start = document.getElementById('bookTimeStart').value;
+        const end = document.getElementById('bookTimeEnd').value;
+        let hours = 0;
+        if (start && end) {
+          const h1 = parseInt(start.split(':')[0]) + parseInt(start.split(':')[1])/60;
+          const h2 = parseInt(end.split(':')[0]) + parseInt(end.split(':')[1])/60;
+          hours = Math.max(0.5, h2 - h1);
+        }
+        baseSubtotal = hours * hourlyRate;
+        currentCalculatedDuration = `${hours.toFixed(1)} Ore (${start} - ${end})`;
+      } else if (bookingMode === 'multi') {
+        const d1 = new Date(document.getElementById('bookStartDate').value);
+        const d2 = new Date(document.getElementById('bookEndDate').value);
+        let days = 1;
+        if (d2 >= d1) {
+          const diffTime = Math.abs(d2 - d1);
+          days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        }
+        baseSubtotal = days * dailyPrice;
+        currentCalculatedDuration = `${days} Giorni`;
+      }
+
+      const guestFee = baseSubtotal * 0.05;
+      currentCalculatedTotal = baseSubtotal + guestFee;
+
+      document.getElementById('summaryDurationText').innerText = currentCalculatedDuration;
+      document.getElementById('summaryBasePrice').innerText = baseSubtotal.toFixed(2) + ' €';
+      document.getElementById('summaryGuestFee').innerText = '+ ' + guestFee.toFixed(2) + ' €';
+      document.getElementById('summaryTotal').innerText = currentCalculatedTotal.toFixed(2) + ' €';
+    }
+
+    function procediAlPagamento(e) {
+      e.preventDefault();
+      document.getElementById('payModalAmount').innerText = currentCalculatedTotal.toFixed(2) + ' €';
+      toggleModal('bookingModal', false);
+      toggleModal('paymentModal', true);
+    }
+
+    function selectPayMethod(method) {
+      document.getElementById('cardDetailsForm').classList.toggle('hidden', method !== 'card');
+    }
+
+    async function confermaEPay() {
+      const payBtn = document.getElementById('payNowBtn');
+      payBtn.disabled = true;
+      payBtn.innerText = 'Elaborazione...';
+
+      setTimeout(() => {
+        const space_id = document.getElementById('bookSpaceId').value;
+        const spz = localSpazi.find(s => s.id === space_id) || { name: 'Spazio', city: '' };
+
+        let dateText = document.getElementById('bookDate').value;
+        if (bookingMode === 'hourly') dateText = document.getElementById('bookHourlyDate').value;
+        else if (bookingMode === 'multi') dateText = document.getElementById('bookStartDate').value + ' al ' + document.getElementById('bookEndDate').value;
+
+        const newBooking = {
+          id: 'bk_' + Date.now(),
+          space_id,
+          space_name: spz.name,
+          space_city: spz.city,
+          guest_id: currentUser.id,
+          booking_date: dateText,
+          duration: currentCalculatedDuration,
+          total_price: currentCalculatedTotal.toFixed(2)
+        };
+
+        localBookings.push(newBooking);
+        localStorage.setItem('cs_bookings', JSON.stringify(localBookings));
+
+        payBtn.disabled = false;
+        payBtn.innerText = 'Paga Ora e Conferma';
+        toggleModal('paymentModal', false);
+
+        alert('🎉 Prenotazione confermata con successo!');
+        mostraPagina('profilePage');
+      }, 1000);
+    }
+
+    function caricaDatiProfilo() {
+      if (!currentUser) return;
+      document.getElementById('profileUserEmail').innerText = currentUser.email;
+
+      const mySpaces = localSpazi.filter(s => s.host_id === currentUser.id);
+      const spacesGrid = document.getElementById('myHostSpacesGrid');
+      spacesGrid.innerHTML = '';
+
+      if (mySpaces.length === 0) {
+        spacesGrid.innerHTML = '<p class="text-xs text-gray-400 italic col-span-3">Nessuno spazio pubblicato.</p>';
+      } else {
+        mySpaces.forEach(s => {
+          const card = document.createElement('div');
+          card.className = 'bg-gray-50 border border-gray-200 rounded-2xl p-4 flex justify-between items-center';
+          card.innerHTML = `
+            <div>
+              <h4 class="font-bold text-gray-900 text-sm">${s.name}</h4>
+              <p class="text-xs text-gray-500">${s.city} • <span class="capitalize">${s.type}</span></p>
+            </div>
+            <span class="text-sm font-extrabold text-brand">${s.price}€ /gg</span>
+          `;
+          spacesGrid.appendChild(card);
+        });
+      }
+
+      const myBookings = localBookings.filter(b => b.guest_id === currentUser.id);
+      const tableBody = document.getElementById('myBookingsTableBody');
+      tableBody.innerHTML = '';
+
+      let totalSpent = 0;
+      if (myBookings.length > 0) {
+        myBookings.forEach(b => {
+          totalSpent += parseFloat(b.total_price || 0);
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-gray-50';
+          tr.innerHTML = `
+            <td class="p-3 font-bold text-gray-900">${b.space_name}</td>
+            <td class="p-3">${b.booking_date}</td>
+            <td class="p-3 text-brand font-semibold">${b.duration || '1 Giorno'}</td>
+            <td class="p-3 font-bold">${b.total_price} €</td>
+            <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Confermato</span></td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      } else {
+        tableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">Nessuna prenotazione effettuata.</td></tr>';
+      }
+
+      document.getElementById('totalGuestSpent').innerText = totalSpent.toFixed(2) + ' €';
+      document.getElementById('totalBookingsCount').innerText = myBookings.length;
+    }
+
+    // MAPPA E RICERCA
     async function cercaSpazi() {
       const cityDesktop = document.getElementById('cityInput') ? document.getElementById('cityInput').value.trim().toLowerCase() : '';
       const cityMobile = document.getElementById('mobileCityInput') ? document.getElementById('mobileCityInput').value.trim().toLowerCase() : '';
@@ -458,7 +1172,6 @@
       const typeSelect = document.getElementById('typeSelect');
       const type = typeSelect ? typeSelect.value : selectedCategory;
 
-      // Leggiamo il maxPrice in base al dispositivo usato
       let maxPrice = null;
       const isMobile = window.innerWidth < 768;
       
@@ -495,6 +1208,44 @@
       renderizzaRisultati(res);
     }
 
+    function tracciaPercorsoVerso(space) {
+      if (currentRoutingControl) {
+        map.removeControl(currentRoutingControl);
+      }
+
+      const R = 6371;
+      const dLat = (space.lat - userLocation.lat) * Math.PI / 180;
+      const dLon = (space.lon - userLocation.lon) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(userLocation.lat * Math.PI / 180) * Math.cos(space.lat * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distanceKm = R * c;
+
+      const isWalking = distanceKm <= 1.5;
+
+      currentRoutingControl = L.Routing.control({
+        waypoints: [
+          L.latLng(userLocation.lat, userLocation.lon),
+          L.latLng(space.lat, space.lon)
+        ],
+        router: L.Routing.osrmv1({ profile: isWalking ? 'foot' : 'car' }),
+        lineOptions: { styles: [{ color: '#FF385C', opacity: 0.9, weight: 5 }] },
+        createMarker: () => null,
+        addWaypoints: false,
+        draggableWaypoints: false,
+        fitSelectedRoutes: true
+      }).addTo(map);
+
+      const infoBox = document.getElementById('routeInfoBox');
+      document.getElementById('routeModeIcon').innerText = isWalking ? '🚶‍♂️' : '🚗';
+      document.getElementById('routeDistanceText').innerText = distanceKm.toFixed(2) + ' km';
+      document.getElementById('routeTimeText').innerText = isWalking 
+        ? `A piedi: ~${Math.round(distanceKm * 12)} min`
+        : `In auto: ~${Math.round(distanceKm * 2.5)} min`;
+      infoBox.classList.remove('hidden');
+    }
+
     function evidenziaSchedaEPopUp(spaceId) {
       document.querySelectorAll('.space-card').forEach(card => card.classList.remove('ring-2', 'ring-brand'));
       
@@ -503,6 +1254,10 @@
         activeCard.classList.add('ring-2', 'ring-brand');
         activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
+
+      const spz = localSpazi.find(s => s.id === spaceId);
+      if (spz) tracciaPercorsoVerso(spz);
+
       const marker = activeMarkersMap[spaceId];
       if (marker) marker.openPopup();
     }
@@ -541,9 +1296,18 @@
           ? `<img src="${space.image}" class="w-full h-48 object-cover rounded-2xl mb-2" />`
           : `<div class="w-full h-48 bg-gray-100 rounded-2xl flex items-center justify-center text-5xl mb-2">${iconEmoji}</div>`;
 
-        // Gestione Icona Poltrona Disponibile/Non Disponibile
         const iconaColor = space.available ? 'fill-brand' : 'fill-gray-400';
         const tooltipTesto = space.available ? 'Poltrona Disponibile' : 'Al momento non disponibile';
+
+        let featuresBadges = '';
+        if (space.features && space.features.length > 0) {
+          featuresBadges = '<div class="flex flex-wrap gap-1.5 mb-2">';
+          if (space.features.includes('wifi')) featuresBadges += '<span class="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">📶 Wi-Fi</span>';
+          if (space.features.includes('ac')) featuresBadges += '<span class="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">❄️ A/C</span>';
+          if (space.features.includes('sterilizer')) featuresBadges += '<span class="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">🧪 Sterilizzatore</span>';
+          if (space.features.includes('kit')) featuresBadges += '<span class="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">🧼 Kit</span>';
+          featuresBadges += '</div>';
+        }
 
         const card = document.createElement('div');
         card.id = 'card_' + space.id;
@@ -554,8 +1318,6 @@
           <div>
             <div class="relative">
               ${imgTag}
-              
-              <!-- NUOVA ICONA POLTRONCINA (SOSTITUISCE IL CUORE) -->
               <div title="${tooltipTesto}" class="absolute top-3 right-3 bg-white/90 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ${iconaColor}" viewBox="0 0 24 24">
                   <path d="M19 10h-1V7c0-1.65-1.35-3-3-3H9C7.35 4 6 5.35 6 7v3H5c-1.1 0-2 .9-2 2v5c0 .55.45 1 1 1h1v2c0 .55.45 1 1 1s1-.45 1-1v-2h12v2c0 .55.45 1 1 1s1-.45 1-1v-2h1c.55 0 1-.45 1-1v-5c0-1.1-.9-2-2-2zm-11-3c0-.55.45-1 1-1h6c.55 0 1 .45 1 1v3H8V7zm11 8H5v-3h14v3z"/>
@@ -568,6 +1330,7 @@
                 <h4 class="font-extrabold text-gray-900 text-sm leading-tight">${space.name}</h4>
               </div>
               <p class="text-xs text-gray-500 mb-2">${space.city}</p>
+              ${featuresBadges}
             </div>
           </div>
 
@@ -585,6 +1348,7 @@
       });
     }
 
+    aggiornaUIUtente();
     cercaSpazi();
   </script>
 </body>
