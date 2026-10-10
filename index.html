@@ -31,6 +31,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -60,7 +63,7 @@
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col pb-20 lg:pb-0 selection:bg-brand selection:text-white">
 
   <!-- HEADER AIRBNB STYLE -->
-  <header class="bg-white border-b border-gray-200 sticky top-0 z-40 px-4 py-3 md:px-8">
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-40 px-4 py-3 md:px-8 shadow-sm">
     <div class="max-w-7xl mx-auto flex justify-between items-center gap-4">
       
       <!-- LOGO -->
@@ -125,7 +128,6 @@
           </button>
         </div>
       </div>
-
     </div>
   </header>
 
@@ -155,7 +157,7 @@
       </div>
     </div>
 
-    <!-- CATEGORY BAR (SCROLLABILE AIRBNB STYLE) -->
+    <!-- CATEGORY BAR -->
     <div class="bg-white border-b border-gray-200 py-3 px-4 shadow-sm sticky top-[154px] md:top-[65px] z-20">
       <div class="max-w-7xl mx-auto flex items-center gap-6 overflow-x-auto no-scrollbar" id="categoryPills">
         <button onclick="selectCategory('')" class="cat-pill active flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1 text-xs font-bold transition-all">
@@ -189,41 +191,28 @@
       </div>
     </div>
 
-    <!-- MAIN CONTENT (GRID CARDS & MAP) -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden relative">
-      
-      <!-- LISTA SCHEDE SPASI (7 COLONNE DESKTOP) -->
       <div id="listSection" class="lg:col-span-7 p-4 md:p-6 overflow-y-auto w-full">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-sm font-bold text-gray-900"><span id="resultsCount" class="text-brand">0</span> spazi trovati</h3>
           <button onclick="resetFilters()" class="text-xs text-brand font-bold hover:underline">Azzera Filtri</button>
         </div>
-        
-        <div id="spacesList" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <!-- Schede Spazi dinamiche -->
-        </div>
+        <div id="spacesList" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
       </div>
-
-      <!-- MAPPA (5 COLONNE DESKTOP) -->
       <div id="mapSection" class="hidden lg:block lg:col-span-5 h-[calc(100vh-140px)] sticky top-[140px] border-l border-gray-200 z-0">
         <div id="map" class="w-full h-full"></div>
-        
         <div id="routeInfoBox" class="hidden absolute top-4 right-4 z-[999] bg-white border border-gray-200 p-3 rounded-2xl shadow-xl text-xs max-w-xs">
           <div class="flex items-center gap-2 font-bold text-brand mb-1">
             <span id="routeModeIcon">🚗</span>
             <span id="routeTitle">Percorso Calcolato</span>
           </div>
-          <div class="text-gray-700">
-            Distanza: <strong id="routeDistanceText" class="text-gray-900">0 km</strong>
-          </div>
-          <div class="text-gray-500 text-[11px] mt-0.5" id="routeTimeText">
-            Tempo stimato: --
-          </div>
+          <div class="text-gray-700">Distanza: <strong id="routeDistanceText" class="text-gray-900">0 km</strong></div>
+          <div class="text-gray-500 text-[11px] mt-0.5" id="routeTimeText">Tempo stimato: --</div>
         </div>
       </div>
     </main>
 
-    <!-- FLOATING MAP/LIST SWITCH BUTTON (MOBILE) -->
     <div class="lg:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-[999]">
       <button onclick="toggleMobileView()" id="mobileSwitchBtn" class="bg-gray-900 hover:bg-black text-white font-bold px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 text-xs tracking-wide">
         <span>🗺️ Mostra Mappa</span>
@@ -231,12 +220,13 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION BAR (FIXED MOBILE FIRST AIRBNB) -->
+  <!-- BOTTOM NAVIGATION BAR -->
   <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 py-2 px-6 flex justify-around items-center shadow-lg">
     <button onclick="resetToHome()" class="flex flex-col items-center gap-1 text-brand">
       <span class="text-lg">🔍</span>
       <span class="text-[10px] font-bold">Esplora</span>
     </button>
+    <!-- PULSANTE INFO COLLEGATO AL MODALE -->
     <button onclick="toggleModal('howItWorksModal', true)" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800">
       <span class="text-lg">💡</span>
       <span class="text-[10px] font-medium">Info</span>
@@ -269,19 +259,16 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span class="text-xs text-gray-400 uppercase font-bold">Guadagni Totali (Host)</span>
+          <span class="text-xs text-gray-400 uppercase font-bold">Guadagni (Host)</span>
           <div id="totalHostEarnings" class="text-3xl font-extrabold text-brand mt-2">0,00 €</div>
-          <span class="text-[11px] text-gray-400 block mt-1">Netto trattenuta Host 10%</span>
         </div>
         <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span class="text-xs text-gray-400 uppercase font-bold">Spese Totali (Guest)</span>
+          <span class="text-xs text-gray-400 uppercase font-bold">Spese (Guest)</span>
           <div id="totalGuestSpent" class="text-3xl font-extrabold text-gray-900 mt-2">0,00 €</div>
-          <span class="text-[11px] text-gray-400 block mt-1">Inclusa fee servizio 5%</span>
         </div>
         <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span class="text-xs text-gray-400 uppercase font-bold">Prenotazioni Totali</span>
+          <span class="text-xs text-gray-400 uppercase font-bold">Prenotazioni</span>
           <div id="totalBookingsCount" class="text-3xl font-extrabold text-gray-900 mt-2">0</div>
-          <span class="text-[11px] text-gray-400 block mt-1">Spazi e giornate prenotati</span>
         </div>
       </div>
 
@@ -318,55 +305,63 @@
     <div class="max-w-7xl mx-auto flex justify-between items-center">
       <div>© 2026 ChairShare Inc. • Tutti i diritti riservati</div>
       <div class="flex gap-4">
+        <!-- PULSANTE INFO DESKTOP -->
         <button onclick="toggleModal('howItWorksModal', true)" class="hover:underline">Come funziona</button>
         <button onclick="toggleModal('legalModal', true)" class="hover:underline">Privacy & Note Legali</button>
       </div>
     </div>
   </footer>
 
-  <!-- TUTTE LE MODALI (RIPRISTINATE INTEGRALMENTE) -->
+  <!-- ==================== MODALI ==================== -->
 
-  <!-- MODALE: INFO COME FUNZIONA -->
+  <!-- MODALE: COME FUNZIONA (COMPLETO) -->
   <div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative text-xs text-gray-700 space-y-4">
-      <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+    <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative text-xs text-gray-700 space-y-5">
+      
+      <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">✕</button>
 
-      <h3 class="text-lg font-extrabold text-gray-900 border-b border-gray-100 pb-2">💡 Come Funziona ChairShare</h3>
+      <h3 class="text-xl font-extrabold text-gray-900 border-b border-gray-100 pb-3 flex items-center gap-2">
+        💡 Come Funziona ChairShare
+      </h3>
 
-      <div class="space-y-3">
+      <div class="space-y-4 text-sm">
         <div class="flex gap-3 items-start">
           <span class="text-2xl">🔍</span>
           <div>
-            <strong class="text-gray-900 block text-sm">1. Cerca e Trova</strong>
-            Trova stanze per psicoterapeuti, cabine per massaggi, poltrone per barberia, studi fotografici o postazioni coworking vicine a te.
+            <strong class="text-brand block text-base mb-1">1. Cerca e Confronta</strong>
+            <p class="text-gray-600 leading-relaxed">Trova poltrone per acconciatori, lettini per massaggi e fisioterapia, studi fotografici, postazioni coworking o stanze per psicoterapia vicine a te.</p>
           </div>
         </div>
 
         <div class="flex gap-3 items-start">
           <span class="text-2xl">📅</span>
           <div>
-            <strong class="text-gray-900 block text-sm">2. Prenota Senza Canoni</strong>
-            Paga solo il tempo che usi (ore o giornate). Nessun abbonamento né vincolo contrattuale.
+            <strong class="text-brand block text-base mb-1">2. Prenota Flessibile</strong>
+            <p class="text-gray-600 leading-relaxed">Scegli se riservare una singola giornata, una fascia oraria o più giorni consecutivi senza alcun vincolo di canone mensile.</p>
           </div>
         </div>
 
         <div class="flex gap-3 items-start">
           <span class="text-2xl">💰</span>
           <div>
-            <strong class="text-gray-900 block text-sm">3. Commissioni Trasparenti</strong>
-            • <strong>Guest:</strong> Fee di servizio del 5%.<br>
-            • <strong>Host:</strong> Pubblicazione gratis, trattenuta del 10% sui guadagni.
+            <strong class="text-brand block text-base mb-1">3. Commissioni Trasparenti</strong>
+            <div class="text-gray-600 space-y-1 mt-1">
+              <p>• <strong class="text-gray-900">Guest (Professionista):</strong> Paghi il prezzo fissato dall'Host + 5% di fee di servizio per la gestione della prenotazione e tutela.</p>
+              <p>• <strong class="text-gray-900">Host (Proprietario):</strong> Pubblicazione gratuita. Tratteniamo solo il 10% sui guadagni effettivi generati.</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="flex justify-end pt-3 border-t border-gray-100">
-        <button onclick="toggleModal('howItWorksModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">Ho Capito</button>
+      <div class="flex justify-end pt-4 border-t border-gray-100">
+        <button onclick="toggleModal('howItWorksModal', false)" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-sm transition-colors shadow-md">
+          Ho Capito
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- MODALE: STEPPER AGGIUNGI SPAZIO -->
+  <!-- MODALE: AGGIUNGI SPAZIO -->
   <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
     <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-lg shadow-2xl relative h-full sm:h-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
       
@@ -738,7 +733,7 @@
       }, () => {});
     }
 
-    // UTILITIES & MODALS
+    // GESTIONE MODALI
     function toggleModal(modalId, show) {
       const modal = document.getElementById(modalId);
       if (modal) {
@@ -834,7 +829,6 @@
       mostraPagina('homePage');
     }
 
-    // AUTH
     function apriAggiungiSpazio() {
       if (!currentUser) {
         alert('Attenzione: accedi o registrati per pubblicare uno spazio!');
@@ -902,7 +896,6 @@
       }
     }
 
-    // STEPPER AGGIUNGI SPAZIO
     function goToStep(step) {
       currentStep = step;
       document.getElementById('stepSection1').classList.toggle('hidden', step !== 1);
@@ -981,7 +974,6 @@
       saveBtn.disabled = false;
     }
 
-    // PRENOTAZIONE E PAGAMENTO
     function apriModalPrenotazione(spaceId, spaceName, basePrice, isAvailable) {
       if (!isAvailable) {
         alert('Mi dispiace, questo spazio al momento non è disponibile per la prenotazione.');
@@ -1163,7 +1155,6 @@
       document.getElementById('totalBookingsCount').innerText = myBookings.length;
     }
 
-    // MAPPA E RICERCA
     async function cercaSpazi() {
       const cityDesktop = document.getElementById('cityInput') ? document.getElementById('cityInput').value.trim().toLowerCase() : '';
       const cityMobile = document.getElementById('mobileCityInput') ? document.getElementById('mobileCityInput').value.trim().toLowerCase() : '';
