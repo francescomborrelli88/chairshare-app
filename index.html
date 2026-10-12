@@ -419,7 +419,7 @@
     </div>
   </div>
 
-  <!-- MODALE: DETTAGLIO COMPLETO SERVIZI E SPAZIO -->
+  <!-- MODALE: DETTAGLIO COMPLETO SERVIZI E SPAZIO (SBLOCCO CON REGISTRAZIONE MVP) -->
   <div id="detailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
       <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
@@ -435,24 +435,16 @@
         <div id="detailServicesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
       </div>
 
-      <!-- AVVISO CONTATTI NASCOSTI PRIMA DELLA PRENOTAZIONE -->
-      <div id="contactLockNotice" class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 flex items-center gap-3 text-amber-800 text-xs">
-        <span class="text-2xl shrink-0">🔒</span>
-        <p class="leading-tight">
-          <strong>Contatti dell'Host protetti:</strong> Effettua la prima prenotazione tramite la piattaforma per sbloccare la chat diretta, il numero di telefono e l'indirizzo esatto.
-        </p>
-      </div>
+      <!-- BOX INFORMATIVO DINAMICO CONTATTI / REGISTRAZIONE -->
+      <div id="contactLockNotice" class="rounded-2xl p-4 flex items-center gap-3 text-xs transition-all"></div>
 
-      <div class="pt-4 border-t border-gray-100 flex justify-between items-center gap-2">
+      <!-- FOOTER DEL MODAL DETTAGLI -->
+      <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
         <div>
           <span class="text-xs text-gray-400 uppercase font-bold block">Tariffa Spazio</span>
           <span id="detailSpacePrice" class="text-lg font-extrabold text-brand">0 € /giorno</span>
         </div>
-        <div class="flex items-center gap-2">
-          <button id="detailBookBtn" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-6 py-3 rounded-xl shadow-md transition-all">
-            Prenota Ora
-          </button>
-        </div>
+        <div id="detailActionButtons" class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end"></div>
       </div>
     </div>
   </div>
@@ -491,8 +483,8 @@
         <div class="flex gap-3 items-start">
           <span class="text-2xl">🔍</span>
           <div>
-            <strong class="text-brand block text-base mb-1">1. Cerca e Confronta</strong>
-            <p class="text-gray-600 leading-relaxed">Trova poltrone per acconciatori, lettini per massaggi e fisioterapia, studi fotografici, postazioni coworking o stanze per psicoterapia vicine a te.</p>
+            <strong class="text-brand block text-base mb-1">1. Cerca e Sblocca Contatti</strong>
+            <p class="text-gray-600 leading-relaxed">Crea un account gratuito per sbloccare l'indirizzo esatto e i dati di contatto diretto (Telefono e WhatsApp) dell'Host.</p>
           </div>
         </div>
 
@@ -558,7 +550,7 @@
               <input id="newCity" type="text" required placeholder="Napoli" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo</label>
+              <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo Completo</label>
               <input id="newAddress" type="text" required placeholder="Via Toledo 10" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
@@ -575,8 +567,8 @@
               </select>
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Telefono WhatsApp per Notifiche</label>
-              <input id="newWhatsapp" type="tel" placeholder="+39 333 1234567" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <label class="text-xs text-gray-500 uppercase font-bold">Telefono WhatsApp per Contatti</label>
+              <input id="newWhatsapp" type="tel" placeholder="3331234567" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
           <div class="flex justify-end pt-3">
@@ -917,7 +909,6 @@
       0: 'Domenica', 1: 'Lunedì', 2: 'Martedì', 3: 'Mercoledì', 4: 'Giovedì', 5: 'Venerdì', 6: 'Sabato'
     };
 
-    // MAPPA DELLE ICONE SPECIFICHE PER CIASCUNA CATEGORIA
     const CATEGORY_ICONS = {
       psicoterapia: `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/></svg>`,
       massaggi: `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>`,
@@ -937,7 +928,7 @@
       
       // Barberia
       reclining_chair: { name: 'Poltrona reclinabile', icon: '💺', category: 'barbiere' },
-      hair_wash: { name: 'Lavatesta ergonomico', icon: '🚿', category: 'barbiere' },
+      hair_wash: { name: 'Lavatesta ergonomico', icon: 'Shower', category: 'barbiere' },
       towels_included: { name: 'Asciugamani inclusi', icon: '🧺', category: 'barbiere' },
 
       // Estetica
@@ -980,9 +971,9 @@
     let activeMarkersMap = {};
 
     let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
-      { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_id: 'sample', host_email: 'host.foodish@chairshare.it', whatsapp: '393331234567', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'heating', 'waiting_room', 'led_lights', 'backdrop'], available: true },
-      { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_id: 'sample', host_email: 'barber.spaccanapoli@chairshare.it', whatsapp: '393409876543', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'reclining_chair', 'hair_wash', 'towels_included'], available: true },
-      { id: 'spz_3', name: 'Postazione Hairstylist Duomo', city: 'Milano', address: 'Via Chiaia 88', type: 'barbiere', price: 50, lat: 40.8420, lon: 14.2495, image: null, host_id: 'sample', host_email: 'psy.chiaia@chairshare.it', whatsapp: '393381122334', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'soundproof', 'sofa_therapy', 'waiting_room'], available: true }
+      { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', area: 'Zona Toledo/Centro', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_name: 'Marco V.', host_id: 'sample', host_email: 'marco.vesuvio@chairshare.it', whatsapp: '393331234567', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'heating', 'waiting_room', 'led_lights', 'backdrop'], available: true },
+      { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', area: 'Zona Centro Storico', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_name: 'Luigi B.', host_id: 'sample', host_email: 'barber.spaccanapoli@chairshare.it', whatsapp: '393409876543', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'reclining_chair', 'hair_wash', 'towels_included'], available: true },
+      { id: 'spz_3', name: 'Postazione Hairstylist Chiaia', city: 'Napoli', area: 'Zona Chiaia', address: 'Via Chiaia 88', type: 'barbiere', price: 50, lat: 40.8420, lon: 14.2495, image: null, host_name: 'Elena C.', host_id: 'sample', host_email: 'elena.chiaia@chairshare.it', whatsapp: '393381122334', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'soundproof', 'sofa_therapy', 'waiting_room'], available: true }
     ];
 
     let localBookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
@@ -1186,32 +1177,62 @@
       toggleModal('addModal', true);
     }
 
-    function haPrenotatoSpazio(spaceId) {
-      if (!currentUser) return false;
-      return localBookings.some(b => b.space_id === spaceId && b.guest_id === currentUser.id);
-    }
-
+    /* ============================================================
+       LOGICA DI SBLOCCO CONTATTI PER UTENTE LOGGATO (FLUSSO MVP)
+       ============================================================ */
     function mostraDettagliSpazio(spaceId) {
       const spz = localSpazi.find(s => s.id === spaceId);
       if (!spz) return;
 
-      const eGiaPrenotato = haPrenotatoSpazio(spaceId);
+      const isLoggedIn = !!currentUser;
 
       document.getElementById('detailSpaceTitle').innerText = spz.name;
-      document.getElementById('detailSpaceLocation').innerText = eGiaPrenotato 
-        ? `📍 ${spz.address || 'Via Toledo'}, ${spz.city}`
-        : `📍 Zona ${spz.city} (Indirizzo visibile post-prenotazione)`;
+      
+      // 1. GESTIONE INDIRIZZO IN BASE A LOGGED IN
+      if (isLoggedIn) {
+        document.getElementById('detailSpaceLocation').innerHTML = `<span class="text-emerald-700 font-bold">📍 ${spz.address || 'Via Toledo 12'}, ${spz.city}</span>`;
+      } else {
+        document.getElementById('detailSpaceLocation').innerText = `📍 ${spz.city} - ${spz.area || 'Zona Centrica'}`;
+      }
         
       document.getElementById('detailSpacePrice').innerText = `${spz.price} € /giorno`;
 
       const daysStr = (spz.openDays || [1,2,3,4,5,6]).map(d => DAYS_MAP[d].substring(0,3)).join(', ');
       document.getElementById('detailHoursBadge').innerText = `🕒 Giorni aperti: ${daysStr} | Orario: ${spz.openTime || '09:00'} - ${spz.closeTime || '19:00'}`;
 
-      document.getElementById('contactLockNotice').classList.toggle('hidden', eGiaPrenotato);
+      // 2. GESTIONE BOX INFORMATIVO
+      const noticeBox = document.getElementById('contactLockNotice');
+      if (!isLoggedIn) {
+        noticeBox.className = "bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-amber-900 text-xs shadow-sm";
+        noticeBox.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-2xl shrink-0">🔒</span>
+            <div>
+              <strong class="block text-amber-950 font-bold">Indirizzo e Contatti diretti protetti</strong>
+              <p class="text-amber-800 leading-tight">Iscriviti o accedi gratis per sbloccare l'indirizzo esatto e i contatti diretti dell'Host.</p>
+            </div>
+          </div>
+          <button onclick="toggleModal('detailModal', false); richiediLoginOAccedi('register');" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-2 rounded-xl text-[11px] shrink-0 transition-colors">
+            Sblocca Ora
+          </button>
+        `;
+      } else {
+        const cleanWa = (spz.whatsapp || '393330000000').replace(/[^0-9]/g, '');
+        noticeBox.className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-emerald-900 text-xs shadow-sm";
+        noticeBox.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-2xl shrink-0">🔓</span>
+            <div>
+              <strong class="block text-emerald-950 font-bold">Contatti Host Sbloccati (${spz.host_name || 'Proprietario'})</strong>
+              <p class="text-emerald-800">📱 Tel/WhatsApp: <strong>+${cleanWa}</strong> | ✉️ Email: <strong>${spz.host_email || 'host@chairshare.it'}</strong></p>
+            </div>
+          </div>
+        `;
+      }
 
+      // 3. GESTIONE SERVIZI INCLUSI
       const grid = document.getElementById('detailServicesGrid');
       grid.innerHTML = '';
-
       if (spz.features && spz.features.length > 0) {
         spz.features.forEach(featKey => {
           const item = SERVICES_MASTER[featKey] || { name: featKey, icon: '✔' };
@@ -1224,12 +1245,33 @@
         grid.innerHTML = '<p class="text-gray-400 italic col-span-2">Nessun servizio aggiuntivo specificato.</p>';
       }
 
-      // COLLEGAMENTO DIRETTO AL MODALE PRENOTAZIONE
-      const bookBtn = document.getElementById('detailBookBtn');
-      bookBtn.onclick = () => {
-        toggleModal('detailModal', false);
-        apriModalPrenotazione(spz.id);
-      };
+      // 4. GESTIONE TASTI DI AZIONE (CTA)
+      const actionBtnsContainer = document.getElementById('detailActionButtons');
+      actionBtnsContainer.innerHTML = '';
+
+      if (!isLoggedIn) {
+        actionBtnsContainer.innerHTML = `
+          <button onclick="toggleModal('detailModal', false); richiediLoginOAccedi('login');" class="bg-gray-900 hover:bg-black text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all w-full sm:w-auto">
+            Accedi per Contattare
+          </button>
+          <button onclick="toggleModal('detailModal', false); richiediLoginOAccedi('register');" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all w-full sm:w-auto">
+            Registrati Gratis
+          </button>
+        `;
+      } else {
+        const cleanWa = (spz.whatsapp || '393330000000').replace(/[^0-9]/g, '');
+        actionBtnsContainer.innerHTML = `
+          <a href="https://wa.me/${cleanWa}?text=Ciao!%20Ho%20visto%20il%20tuo%20spazio%20'${encodeURIComponent(spz.name)}'%20su%20ChairShare." target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5">
+            💬 WhatsApp
+          </a>
+          <a href="tel:+${cleanWa}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-4 py-3 rounded-xl transition-all border border-gray-300 flex items-center justify-center gap-1">
+            📞 Chiama Host
+          </a>
+          <button onclick="toggleModal('detailModal', false); apriModalPrenotazione('${spz.id}');" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all">
+            Prenota Ora
+          </button>
+        `;
+      }
 
       toggleModal('detailModal', true);
     }
@@ -1394,9 +1436,10 @@
       } else {
         const newSpace = {
           id: 'spz_' + Date.now(),
-          name, city, address, type, price, lat, lon, features, whatsapp,
+          name, city, address, area: 'Zona ' + city, type, price, lat, lon, features, whatsapp,
           openDays, openTime, closeTime,
           image: imageBase64,
+          host_name: currentUser.email.split('@')[0],
           host_id: currentUser.id,
           host_email: currentUser.email,
           available: true
@@ -1412,7 +1455,6 @@
       saveBtn.disabled = false;
     }
 
-    /* CONTROLLO LOGIN E APERTURA TAB DI PRENOTAZIONE */
     function apriModalPrenotazione(spaceId) {
       if (!currentUser) {
         richiediLoginOAccedi('login');
@@ -1597,8 +1639,7 @@
 
         document.getElementById('notifDetailsText').innerHTML = `
           La tua prenotazione per <strong>${spz.name}</strong> (${dateText}) è confermata!<br/><br/>
-          ✉️ <strong>Notifica inviata all'Host:</strong> ${spz.host_email || 'host@chairshare.it'}<br/>
-          🔓 Contatti e Chat con l'Host ora sbloccati nella tua Area Personale!
+          ✉️ <strong>Notifica inviata all'Host:</strong> ${spz.host_email || 'host@chairshare.it'}
         `;
         toggleModal('notificationToastModal', true);
 
@@ -1723,7 +1764,7 @@
         myBookings.forEach(b => {
           totalAmount += parseFloat(b.total_price || 0);
           const spz = localSpazi.find(s => s.id === b.space_id);
-          const contactStr = (spz && spz.whatsapp) ? `📲 WA: ${spz.whatsapp}` : '💬 Chat Piattaforma';
+          const contactStr = (spz && spz.whatsapp) ? `📲 WA: +${spz.whatsapp.replace(/[^0-9]/g, '')}` : '💬 Chat Piattaforma';
 
           const tr = document.createElement('tr');
           tr.className = 'hover:bg-gray-50';
@@ -1871,8 +1912,9 @@
         return;
       }
 
+      const isLoggedIn = !!currentUser;
+
       spaces.forEach(space => {
-        // SELEZIONE ICONA PER CATEGORIA SPECIFICA
         let catSvgIcon = CATEGORY_ICONS[space.type] || CATEGORY_ICONS['coworking'];
         let placeholderGradient = 'bg-gradient-to-br from-slate-100 to-slate-200';
 
@@ -1880,10 +1922,13 @@
           ? `<img src="${space.image}" class="w-full h-20 object-cover" />`
           : `<div class="w-full h-16 ${placeholderGradient} flex items-center justify-center border-b border-gray-200/80">${catSvgIcon}</div>`;
 
-        const eGiaPrenotato = haPrenotatoSpazio(space.id);
-        const contactLockBadge = eGiaPrenotato 
-          ? `<span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">🔒 Sbloccato</span>`
-          : `<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">🔒 Contatti Protetti</span>`;
+        const contactLockBadge = isLoggedIn 
+          ? `<span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">🔓 Sbloccato</span>`
+          : `<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">🔒 Registrati per Sbloccare</span>`;
+
+        const locationText = isLoggedIn 
+          ? `📍 ${space.address || 'Via Toledo 12'}, ${space.city}`
+          : `📍 ${space.city} • ${space.area || 'Zona Generica'}`;
 
         const popupHTML = `
           <div class="p-0 overflow-hidden text-gray-800">
@@ -1893,12 +1938,12 @@
                 <h4 class="font-extrabold text-xs text-gray-900 leading-tight">${space.name}</h4>
                 <span class="text-[11px] font-extrabold text-brand shrink-0">${space.price}€</span>
               </div>
-              <p class="text-[10px] text-gray-500 truncate">📍 Zona ${space.city}</p>
+              <p class="text-[10px] text-gray-500 truncate">${locationText}</p>
               <div class="my-1">${contactLockBadge}</div>
               
               <div class="pt-1.5 border-t border-gray-100 flex gap-1">
-                <button onclick="apriModalPrenotazione('${space.id}')" class="flex-1 bg-brand hover:bg-brand-hover text-white font-bold py-1 px-1.5 rounded-lg text-[10px] text-center shadow-sm">
-                  Prenota
+                <button onclick="mostraDettagliSpazio('${space.id}')" class="flex-1 bg-brand hover:bg-brand-hover text-white font-bold py-1 px-1.5 rounded-lg text-[10px] text-center shadow-sm">
+                  Vedi Dettagli
                 </button>
               </div>
             </div>
@@ -1953,7 +1998,7 @@
               <div class="flex justify-between items-start">
                 <h4 class="text-base font-bold text-gray-900 leading-snug">${space.name}</h4>
               </div>
-              <p class="text-xs text-gray-500 mt-0.5">${space.city} • <span class="text-emerald-700 font-semibold">Aperto: ${daysText}</span></p>
+              <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
               ${featuresBadges}
             </div>
           </div>
@@ -1963,8 +2008,8 @@
               <span class="text-base font-extrabold text-gray-900">${space.price} €</span>
               <span class="text-xs text-gray-500 font-normal"> /giorno</span>
             </div>
-            <button onclick="event.stopPropagation(); apriModalPrenotazione('${space.id}')" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all">
-              Prenota
+            <button onclick="event.stopPropagation(); mostraDettagliSpazio('${space.id}')" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all">
+              ${isLoggedIn ? 'Sbloccato' : 'Sblocca Contatti'}
             </button>
           </div>
         `;
