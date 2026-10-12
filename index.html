@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>ChairShare - Trova e Prenota Spazi e Postazioni</title>
+  <title>ChairShare - Trova e Contatta Spazi e Postazioni</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -147,7 +147,7 @@
             Accedi
           </button>
           <button onclick="apriAggiungiSpazio()" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-3.5 py-2 rounded-full shadow-md transition-all hidden sm:block">
-            + Affitta Spazio
+            + Pubblica Spazio
           </button>
         </div>
 
@@ -161,10 +161,10 @@
     </div>
   </header>
 
-  <!-- APPLE-STYLE SLOGAN -->
+  <!-- SLOGAN PIATTAFORMA VETRINA -->
   <div class="bg-white text-brand py-2.5 px-4 text-center border-b border-gray-200">
     <p class="text-xs md:text-sm italic font-medium tracking-wide">
-      “Condividi il tuo spazio, fai crescere la tua professione: la libertà di lavorare dove e quando vuoi.”
+      “Metti in mostra il tuo spazio o trova la postazione ideale: contatta direttamente l'Host senza intermediari.”
     </p>
   </div>
 
@@ -292,7 +292,7 @@
       <div class="w-12 h-12 rounded-full bg-brand text-white flex items-center justify-center font-extrabold text-2xl shadow-lg ring-4 ring-white border border-brand transition-transform active:scale-95">
         +
       </div>
-      <span class="text-[10px] font-bold text-brand mt-0.5">Affitta</span>
+      <span class="text-[10px] font-bold text-brand mt-0.5">Pubblica</span>
     </button>
 
     <button onclick="apriModalFavorites()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800 flex-1">
@@ -327,48 +327,19 @@
         </div>
       </div>
 
-      <!-- KPI STATS -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div id="hostEarningsCard" class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span class="text-xs text-gray-400 uppercase font-bold">Guadagni Cumulativi (Host)</span>
-          <div id="totalHostEarnings" class="text-3xl font-extrabold text-brand mt-2">0,00 €</div>
-        </div>
-        <div id="guestSpentCard" class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span class="text-xs text-gray-400 uppercase font-bold">Spese Totali (Freelance)</span>
-          <div id="totalGuestSpent" class="text-3xl font-extrabold text-gray-900 mt-2">0,00 €</div>
-        </div>
-        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-          <span class="text-xs text-gray-400 uppercase font-bold">Prenotazioni Totali</span>
-          <div id="totalBookingsCount" class="text-3xl font-extrabold text-gray-900 mt-2">0</div>
-        </div>
-      </div>
-
       <!-- SEZIONE SPAZI PUBBLICATI (SOLO HOST) -->
       <div id="hostSpacesSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
-          <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi Pubblicati</h3>
+          <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi in Vetrina</h3>
           <button onclick="apriAggiungiSpazio()" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Aggiungi Spazio</button>
         </div>
         <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
 
-      <!-- SEZIONE PRENOTAZIONI & CHAT -->
+      <!-- SEZIONE STORICO CONTATTI SBLOCCATI -->
       <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <h3 id="bookingsSectionTitle" class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">📅 Storico Prenotazioni & Chat Host</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-gray-700">
-            <thead class="text-xs text-gray-400 uppercase bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th class="p-3">Spazio</th>
-                <th class="p-3">Data</th>
-                <th class="p-3">Durata</th>
-                <th class="p-3">Totale</th>
-                <th class="p-3">Contatto & Chat Host</th>
-              </tr>
-            </thead>
-            <tbody id="myBookingsTableBody" class="divide-y divide-gray-100"></tbody>
-          </table>
-        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">📞 Spazi Contattati & Sbloccati</h3>
+        <div id="myUnlockedContactsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
 
       <!-- SEZIONE LE MIE RECENSIONI -->
@@ -392,7 +363,7 @@
 
   <!-- ==================== MODALI ==================== -->
 
-  <!-- MODALE NOTIFICA RICEVUTA -->
+  <!-- MODALE NOTIFICA TOAST -->
   <div id="notificationToastModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-center space-y-4 border-2 border-emerald-500">
       <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-sm">
@@ -401,7 +372,7 @@
       <div>
         <h3 class="text-lg font-extrabold text-gray-900">Operazione Effettuata!</h3>
         <p id="notifDetailsText" class="text-xs text-gray-600 mt-2 leading-relaxed">
-          Notifica inviata con successo.
+          Notifica completata con successo.
         </p>
       </div>
       <button onclick="toggleModal('notificationToastModal', false)" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-all">
@@ -464,32 +435,11 @@
       <!-- FOOTER DEL MODAL DETTAGLI -->
       <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
         <div>
-          <span class="text-xs text-gray-400 uppercase font-bold block">Tariffa Spazio</span>
+          <span class="text-xs text-gray-400 uppercase font-bold block">Tariffa Indicativa</span>
           <span id="detailSpacePrice" class="text-lg font-extrabold text-brand">0 € /giorno</span>
         </div>
         <div id="detailActionButtons" class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- MODALE CHAT -->
-  <div id="chatModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative flex flex-col h-[500px]">
-      <button onclick="toggleModal('chatModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-
-      <div class="border-b border-gray-100 pb-3 mb-3">
-        <h3 id="chatSpaceTitle" class="font-extrabold text-gray-900 text-base">Chat Spazio</h3>
-        <p class="text-xs text-emerald-600 font-semibold flex items-center gap-1">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Host Online • Risponde di solito entro 1 ora
-        </p>
-      </div>
-
-      <div id="chatMessagesBox" class="flex-1 overflow-y-auto space-y-3 p-2 bg-gray-50 rounded-2xl border border-gray-100 mb-3 text-xs"></div>
-
-      <form onsubmit="inviaMessaggioChat(event)" class="flex gap-2">
-        <input id="chatInputText" type="text" placeholder="Scrivi un messaggio all'Host..." required class="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand" />
-        <button type="submit" class="bg-brand text-white font-bold px-4 py-2 rounded-xl text-xs hover:bg-brand-hover transition-colors">Invia</button>
-      </form>
     </div>
   </div>
 
@@ -499,34 +449,31 @@
       <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">✕</button>
 
       <h3 class="text-xl font-extrabold text-gray-900 border-b border-gray-100 pb-3 flex items-center gap-2">
-        💡 Come Funziona ChairShare
+        💡 Come Funziona ChairShare (Vetrina Diretta)
       </h3>
 
       <div class="space-y-4 text-sm">
         <div class="flex gap-3 items-start">
           <span class="text-2xl">🔍</span>
           <div>
-            <strong class="text-brand block text-base mb-1">1. Cerca e Sblocca Contatti</strong>
-            <p class="text-gray-600 leading-relaxed">Crea un account gratuito per sbloccare l'indirizzo esatto e i dati di contatto diretto (Telefono e WhatsApp) dell'Host.</p>
+            <strong class="text-brand block text-base mb-1">1. Cerca lo Spazio Ideale</strong>
+            <p class="text-gray-600 leading-relaxed">Filtra le strutture per città, tipologia o servizi desiderati in tutta Italia.</p>
           </div>
         </div>
 
         <div class="flex gap-3 items-start">
-          <span class="text-2xl">📅</span>
+          <span class="text-2xl">🔓</span>
           <div>
-            <strong class="text-brand block text-base mb-1">2. Prenota e Recensisci</strong>
-            <p class="text-gray-600 leading-relaxed">Contatta l'Host o prenota la postazione. Dopo aver avviato il contatto potrai lasciare una recensione verificata per aiutare gli altri lavoratori!</p>
+            <strong class="text-brand block text-base mb-1">2. Sblocca i Contatti Gratuitamente</strong>
+            <p class="text-gray-600 leading-relaxed">Registrati gratis per accedere all'indirizzo esatto e ai recapiti diretti (Telefono, WhatsApp ed Email) dell'Host.</p>
           </div>
         </div>
 
         <div class="flex gap-3 items-start">
-          <span class="text-2xl">💰</span>
+          <span class="text-2xl">🤝</span>
           <div>
-            <strong class="text-brand block text-base mb-1">3. Commissioni Trasparenti</strong>
-            <div class="text-gray-600 space-y-1 mt-1">
-              <p>• <strong class="text-gray-900">Guest (Professionista):</strong> Paghi il prezzo fissato dall'Host + 5% di fee di servizio per la gestione della prenotazione e tutela.</p>
-              <p>• <strong class="text-gray-900">Host (Proprietario):</strong> Pubblicazione gratuita. Tratteniamo solo il 10% sui guadagni effettivi generati.</p>
-            </div>
+            <strong class="text-brand block text-base mb-1">3. Contatta in Autonomia</strong>
+            <p class="text-gray-600 leading-relaxed">Accordati direttamente con il proprietario senza intermediazioni, pagamenti online o commissioni di servizio.</p>
           </div>
         </div>
       </div>
@@ -547,7 +494,7 @@
 
       <div class="mb-5 pr-6">
         <h3 id="modalSpaceTitle" class="text-xl font-extrabold text-gray-900">Pubblica il tuo Spazio</h3>
-        <p class="text-xs text-gray-500">Metti a disposizione la tua struttura e imposta gli orari di apertura.</p>
+        <p class="text-xs text-gray-500">Metti in vetrina la tua struttura e i tuoi recapiti.</p>
         
         <div class="flex items-center justify-between mt-4 relative">
           <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -z-0"></div>
@@ -590,7 +537,7 @@
               </select>
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Telefono WhatsApp per Contatti</label>
+              <label class="text-xs text-gray-500 uppercase font-bold">Telefono / WhatsApp Contatto</label>
               <input id="newWhatsapp" type="tel" placeholder="3331234567" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
@@ -603,10 +550,10 @@
 
         <!-- STEP 2: ORARI APERTURA, GIORNI E SERVIZI -->
         <div id="stepSection2" class="hidden space-y-4">
-          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Giorni, Orari di Apertura & Tariffe</h4>
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Giorni, Orari & Tariffe Indicative</h4>
           
           <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 space-y-3">
-            <label class="text-xs text-gray-700 uppercase font-extrabold block">📅 Giorni di Apertura Attività</label>
+            <label class="text-xs text-gray-700 uppercase font-extrabold block">📅 Giorni di Disponibilità</label>
             <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5 text-center text-xs">
               <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white has-[:checked]:border-brand font-bold transition-all">
                 <input type="checkbox" value="1" class="hidden day-checkbox" checked /> Lun
@@ -644,7 +591,7 @@
           </div>
 
           <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Prezzo Giornaliero (€/giorno)</label>
+            <label class="text-xs text-gray-500 uppercase font-bold">Prezzo Indicativo (€/giorno)</label>
             <input id="newPrice" type="number" required placeholder="Es. 50" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
           </div>
 
@@ -680,11 +627,11 @@
 
         <!-- STEP 3: CONFORMITÀ -->
         <div id="stepSection3" class="hidden space-y-4">
-          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 3: Notifiche e Pubblicazione</h4>
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 3: Pubblicazione Vetrina</h4>
           
           <div class="bg-emerald-50 p-3.5 rounded-2xl border border-emerald-200 text-xs text-emerald-800 space-y-1">
-            <strong class="block font-bold">🔔 Inoltro Notifiche Automatico Attivo:</strong>
-            <p>Riceverai una **notifica istantanea via Email e WhatsApp** ogni volta che un lavoratore prenoterà questa postazione.</p>
+            <strong class="block font-bold">💡 Contatto Diretto Inserito:</strong>
+            <p>Gli utenti interessati potranno contattarti direttamente via WhatsApp, telefono ed email.</p>
           </div>
 
           <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 text-xs text-gray-600 space-y-2">
@@ -705,169 +652,13 @@
     </div>
   </div>
 
-  <!-- MODALE: PRENOTAZIONE CON VALIDAZIONE ORARI E GIORNI -->
-  <div id="bookingModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
-    <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-lg shadow-2xl relative h-full sm:h-auto overflow-y-auto">
-      <button onclick="toggleModal('bookingModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-
-      <h3 id="bookSpaceTitle" class="text-xl font-extrabold text-gray-900 mb-1">Prenota Spazio</h3>
-      <div id="bookOpeningHoursNotice" class="text-xs text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 mb-4 font-semibold">
-        📍 Orari di apertura: 09:00 - 19:00
-      </div>
-
-      <div id="bookingTimeError" class="hidden text-xs text-red-600 bg-red-50 p-3 rounded-xl border border-red-200 mb-3 font-bold"></div>
-
-      <form id="bookingForm" onsubmit="procediAlPagamento(event)" class="space-y-4">
-        <input type="hidden" id="bookSpaceId" />
-        <input type="hidden" id="bookBasePrice" />
-
-        <div>
-          <label class="text-xs text-gray-500 uppercase font-bold">Modalità</label>
-          <div class="grid grid-cols-3 gap-2 mt-1">
-            <button type="button" onclick="setBookingMode('single')" id="modeBtnSingle" class="py-2.5 text-xs font-bold rounded-xl border border-brand bg-pink-50 text-brand">1 Giorno</button>
-            <button type="button" onclick="setBookingMode('hourly')" id="modeBtnHourly" class="py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600">Fascia Oraria</button>
-            <button type="button" onclick="setBookingMode('multi')" id="modeBtnMulti" class="py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600">Più Giorni</button>
-          </div>
-        </div>
-
-        <div id="bookingSingleBox">
-          <label class="text-xs text-gray-500 uppercase font-bold">Data Prenotazione</label>
-          <input id="bookDate" type="date" onchange="validaECalcolaTotale()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
-        </div>
-
-        <div id="bookingHourlyBox" class="hidden space-y-3">
-          <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Data</label>
-            <input id="bookHourlyDate" type="date" onchange="validaECalcolaTotale()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Dalle Ore</label>
-              <input id="bookTimeStart" type="time" value="09:00" onchange="validaECalcolaTotale()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
-            </div>
-            <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Alle Ore</label>
-              <input id="bookTimeEnd" type="time" value="13:00" onchange="validaECalcolaTotale()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
-            </div>
-          </div>
-        </div>
-
-        <div id="bookingMultiBox" class="hidden grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Data Inizio</label>
-            <input id="bookStartDate" type="date" onchange="validaECalcolaTotale()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
-          </div>
-          <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Data Fine</label>
-            <input id="bookEndDate" type="date" onchange="validaECalcolaTotale()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
-          </div>
-        </div>
-
-        <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 text-xs text-gray-600">
-          <label class="flex items-start gap-2 cursor-pointer">
-            <input type="checkbox" id="guestLegalCheck" required class="mt-0.5 accent-brand" />
-            <span>Confermo il possesso dei requisiti e abilitazioni professionali.</span>
-          </label>
-        </div>
-
-        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-2 text-xs">
-          <div class="flex justify-between">
-            <span class="text-gray-500">Durata:</span>
-            <span id="summaryDurationText" class="font-bold text-gray-900">1 Giorno</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Subtotale Spazio:</span>
-            <span id="summaryBasePrice" class="font-bold text-gray-900">0,00 €</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500">Fee Servizio Guest (5%):</span>
-            <span id="summaryGuestFee" class="text-brand font-bold">+ 0,00 €</span>
-          </div>
-          <hr class="border-gray-200 my-2">
-          <div class="flex justify-between text-sm font-extrabold">
-            <span>Totale Complessivo:</span>
-            <span id="summaryTotal" class="text-brand text-base">0,00 €</span>
-          </div>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="toggleModal('bookingModal', false)" class="px-4 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">Annulla</button>
-          <button id="submitBookingBtn" type="submit" class="flex-1 py-3 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">
-            Procedi al Pagamento
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODALE: CHECKOUT STRIPE -->
-  <div id="paymentModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="toggleModal('paymentModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-
-      <h3 class="text-lg font-extrabold text-gray-900 mb-3 border-b border-gray-100 pb-2">🔒 Pagamento Sicuro Stripe</h3>
-
-      <div class="bg-pink-50 p-3 rounded-2xl mb-4 border border-pink-100 flex justify-between items-center">
-        <div>
-          <span class="text-xs text-gray-500 block">Totale autorizzato</span>
-          <span id="payModalAmount" class="text-xl font-extrabold text-brand">0,00 €</span>
-        </div>
-        <div class="text-right text-[10px] text-gray-400">
-          Pagamento SSL 256-bit
-        </div>
-      </div>
-
-      <div class="space-y-2 mb-4">
-        <label onclick="selectPayMethod('card')" class="pay-option flex items-center justify-between p-3 rounded-2xl border border-gray-200 hover:border-brand cursor-pointer transition-all bg-white">
-          <div class="flex items-center gap-3">
-            <input type="radio" name="payMethod" value="card" checked class="accent-brand" />
-            <span class="text-xs font-bold text-gray-900">Carta di Credito / Debito</span>
-          </div>
-          <span class="text-xs text-gray-500">💳 Visa/MC/Amex</span>
-        </label>
-
-        <label onclick="selectPayMethod('wallet')" class="pay-option flex items-center justify-between p-3 rounded-2xl border border-gray-200 hover:border-brand cursor-pointer transition-all bg-white">
-          <div class="flex items-center gap-3">
-            <input type="radio" name="payMethod" value="wallet" class="accent-brand" />
-            <span class="text-xs font-bold text-gray-900">Apple Pay / Google Pay</span>
-          </div>
-          <span class="text-xs text-gray-500">⚡ 1-Click</span>
-        </label>
-      </div>
-
-      <div id="cardDetailsForm" class="space-y-2 mb-5">
-        <div>
-          <label class="text-[10px] text-gray-500 uppercase font-bold">Numero Carta</label>
-          <input type="text" value="4532 8812 9901 8892" class="w-full mt-0.5 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:border-brand" />
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-[10px] text-gray-500 uppercase font-bold">Scadenza</label>
-            <input type="text" value="12/28" class="w-full mt-0.5 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:border-brand" />
-          </div>
-          <div>
-            <label class="text-[10px] text-gray-500 uppercase font-bold">CVC</label>
-            <input type="text" value="882" class="w-full mt-0.5 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:border-brand" />
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
-        <button type="button" onclick="toggleModal('paymentModal', false)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">Annulla</button>
-        <button onclick="confermaEPay()" id="payNowBtn" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">
-          Paga Ora e Conferma
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- MODALE: AUTH LOGIN/REGISTRAZIONE -->
   <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
       <button onclick="toggleModal('authModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <h3 id="authTitle" class="text-xl font-extrabold text-gray-900 mb-1">Accedi a ChairShare</h3>
-      <p id="authSubTitle" class="text-xs text-gray-500 mb-4">Gestisci le tue prenotazioni o pubblica i tuoi spazi.</p>
+      <p id="authSubTitle" class="text-xs text-gray-500 mb-4">Sblocca i contatti diretti degli Host o pubblica i tuoi spazi.</p>
 
       <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3">
         <div>
@@ -919,14 +710,14 @@
     <div class="bg-white rounded-3xl p-6 w-full max-w-xl shadow-2xl relative max-h-[85vh] overflow-y-auto text-xs text-gray-600 space-y-3">
       <button onclick="toggleModal('legalModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
       <h3 class="text-lg font-extrabold text-gray-900 border-b border-gray-100 pb-2">⚖️ Termini di Servizio & Note Legali</h3>
-      <p>ChairShare facilita la condivisione temporanea di spazi tra lavoratori ed Host nel rispetto del D.L. 78/2010 per l'affitto di poltrona e cabina.</p>
+      <p>ChairShare è una piattaforma vetrina che permette la messa in contatto tra lavoratori ed Host nel rispetto del D.L. 78/2010 per l'affitto di poltrona e cabina.</p>
       <div class="flex justify-end pt-3 border-t border-gray-100">
         <button onclick="toggleModal('legalModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">Chiudi</button>
       </div>
     </div>
   </div>
 
-  <!-- SCRIPT LOGICA JAVASCRIPT COMPLETA CON RECENSIONI -->
+  <!-- SCRIPT LOGICA JAVASCRIPT VETRINA COMPLETA -->
   <script>
     const DAYS_MAP = {
       0: 'Domenica', 1: 'Lunedì', 2: 'Martedì', 3: 'Mercoledì', 4: 'Giovedì', 5: 'Venerdì', 6: 'Sabato'
@@ -975,13 +766,9 @@
     }
 
     let isRegisterMode = false;
-    let bookingMode = 'single';
     let selectedCategory = '';
-    let currentCalculatedTotal = 0;
-    let currentCalculatedDuration = '';
     let currentStep = 1;
     let isMapViewMobile = false;
-    let currentActiveChatBookingId = null;
     let selectedRatingStar = 5;
 
     let userLocation = { lat: 40.8518, lon: 14.2681 };
@@ -994,14 +781,10 @@
       { id: 'spz_3', name: 'Postazione Hairstylist Chiaia', city: 'Napoli', area: 'Zona Chiaia', address: 'Via Chiaia 88', type: 'barbiere', price: 50, lat: 40.8420, lon: 14.2495, image: null, host_name: 'Elena C.', host_id: 'sample', host_email: 'elena.chiaia@chairshare.it', whatsapp: '393381122334', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'soundproof', 'sofa_therapy', 'waiting_room'], available: true }
     ];
 
-    let localBookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
-    let localChats = JSON.parse(localStorage.getItem('cs_chats')) || {};
-
-    // TABELLA/OGGETTI PER SBLOCCHI E RECENSIONI
     let localUnlocked = JSON.parse(localStorage.getItem('cs_unlocked')) || [];
     let localReviews = JSON.parse(localStorage.getItem('cs_reviews')) || [
-      { id: 'rev_1', spaceId: 'spz_1', authorId: 'usr_demo1', authorEmail: 'm.rossi@email.it', rating: 5, comment: 'Spazio eccezionale, ben illuminato e molto pulito. L\'host Marco è stato disponibilissimo!', createdAt: '2026-02-10', isVerified: true },
-      { id: 'rev_2', spaceId: 'spz_2', authorId: 'usr_demo2', authorEmail: 'f.bianchi@email.it', rating: 4, comment: 'Ottima posizione in centro. Poltrona comoda e lavatesta perfetto.', createdAt: '2026-03-01', isVerified: true }
+      { id: 'rev_1', spaceId: 'spz_1', authorId: 'usr_demo1', authorEmail: 'm.rossi@email.it', rating: 5, comment: 'Spazio eccezionale, ben illuminato e pulito. L\'host Marco è stato gentilissimo!', createdAt: '2026-02-10', isVerified: true },
+      { id: 'rev_2', spaceId: 'spz_2', authorId: 'usr_demo2', authorEmail: 'f.bianchi@email.it', rating: 4, comment: 'Posizione ottima al centro. Poltrona comodissima.', createdAt: '2026-03-01', isVerified: true }
     ];
 
     const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
@@ -1140,7 +923,7 @@
       mostraPagina('homePage');
     }
 
-    /* REGISTRAZIONE EVENTO CONTATTO UTENTE PER PERMETTERE RECENSIONE */
+    /* TRACCIAMENTO EVENTO CONTATTO UTENTE */
     function registraContattoHost(spaceId) {
       if (!currentUser) return;
       const giaContattato = localUnlocked.some(u => u.userId === currentUser.id && u.spaceId === spaceId);
@@ -1152,8 +935,7 @@
 
     function haGiaContattatoSpazio(userId, spaceId) {
       if (!userId) return false;
-      return localUnlocked.some(u => u.userId === userId && u.spaceId === spaceId) ||
-             localBookings.some(b => b.guest_id === userId && b.space_id === spaceId);
+      return localUnlocked.some(u => u.userId === userId && u.spaceId === spaceId);
     }
 
     function calcolaMediaVoti(spaceId) {
@@ -1164,7 +946,7 @@
     }
 
     /* ============================================================
-       LOGICA MODAL DETTAGLI + SEZIONE RECENSIONI E RATING
+       LOGICA MODAL DETTAGLI SPAZIO
        ============================================================ */
     function mostraDettagliSpazio(spaceId) {
       const spz = localSpazi.find(s => s.id === spaceId);
@@ -1182,10 +964,11 @@
         ratingBadge.innerText = `★ Nuovo`;
       }
 
+      // 1. INDIRIZZO COMPLETO O GENERICO
       if (isLoggedIn) {
         document.getElementById('detailSpaceLocation').innerHTML = `<span class="text-emerald-700 font-bold">📍 ${spz.address || 'Via Toledo 12'}, ${spz.city}</span>`;
       } else {
-        document.getElementById('detailSpaceLocation').innerText = `📍 ${spz.city} - ${spz.area || 'Zona Centrica'}`;
+        document.getElementById('detailSpaceLocation').innerText = `📍 ${spz.city} • ${spz.area || 'Zona Generica'}`;
       }
         
       document.getElementById('detailSpacePrice').innerText = `${spz.price} € /giorno`;
@@ -1193,7 +976,7 @@
       const daysStr = (spz.openDays || [1,2,3,4,5,6]).map(d => DAYS_MAP[d].substring(0,3)).join(', ');
       document.getElementById('detailHoursBadge').innerText = `🕒 Giorni aperti: ${daysStr} | Orario: ${spz.openTime || '09:00'} - ${spz.closeTime || '19:00'}`;
 
-      // GESTIONE CONTATTI
+      // 2. BOX INFORMATIVO CONTATTI / REGISTRAZIONE
       const noticeBox = document.getElementById('contactLockNotice');
       if (!isLoggedIn) {
         noticeBox.className = "bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-amber-900 text-xs shadow-sm";
@@ -1239,10 +1022,10 @@
         grid.innerHTML = '<p class="text-gray-400 italic col-span-2">Nessun servizio aggiuntivo specificato.</p>';
       }
 
-      // GESTIONE SEZIONE RECENSIONI E FORM
+      // RECENSIONI
       renderizzaSezioneRecensioni(spz.id);
 
-      // TASTI ACTION FOOTER
+      // 3. PULSANTI D'AZIONE CTA (WHATSAPP / CHIAMA HOST)
       const actionBtnsContainer = document.getElementById('detailActionButtons');
       actionBtnsContainer.innerHTML = '';
 
@@ -1258,15 +1041,12 @@
       } else {
         const cleanWa = (spz.whatsapp || '393330000000').replace(/[^0-9]/g, '');
         actionBtnsContainer.innerHTML = `
-          <a href="https://wa.me/${cleanWa}?text=Ciao!%20Ho%20visto%20il%20tuo%20spazio%20'${encodeURIComponent(spz.name)}'%20su%20ChairShare." onclick="registraContattoHost('${spz.id}')" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5">
-            💬 WhatsApp
+          <a href="https://wa.me/${cleanWa}?text=Ciao!%20Ho%20visto%20il%20tuo%20spazio%20'${encodeURIComponent(spz.name)}'%20su%20ChairShare." onclick="registraContattoHost('${spz.id}')" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
+            💬 Chatta su WhatsApp
           </a>
-          <a href="tel:+${cleanWa}" onclick="registraContattoHost('${spz.id}')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-4 py-3 rounded-xl transition-all border border-gray-300 flex items-center justify-center gap-1">
+          <a href="tel:+${cleanWa}" onclick="registraContattoHost('${spz.id}')" class="bg-gray-900 hover:bg-black text-white text-xs font-bold px-5 py-3 rounded-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
             📞 Chiama Host
           </a>
-          <button onclick="toggleModal('detailModal', false); apriModalPrenotazione('${spz.id}');" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all">
-            Prenota Ora
-          </button>
         `;
       }
 
@@ -1293,7 +1073,7 @@
       } else if (!puoRecensire) {
         containerForm.innerHTML = `
           <div class="text-amber-800 bg-amber-50 p-3 rounded-xl border border-amber-200 text-center font-medium">
-            ⚠️ Puedes recensire questo spazio solo dopo aver contattato l'Host o effettuato una prenotazione.
+            ⚠️ Puoi recensire questo spazio solo dopo aver contattato l'Host.
           </div>
         `;
       } else {
@@ -1322,7 +1102,7 @@
 
       listContainer.innerHTML = '';
       if (spaceRevs.length === 0) {
-        listContainer.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-3">Ancora nessuna recensione. Sii il primo a lasciarne una!</p>';
+        listContainer.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-3">Ancora nessuna recensione. Contatta l\'host per lasciarne una!</p>';
       } else {
         spaceRevs.forEach(r => {
           const starsStr = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
@@ -1581,248 +1361,66 @@
       saveBtn.disabled = false;
     }
 
-    function apriModalPrenotazione(spaceId) {
-      if (!currentUser) {
-        richiediLoginOAccedi('login');
-        return;
-      }
-
+    function apriModificaSpazio(spaceId) {
       const spz = localSpazi.find(s => s.id === spaceId);
-      if (!spz || !spz.available) return;
-
-      document.getElementById('bookSpaceId').value = spz.id;
-      document.getElementById('bookBasePrice').value = spz.price;
-      document.getElementById('bookSpaceTitle').innerText = 'Prenota: ' + spz.name;
-      
-      const daysStr = (spz.openDays || [1,2,3,4,5,6]).map(d => DAYS_MAP[d].substring(0,3)).join(', ');
-      document.getElementById('bookOpeningHoursNotice').innerText = `🕒 Giorni aperti: ${daysStr} | Orario: ${spz.openTime || '09:00'} - ${spz.closeTime || '19:00'}`;
-
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('bookDate').value = today;
-      document.getElementById('bookHourlyDate').value = today;
-      document.getElementById('bookStartDate').value = today;
-      document.getElementById('bookEndDate').value = today;
-
-      setBookingMode('single');
-      toggleModal('bookingModal', true);
-    }
-
-    function setBookingMode(mode) {
-      bookingMode = mode;
-      
-      const btnSingle = document.getElementById('modeBtnSingle');
-      const btnHourly = document.getElementById('modeBtnHourly');
-      const btnMulti = document.getElementById('modeBtnMulti');
-
-      btnSingle.className = mode === 'single' ? 'py-2.5 text-xs font-bold rounded-xl border border-brand bg-pink-50 text-brand' : 'py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600';
-      btnHourly.className = mode === 'hourly' ? 'py-2.5 text-xs font-bold rounded-xl border border-brand bg-pink-50 text-brand' : 'py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600';
-      btnMulti.className = mode === 'multi' ? 'py-2.5 text-xs font-bold rounded-xl border border-brand bg-pink-50 text-brand' : 'py-2.5 text-xs font-bold rounded-xl border border-gray-200 bg-white text-gray-600';
-
-      document.getElementById('bookingSingleBox').classList.toggle('hidden', mode !== 'single');
-      document.getElementById('bookingHourlyBox').classList.toggle('hidden', mode !== 'hourly');
-      document.getElementById('bookingMultiBox').classList.toggle('hidden', mode !== 'multi');
-
-      validaECalcolaTotale();
-    }
-
-    function validaECalcolaTotale() {
-      const space_id = document.getElementById('bookSpaceId').value;
-      const spz = localSpazi.find(s => s.id === space_id);
-      const errBox = document.getElementById('bookingTimeError');
-      const submitBtn = document.getElementById('submitBookingBtn');
-
-      errBox.classList.add('hidden');
-      submitBtn.disabled = false;
-      submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-
       if (!spz) return;
 
-      const openDays = spz.openDays || [1,2,3,4,5,6];
-      const openTime = spz.openTime || '09:00';
-      const closeTime = spz.closeTime || '19:00';
+      document.getElementById('editingSpaceId').value = spz.id;
+      document.getElementById('modalSpaceTitle').innerText = 'Modifica Spazio';
 
-      let targetDateStr = document.getElementById('bookDate').value;
-      if (bookingMode === 'hourly') targetDateStr = document.getElementById('bookHourlyDate').value;
-      else if (bookingMode === 'multi') targetDateStr = document.getElementById('bookStartDate').value;
+      document.getElementById('newName').value = spz.name;
+      document.getElementById('newCity').value = spz.city;
+      document.getElementById('newAddress').value = spz.address || '';
+      document.getElementById('newType').value = spz.type;
+      document.getElementById('newPrice').value = spz.price;
+      document.getElementById('newWhatsapp').value = spz.whatsapp || '';
+      document.getElementById('newOpenTime').value = spz.openTime || '09:00';
+      document.getElementById('newCloseTime').value = spz.closeTime || '19:00';
 
-      if (targetDateStr) {
-        const selDate = new Date(targetDateStr);
-        const dayOfWeek = selDate.getDay();
-
-        if (!openDays.includes(dayOfWeek)) {
-          errBox.innerText = `⚠️ La struttura è CHIUSA di ${DAYS_MAP[dayOfWeek]}. Scegli un giorno lavorativo.`;
-          errBox.classList.remove('hidden');
-          submitBtn.disabled = true;
-          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          return;
-        }
-      }
-
-      if (bookingMode === 'hourly') {
-        const start = document.getElementById('bookTimeStart').value;
-        const end = document.getElementById('bookTimeEnd').value;
-
-        if (start < openTime || end > closeTime) {
-          errBox.innerText = `⚠️ Gli orari scelti (${start} - ${end}) sono fuori dall'orario di apertura dell'attività (${openTime} - ${closeTime}).`;
-          errBox.classList.remove('hidden');
-          submitBtn.disabled = true;
-          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          return;
-        }
-      }
-
-      calcolaTotalePrenotazione();
-    }
-
-    function calcolaTotalePrenotazione() {
-      const dailyPrice = parseFloat(document.getElementById('bookBasePrice').value) || 0;
-      const hourlyRate = dailyPrice / 8;
-      let baseSubtotal = 0;
-
-      if (bookingMode === 'single') {
-        baseSubtotal = dailyPrice;
-        currentCalculatedDuration = '1 Giorno (8 ore)';
-      } else if (bookingMode === 'hourly') {
-        const start = document.getElementById('bookTimeStart').value;
-        const end = document.getElementById('bookTimeEnd').value;
-        let hours = 0;
-        if (start && end) {
-          const h1 = parseInt(start.split(':')[0]) + parseInt(start.split(':')[1])/60;
-          const h2 = parseInt(end.split(':')[0]) + parseInt(end.split(':')[1])/60;
-          hours = Math.max(0.5, h2 - h1);
-        }
-        baseSubtotal = hours * hourlyRate;
-        currentCalculatedDuration = `${hours.toFixed(1)} Ore (${start} - ${end})`;
-      } else if (bookingMode === 'multi') {
-        const d1 = new Date(document.getElementById('bookStartDate').value);
-        const d2 = new Date(document.getElementById('bookEndDate').value);
-        let days = 1;
-        if (d2 >= d1) {
-          const diffTime = Math.abs(d2 - d1);
-          days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        }
-        baseSubtotal = days * dailyPrice;
-        currentCalculatedDuration = `${days} Giorni`;
-      }
-
-      const guestFee = baseSubtotal * 0.05;
-      currentCalculatedTotal = baseSubtotal + guestFee;
-
-      document.getElementById('summaryDurationText').innerText = currentCalculatedDuration;
-      document.getElementById('summaryBasePrice').innerText = baseSubtotal.toFixed(2) + ' €';
-      document.getElementById('summaryGuestFee').innerText = '+ ' + guestFee.toFixed(2) + ' €';
-      document.getElementById('summaryTotal').innerText = currentCalculatedTotal.toFixed(2) + ' €';
-    }
-
-    function procediAlPagamento(e) {
-      e.preventDefault();
-      document.getElementById('payModalAmount').innerText = currentCalculatedTotal.toFixed(2) + ' €';
-      toggleModal('bookingModal', false);
-      toggleModal('paymentModal', true);
-    }
-
-    function selectPayMethod(method) {
-      document.getElementById('cardDetailsForm').classList.toggle('hidden', method !== 'card');
-    }
-
-    async function confermaEPay() {
-      const payBtn = document.getElementById('payNowBtn');
-      payBtn.disabled = true;
-      payBtn.innerText = 'Elaborazione...';
-
-      setTimeout(() => {
-        const space_id = document.getElementById('bookSpaceId').value;
-        const spz = localSpazi.find(s => s.id === space_id) || { name: 'Spazio', city: '', host_email: 'host@chairshare.it', whatsapp: '393330000000' };
-
-        let dateText = document.getElementById('bookDate').value;
-        if (bookingMode === 'hourly') dateText = document.getElementById('bookHourlyDate').value;
-        else if (bookingMode === 'multi') dateText = document.getElementById('bookStartDate').value + ' al ' + document.getElementById('bookEndDate').value;
-
-        const bookingId = 'bk_' + Date.now();
-        const newBooking = {
-          id: bookingId,
-          space_id,
-          space_name: spz.name,
-          space_city: spz.city,
-          guest_id: currentUser.id,
-          guest_email: currentUser.email,
-          booking_date: dateText,
-          duration: currentCalculatedDuration,
-          total_price: currentCalculatedTotal.toFixed(2)
-        };
-
-        localBookings.push(newBooking);
-        localStorage.setItem('cs_bookings', JSON.stringify(localBookings));
-
-        registraContattoHost(space_id);
-
-        localChats[bookingId] = [
-          { sender: 'host', text: `Ciao! Grazie per aver prenotato ${spz.name}. Mandami pure un messaggio qui per concordare l'arrivo!`, time: 'Adesso' }
-        ];
-        localStorage.setItem('cs_chats', JSON.stringify(localChats));
-
-        payBtn.disabled = false;
-        payBtn.innerText = 'Paga Ora e Conferma';
-        toggleModal('paymentModal', false);
-
-        document.getElementById('notifDetailsText').innerHTML = `
-          La tua prenotazione per <strong>${spz.name}</strong> (${dateText}) è confermata!<br/><br/>
-          ✉️ <strong>Notifica inviata all'Host:</strong> ${spz.host_email || 'host@chairshare.it'}
-        `;
-        toggleModal('notificationToastModal', true);
-
-        mostraPagina('profilePage');
-        cercaSpazi();
-      }, 1000);
-    }
-
-    function apriChatConHost(bookingId) {
-      currentActiveChatBookingId = bookingId;
-      const bk = localBookings.find(b => b.id === bookingId);
-      if (bk) document.getElementById('chatSpaceTitle').innerText = 'Chat: ' + bk.space_name;
-
-      renderizzaMessaggiChat();
-      toggleModal('chatModal', true);
-    }
-
-    function renderizzaMessaggiChat() {
-      const chatBox = document.getElementById('chatMessagesBox');
-      chatBox.innerHTML = '';
-      const msgs = localChats[currentActiveChatBookingId] || [];
-
-      msgs.forEach(m => {
-        const isMe = m.sender === 'guest';
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
-        msgDiv.innerHTML = `
-          <div class="max-w-[80%] p-2.5 rounded-2xl ${isMe ? 'bg-brand text-white rounded-br-none' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'}">
-            ${m.text}
-          </div>
-          <span class="text-[9px] text-gray-400 mt-0.5 px-1">${m.time}</span>
-        `;
-        chatBox.appendChild(msgDiv);
+      document.querySelectorAll('.day-checkbox').forEach(cb => {
+        cb.checked = spz.openDays ? spz.openDays.includes(parseInt(cb.value)) : true;
       });
 
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+      aggiornaFormServiziPerCategoria();
 
-    function inviaMessaggioChat(e) {
-      e.preventDefault();
-      const input = document.getElementById('chatInputText');
-      const val = input.value.trim();
-      if (!val || !currentActiveChatBookingId) return;
-
-      if (!localChats[currentActiveChatBookingId]) localChats[currentActiveChatBookingId] = [];
-
-      localChats[currentActiveChatBookingId].push({
-        sender: 'guest',
-        text: val,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      document.querySelectorAll('.service-checkbox').forEach(cb => {
+        cb.checked = spz.features ? spz.features.includes(cb.value) : false;
       });
 
-      localStorage.setItem('cs_chats', JSON.stringify(localChats));
-      input.value = '';
-      renderizzaMessaggiChat();
+      goToStep(1);
+      toggleModal('addModal', true);
+    }
+
+    function apriAggiungiSpazio() {
+      if (!currentUser) {
+        richiediLoginOAccedi('register');
+      } else {
+        document.getElementById('editingSpaceId').value = '';
+        document.getElementById('modalSpaceTitle').innerText = 'Pubblica il tuo Spazio';
+        document.getElementById('addSpaceForm').reset();
+        aggiornaFormServiziPerCategoria();
+        goToStep(1);
+        toggleModal('addModal', true);
+      }
+    }
+
+    function aggiornaFormServiziPerCategoria() {
+      const type = document.getElementById('newType').value;
+      const titleElem = document.getElementById('categorySpecificTitle');
+      const boxContainer = document.getElementById('categorySpecificCheckboxes');
+
+      boxContainer.innerHTML = '';
+      titleElem.innerText = `2. Servizi Specifici (${type.toUpperCase()})`;
+
+      Object.keys(SERVICES_MASTER).forEach(key => {
+        const item = SERVICES_MASTER[key];
+        if (item.category === type) {
+          const lbl = document.createElement('label');
+          lbl.className = 'flex items-center gap-1.5 cursor-pointer';
+          lbl.innerHTML = `<input type="checkbox" value="${key}" class="service-checkbox accent-brand" /> <span>${item.icon} ${item.name}</span>`;
+          boxContainer.appendChild(lbl);
+        }
+      });
     }
 
     function caricaDatiProfilo() {
@@ -1837,19 +1435,15 @@
         ? 'text-xs bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-bold'
         : 'text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold';
 
-      document.getElementById('hostEarningsCard').classList.toggle('hidden', !isHost);
-      document.getElementById('guestSpentCard').classList.toggle('hidden', isHost);
       document.getElementById('hostSpacesSection').classList.toggle('hidden', !isHost);
 
       if (isHost) {
-        document.getElementById('bookingsSectionTitle').innerText = '📅 Prenotazioni Ricevute & Chat Clienti';
-        
         const mySpaces = localSpazi.filter(s => s.host_id === currentUser.id);
         const spacesGrid = document.getElementById('myHostSpacesGrid');
         spacesGrid.innerHTML = '';
 
         if (mySpaces.length === 0) {
-          spacesGrid.innerHTML = '<p class="text-xs text-gray-400 italic col-span-3">Nessuno spazio pubblicato.</p>';
+          spacesGrid.innerHTML = '<p class="text-xs text-gray-400 italic col-span-3">Nessuno spazio in vetrina.</p>';
         } else {
           mySpaces.forEach(s => {
             const card = document.createElement('div');
@@ -1858,7 +1452,6 @@
               <div onclick="vaiASchedaEVisualizza('${s.id}')" class="cursor-pointer">
                 <h4 class="font-bold text-gray-900 text-sm hover:text-brand transition-colors">${s.name}</h4>
                 <p class="text-xs text-gray-500">${s.city} • <span class="capitalize">${s.type}</span></p>
-                <p class="text-[10px] text-emerald-700 font-semibold mt-1">🕒 Orari: ${s.openTime || '09:00'}-${s.closeTime || '19:00'}</p>
                 <div class="text-sm font-extrabold text-brand mt-1">${s.price}€ /giorno</div>
               </div>
               <div class="flex gap-2 border-t border-gray-200 pt-2">
@@ -1873,50 +1466,36 @@
             spacesGrid.appendChild(card);
           });
         }
-      } else {
-        document.getElementById('bookingsSectionTitle').innerText = '📅 I Tuoi Turni Prenotati & Chat Host';
       }
 
-      const myBookings = isHost 
-        ? localBookings.filter(b => {
-            const spz = localSpazi.find(s => s.id === b.space_id);
-            return spz && spz.host_id === currentUser.id;
-          })
-        : localBookings.filter(b => b.guest_id === currentUser.id);
+      // LISTA CONTATTI SBLOCCATI DALL'UTENTE
+      const unlockedList = document.getElementById('myUnlockedContactsList');
+      unlockedList.innerHTML = '';
+      const myUnlocked = localUnlocked.filter(u => u.userId === currentUser.id);
 
-      const tableBody = document.getElementById('myBookingsTableBody');
-      tableBody.innerHTML = '';
-
-      let totalAmount = 0;
-      if (myBookings.length > 0) {
-        myBookings.forEach(b => {
-          totalAmount += parseFloat(b.total_price || 0);
-          const spz = localSpazi.find(s => s.id === b.space_id);
-          const contactStr = (spz && spz.whatsapp) ? `📲 WA: +${spz.whatsapp.replace(/[^0-9]/g, '')}` : '💬 Chat Piattaforma';
-
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-gray-50';
-          tr.innerHTML = `
-            <td class="p-3 font-bold text-gray-900">${b.space_name}</td>
-            <td class="p-3">${b.booking_date}</td>
-            <td class="p-3 text-brand font-semibold">${b.duration || '1 Giorno'}</td>
-            <td class="p-3 font-bold">${b.total_price} €</td>
-            <td class="p-3">
-              <div class="flex items-center gap-2">
-                <button onclick="apriChatConHost('${b.id}')" class="bg-pink-50 hover:bg-pink-100 text-brand border border-pink-200 text-xs font-bold px-3 py-1 rounded-xl transition-all shadow-sm">
-                  💬 Chat ${isHost ? 'Guest' : 'Host'}
-                </button>
-                <span class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">${contactStr}</span>
+      if (myUnlocked.length === 0) {
+        unlockedList.innerHTML = '<p class="text-xs text-gray-400 italic col-span-3">Non hai ancora sbloccato contatti.</p>';
+      } else {
+        myUnlocked.forEach(u => {
+          const spz = localSpazi.find(s => s.id === u.spaceId);
+          if (spz) {
+            const cleanWa = (spz.whatsapp || '393330000000').replace(/[^0-9]/g, '');
+            const card = document.createElement('div');
+            card.className = 'bg-gray-50 border border-gray-200 rounded-2xl p-3.5 space-y-2 text-xs';
+            card.innerHTML = `
+              <h4 class="font-bold text-gray-900">${spz.name}</h4>
+              <p class="text-gray-500">📍 ${spz.address || 'Via Toledo'}, ${spz.city}</p>
+              <div class="pt-2 border-t border-gray-200 flex gap-2">
+                <a href="https://wa.me/${cleanWa}" target="_blank" class="flex-1 bg-emerald-600 text-white font-bold py-1.5 rounded-xl text-center">💬 WA</a>
+                <a href="tel:+${cleanWa}" class="flex-1 bg-gray-200 text-gray-800 font-bold py-1.5 rounded-xl text-center">📞 Chiama</a>
               </div>
-            </td>
-          `;
-          tableBody.appendChild(tr);
+            `;
+            unlockedList.appendChild(card);
+          }
         });
-      } else {
-        tableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">Nessuna prenotazione presente.</td></tr>';
       }
 
-      // STORICO RECENSIONI UTENTE
+      // STORICO RECENSIONI
       const myReviewsContainer = document.getElementById('myUserReviewsList');
       myReviewsContainer.innerHTML = '';
 
@@ -1941,14 +1520,6 @@
           myReviewsContainer.appendChild(rBox);
         });
       }
-
-      if (isHost) {
-        document.getElementById('totalHostEarnings').innerText = (totalAmount * 0.90).toFixed(2) + ' €';
-      } else {
-        document.getElementById('totalGuestSpent').innerText = totalAmount.toFixed(2) + ' €';
-      }
-
-      document.getElementById('totalBookingsCount').innerText = myBookings.length;
     }
 
     async function cercaSpazi() {
@@ -2134,8 +1705,6 @@
           featuresBadges += '</div>';
         }
 
-        const daysText = (space.openDays || [1,2,3,4,5,6]).map(d => DAYS_MAP[d].substring(0,3)).join(', ');
-
         const card = document.createElement('div');
         card.id = 'card_' + space.id;
         card.className = 'space-card cursor-pointer bg-white rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden relative';
@@ -2169,7 +1738,7 @@
               <span class="text-xs text-gray-500 font-normal"> /giorno</span>
             </div>
             <button onclick="event.stopPropagation(); mostraDettagliSpazio('${space.id}')" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all">
-              ${isLoggedIn ? 'Sbloccato' : 'Sblocca Contatti'}
+              ${isLoggedIn ? 'Contatta Host' : 'Sblocca Contatti'}
             </button>
           </div>
         `;
