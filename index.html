@@ -38,7 +38,7 @@
     /* STILE BASE SCHEDA E FIX SELEZIONE UNIFORME PER IOS SAFARI */
     .space-card {
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 2px solid rgba(229, 231, 235, 0.9); /* Bordo base 2px costante per evitare salti */
+      border: 2px solid rgba(229, 231, 235, 0.9);
       box-sizing: border-box;
     }
     .space-card:hover {
@@ -531,7 +531,7 @@
         <div class="flex items-center justify-between mt-4 relative">
           <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -z-0"></div>
           <div id="stepDot1" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10">1</div>
-          <div id="stepDot2" class="w-8 h-8 rounded-full bg-gray-200 text-gray-50 flex items-center justify-center font-bold text-xs z-10">2</div>
+          <div id="stepDot2" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10">2</div>
           <div id="stepDot3" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10">3</div>
         </div>
       </div>
@@ -812,7 +812,7 @@
     </div>
   </div>
 
-  <!-- MODALE: AUTH LOGIN/REGISTRAZIONE -->
+  <!-- MODALE: AUTH LOGIN/REGISTRAZIONE (POPUP BIANCO NATIVO) -->
   <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
       <button onclick="toggleModal('authModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
@@ -878,7 +878,7 @@
     </div>
   </div>
 
-  <!-- SCRIPT LOGICA JAVASCRIPT COMPLETA -->
+  <!-- SCRIPT LOGICA JAVASCRIPT COMPLETA (SENZA POPUP GRIGI) -->
   <script>
     // DICTIONARY SERVIZI COMPLETO
     const SERVICES_MASTER = {
@@ -1006,7 +1006,6 @@
       localStorage.removeItem('cs_user');
       aggiornaUIUtente();
       mostraPagina('homePage');
-      alert('Logout effettuato con successo!');
     }
 
     function toggleModal(modalId, show) {
@@ -1128,9 +1127,9 @@
       });
     }
 
+    /* APERTURA DIRETTA DEL POPUP BIANCO NATIVO SENZA ALERT GRIGIO */
     function apriAggiungiSpazio() {
       if (!currentUser) {
-        alert('Attenzione: accedi o registrati per pubblicare uno spazio!');
         richiediLoginOAccedi('register');
       } else {
         document.getElementById('editingSpaceId').value = '';
@@ -1198,12 +1197,10 @@
     }
 
     function eliminaSpazioHost(spaceId) {
-      if (confirm('Sei sicuro di voler eliminare definitivamente questo spazio?')) {
-        localSpazi = localSpazi.filter(s => s.id !== spaceId);
-        localStorage.setItem('cs_spazi', JSON.stringify(localSpazi));
-        caricaDatiProfilo();
-        cercaSpazi();
-      }
+      localSpazi = localSpazi.filter(s => s.id !== spaceId);
+      localStorage.setItem('cs_spazi', JSON.stringify(localSpazi));
+      caricaDatiProfilo();
+      cercaSpazi();
     }
 
     function vaiASchedaEVisualizza(spaceId) {
@@ -1248,7 +1245,6 @@
       if (isRegisterMode) {
         const legalCheck = document.getElementById('registerLegalCheck');
         if (!legalCheck.checked) {
-          alert('Attenzione: devi accettare i Termini di Servizio.');
           return;
         }
       }
@@ -1257,7 +1253,6 @@
       localStorage.setItem('cs_user', JSON.stringify(currentUser));
       aggiornaUIUtente();
       toggleModal('authModal', false);
-      alert('Accesso completato!');
     }
 
     function aggiornaUIUtente() {
@@ -1343,7 +1338,6 @@
           localSpazi[index].lon = lon;
           if (imageBase64) localSpazi[index].image = imageBase64;
         }
-        alert('Spazio aggiornato con successo!');
       } else {
         const newSpace = {
           id: 'spz_' + Date.now(),
@@ -1353,7 +1347,6 @@
           available: true
         };
         localSpazi.push(newSpace);
-        alert('Spazio pubblicato con successo!');
       }
 
       localStorage.setItem('cs_spazi', JSON.stringify(localSpazi));
@@ -1364,13 +1357,10 @@
       saveBtn.disabled = false;
     }
 
+    /* PRENOTAZIONE DIRETTA SENZA ALERT NATIVO */
     function apriModalPrenotazione(spaceId, spaceName, basePrice, isAvailable) {
-      if (!isAvailable) {
-        alert('Mi dispiace, questo spazio al momento non è disponibile per la prenotazione.');
-        return;
-      }
+      if (!isAvailable) return;
       if (!currentUser) {
-        alert('Attenzione: accedi o registrati per prenotare uno spazio!');
         richiediLoginOAccedi('register');
         return;
       }
@@ -1498,7 +1488,6 @@
         payBtn.innerText = 'Paga Ora e Conferma';
         toggleModal('paymentModal', false);
 
-        alert('🎉 Prenotazione confermata con successo!');
         mostraPagina('profilePage');
       }, 1000);
     }
