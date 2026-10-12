@@ -370,6 +370,12 @@
           </table>
         </div>
       </div>
+
+      <!-- SEZIONE LE MIE RECENSIONI -->
+      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">⭐ Le mie Recensioni Lasciate</h3>
+        <div id="myUserReviewsList" class="space-y-3"></div>
+      </div>
     </div>
   </div>
 
@@ -393,9 +399,9 @@
         📲
       </div>
       <div>
-        <h3 class="text-lg font-extrabold text-gray-900">Prenotazione Confermata!</h3>
+        <h3 class="text-lg font-extrabold text-gray-900">Operazione Effettuata!</h3>
         <p id="notifDetailsText" class="text-xs text-gray-600 mt-2 leading-relaxed">
-          Ora hai sbloccato l'accesso diretto alla Chat e ai contatti dell'Host!
+          Notifica inviata con successo.
         </p>
       </div>
       <button onclick="toggleModal('notificationToastModal', false)" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-all">
@@ -419,13 +425,16 @@
     </div>
   </div>
 
-  <!-- MODALE: DETTAGLIO COMPLETO SERVIZI E SPAZIO (SBLOCCO CON REGISTRAZIONE MVP) -->
+  <!-- MODALE: DETTAGLIO COMPLETO SERVIZI, CONTATTI E RECENSIONI -->
   <div id="detailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
       <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <div class="border-b border-gray-100 pb-3">
-        <h3 id="detailSpaceTitle" class="text-xl font-extrabold text-gray-900">Nome Spazio</h3>
+        <div class="flex justify-between items-start gap-2">
+          <h3 id="detailSpaceTitle" class="text-xl font-extrabold text-gray-900">Nome Spazio</h3>
+          <span id="detailRatingBadge" class="text-xs font-bold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200"></span>
+        </div>
         <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-0.5">Città • Indirizzo</p>
         <div id="detailHoursBadge" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2 rounded-xl border border-emerald-100"></div>
       </div>
@@ -436,7 +445,21 @@
       </div>
 
       <!-- BOX INFORMATIVO DINAMICO CONTATTI / REGISTRAZIONE -->
-      <div id="contactLockNotice" class="rounded-2xl p-4 flex items-center gap-3 text-xs transition-all"></div>
+      <div id="contactLockNotice" class="rounded-2xl p-4 flex items-center justify-between gap-3 text-xs transition-all"></div>
+
+      <!-- SEZIONE RECENSIONI E RATING -->
+      <div class="border-t border-gray-100 pt-4 space-y-3">
+        <div class="flex justify-between items-center">
+          <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider">Recensioni degli Utenti</h4>
+          <span id="reviewCountHeader" class="text-xs font-bold text-gray-600"></span>
+        </div>
+
+        <!-- FORM RECENSIONE O BOX REQUISITO NON SODDISFATTO -->
+        <div id="addReviewFormContainer" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 text-xs space-y-3"></div>
+
+        <!-- LISTA DELLE RECENSIONI -->
+        <div id="spaceReviewsList" class="space-y-3 max-h-60 overflow-y-auto pr-1"></div>
+      </div>
 
       <!-- FOOTER DEL MODAL DETTAGLI -->
       <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
@@ -491,8 +514,8 @@
         <div class="flex gap-3 items-start">
           <span class="text-2xl">📅</span>
           <div>
-            <strong class="text-brand block text-base mb-1">2. Prenota Flessibile</strong>
-            <p class="text-gray-600 leading-relaxed">Scegli se riservare una singola giornata, una fascia oraria o più giorni consecutivi senza alcun vincolo di canone mensile negli orari di apertura dell'Host.</p>
+            <strong class="text-brand block text-base mb-1">2. Prenota e Recensisci</strong>
+            <p class="text-gray-600 leading-relaxed">Contatta l'Host o prenota la postazione. Dopo aver avviato il contatto potrai lasciare una recensione verificata per aiutare gli altri lavoratori!</p>
           </div>
         </div>
 
@@ -903,7 +926,7 @@
     </div>
   </div>
 
-  <!-- SCRIPT LOGICA JAVASCRIPT COMPLETA -->
+  <!-- SCRIPT LOGICA JAVASCRIPT COMPLETA CON RECENSIONI -->
   <script>
     const DAYS_MAP = {
       0: 'Domenica', 1: 'Lunedì', 2: 'Martedì', 3: 'Mercoledì', 4: 'Giovedì', 5: 'Venerdì', 6: 'Sabato'
@@ -926,28 +949,22 @@
       coffee: { name: 'Area Break / Macchina Caffè', icon: '☕', category: 'General' },
       parking: { name: 'Parcheggio riservato', icon: '🅿️', category: 'General' },
       
-      // Barberia
       reclining_chair: { name: 'Poltrona reclinabile', icon: '💺', category: 'barbiere' },
       hair_wash: { name: 'Lavatesta ergonomico', icon: 'Shower', category: 'barbiere' },
       towels_included: { name: 'Asciugamani inclusi', icon: '🧺', category: 'barbiere' },
 
-      // Estetica
       nails_table: { name: 'Tavolo Nails con aspiratore', icon: '💅', category: 'estetica' },
       aesthetic_bed: { name: 'Lettino Estetico', icon: '🛏️', category: 'estetica' },
 
-      // Massaggi
       massage_bed: { name: 'Lettino massaggio regolabile', icon: '🛋️', category: 'massaggi' },
       oil_warmer: { name: 'Scalda-olio / Scalda-asciugamani', icon: '🪔', category: 'massaggi' },
 
-      // Psicoterapia
       soundproof: { name: 'Insonorizzazione acustica', icon: '🔇', category: 'psicoterapia' },
       sofa_therapy: { name: 'Poltrone / Divano Terapeutico', icon: '🛋️', category: 'psicoterapia' },
 
-      // Foto
       led_lights: { name: 'Luci continue LED + Softbox', icon: '📸', category: 'fotografia' },
       backdrop: { name: 'Limbo / Fondali Carta', icon: '🎨', category: 'fotografia' },
 
-      // Coworking
       external_monitor: { name: 'Monitor esterno', icon: '🖥️', category: 'coworking' }
     };
 
@@ -965,6 +982,7 @@
     let currentStep = 1;
     let isMapViewMobile = false;
     let currentActiveChatBookingId = null;
+    let selectedRatingStar = 5;
 
     let userLocation = { lat: 40.8518, lon: 14.2681 };
     let currentRouteLine = null;
@@ -978,6 +996,13 @@
 
     let localBookings = JSON.parse(localStorage.getItem('cs_bookings')) || [];
     let localChats = JSON.parse(localStorage.getItem('cs_chats')) || {};
+
+    // TABELLA/OGGETTI PER SBLOCCHI E RECENSIONI
+    let localUnlocked = JSON.parse(localStorage.getItem('cs_unlocked')) || [];
+    let localReviews = JSON.parse(localStorage.getItem('cs_reviews')) || [
+      { id: 'rev_1', spaceId: 'spz_1', authorId: 'usr_demo1', authorEmail: 'm.rossi@email.it', rating: 5, comment: 'Spazio eccezionale, ben illuminato e molto pulito. L\'host Marco è stato disponibilissimo!', createdAt: '2026-02-10', isVerified: true },
+      { id: 'rev_2', spaceId: 'spz_2', authorId: 'usr_demo2', authorEmail: 'f.bianchi@email.it', rating: 4, comment: 'Ottima posizione in centro. Poltrona comoda e lavatesta perfetto.', createdAt: '2026-03-01', isVerified: true }
+    ];
 
     const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -1115,70 +1140,31 @@
       mostraPagina('homePage');
     }
 
-    function aggiornaFormServiziPerCategoria() {
-      const type = document.getElementById('newType').value;
-      const titleElem = document.getElementById('categorySpecificTitle');
-      const boxContainer = document.getElementById('categorySpecificCheckboxes');
-
-      boxContainer.innerHTML = '';
-      titleElem.innerText = `2. Servizi Specifici (${type.toUpperCase()})`;
-
-      Object.keys(SERVICES_MASTER).forEach(key => {
-        const item = SERVICES_MASTER[key];
-        if (item.category === type) {
-          const lbl = document.createElement('label');
-          lbl.className = 'flex items-center gap-1.5 cursor-pointer';
-          lbl.innerHTML = `<input type="checkbox" value="${key}" class="service-checkbox accent-brand" /> <span>${item.icon} ${item.name}</span>`;
-          boxContainer.appendChild(lbl);
-        }
-      });
-    }
-
-    function apriAggiungiSpazio() {
-      if (!currentUser) {
-        richiediLoginOAccedi('register');
-      } else {
-        document.getElementById('editingSpaceId').value = '';
-        document.getElementById('modalSpaceTitle').innerText = 'Pubblica il tuo Spazio';
-        document.getElementById('addSpaceForm').reset();
-        aggiornaFormServiziPerCategoria();
-        goToStep(1);
-        toggleModal('addModal', true);
+    /* REGISTRAZIONE EVENTO CONTATTO UTENTE PER PERMETTERE RECENSIONE */
+    function registraContattoHost(spaceId) {
+      if (!currentUser) return;
+      const giaContattato = localUnlocked.some(u => u.userId === currentUser.id && u.spaceId === spaceId);
+      if (!giaContattato) {
+        localUnlocked.push({ userId: currentUser.id, spaceId: spaceId, date: new Date().toISOString() });
+        localStorage.setItem('cs_unlocked', JSON.stringify(localUnlocked));
       }
     }
 
-    function apriModificaSpazio(spaceId) {
-      const spz = localSpazi.find(s => s.id === spaceId);
-      if (!spz) return;
+    function haGiaContattatoSpazio(userId, spaceId) {
+      if (!userId) return false;
+      return localUnlocked.some(u => u.userId === userId && u.spaceId === spaceId) ||
+             localBookings.some(b => b.guest_id === userId && b.space_id === spaceId);
+    }
 
-      document.getElementById('editingSpaceId').value = spz.id;
-      document.getElementById('modalSpaceTitle').innerText = 'Modifica Spazio';
-
-      document.getElementById('newName').value = spz.name;
-      document.getElementById('newCity').value = spz.city;
-      document.getElementById('newAddress').value = spz.address || '';
-      document.getElementById('newType').value = spz.type;
-      document.getElementById('newPrice').value = spz.price;
-      document.getElementById('newWhatsapp').value = spz.whatsapp || '';
-      document.getElementById('newOpenTime').value = spz.openTime || '09:00';
-      document.getElementById('newCloseTime').value = spz.closeTime || '19:00';
-
-      document.querySelectorAll('.day-checkbox').forEach(cb => {
-        cb.checked = spz.openDays ? spz.openDays.includes(parseInt(cb.value)) : true;
-      });
-
-      aggiornaFormServiziPerCategoria();
-
-      document.querySelectorAll('.service-checkbox').forEach(cb => {
-        cb.checked = spz.features ? spz.features.includes(cb.value) : false;
-      });
-
-      goToStep(1);
-      toggleModal('addModal', true);
+    function calcolaMediaVoti(spaceId) {
+      const revs = localReviews.filter(r => r.spaceId === spaceId && !r.flagged);
+      if (revs.length === 0) return { avg: null, count: 0 };
+      const sum = revs.reduce((acc, r) => acc + r.rating, 0);
+      return { avg: (sum / revs.length).toFixed(1), count: revs.length };
     }
 
     /* ============================================================
-       LOGICA DI SBLOCCO CONTATTI PER UTENTE LOGGATO (FLUSSO MVP)
+       LOGICA MODAL DETTAGLI + SEZIONE RECENSIONI E RATING
        ============================================================ */
     function mostraDettagliSpazio(spaceId) {
       const spz = localSpazi.find(s => s.id === spaceId);
@@ -1188,7 +1174,14 @@
 
       document.getElementById('detailSpaceTitle').innerText = spz.name;
       
-      // 1. GESTIONE INDIRIZZO IN BASE A LOGGED IN
+      const ratingStats = calcolaMediaVoti(spz.id);
+      const ratingBadge = document.getElementById('detailRatingBadge');
+      if (ratingStats.avg) {
+        ratingBadge.innerText = `★ ${ratingStats.avg} (${ratingStats.count})`;
+      } else {
+        ratingBadge.innerText = `★ Nuovo`;
+      }
+
       if (isLoggedIn) {
         document.getElementById('detailSpaceLocation').innerHTML = `<span class="text-emerald-700 font-bold">📍 ${spz.address || 'Via Toledo 12'}, ${spz.city}</span>`;
       } else {
@@ -1200,7 +1193,7 @@
       const daysStr = (spz.openDays || [1,2,3,4,5,6]).map(d => DAYS_MAP[d].substring(0,3)).join(', ');
       document.getElementById('detailHoursBadge').innerText = `🕒 Giorni aperti: ${daysStr} | Orario: ${spz.openTime || '09:00'} - ${spz.closeTime || '19:00'}`;
 
-      // 2. GESTIONE BOX INFORMATIVO
+      // GESTIONE CONTATTI
       const noticeBox = document.getElementById('contactLockNotice');
       if (!isLoggedIn) {
         noticeBox.className = "bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-amber-900 text-xs shadow-sm";
@@ -1217,6 +1210,7 @@
           </button>
         `;
       } else {
+        registraContattoHost(spz.id);
         const cleanWa = (spz.whatsapp || '393330000000').replace(/[^0-9]/g, '');
         noticeBox.className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-emerald-900 text-xs shadow-sm";
         noticeBox.innerHTML = `
@@ -1230,7 +1224,7 @@
         `;
       }
 
-      // 3. GESTIONE SERVIZI INCLUSI
+      // SERVIZI
       const grid = document.getElementById('detailServicesGrid');
       grid.innerHTML = '';
       if (spz.features && spz.features.length > 0) {
@@ -1245,7 +1239,10 @@
         grid.innerHTML = '<p class="text-gray-400 italic col-span-2">Nessun servizio aggiuntivo specificato.</p>';
       }
 
-      // 4. GESTIONE TASTI DI AZIONE (CTA)
+      // GESTIONE SEZIONE RECENSIONI E FORM
+      renderizzaSezioneRecensioni(spz.id);
+
+      // TASTI ACTION FOOTER
       const actionBtnsContainer = document.getElementById('detailActionButtons');
       actionBtnsContainer.innerHTML = '';
 
@@ -1261,10 +1258,10 @@
       } else {
         const cleanWa = (spz.whatsapp || '393330000000').replace(/[^0-9]/g, '');
         actionBtnsContainer.innerHTML = `
-          <a href="https://wa.me/${cleanWa}?text=Ciao!%20Ho%20visto%20il%20tuo%20spazio%20'${encodeURIComponent(spz.name)}'%20su%20ChairShare." target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5">
+          <a href="https://wa.me/${cleanWa}?text=Ciao!%20Ho%20visto%20il%20tuo%20spazio%20'${encodeURIComponent(spz.name)}'%20su%20ChairShare." onclick="registraContattoHost('${spz.id}')" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5">
             💬 WhatsApp
           </a>
-          <a href="tel:+${cleanWa}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-4 py-3 rounded-xl transition-all border border-gray-300 flex items-center justify-center gap-1">
+          <a href="tel:+${cleanWa}" onclick="registraContattoHost('${spz.id}')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-4 py-3 rounded-xl transition-all border border-gray-300 flex items-center justify-center gap-1">
             📞 Chiama Host
           </a>
           <button onclick="toggleModal('detailModal', false); apriModalPrenotazione('${spz.id}');" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all">
@@ -1274,6 +1271,135 @@
       }
 
       toggleModal('detailModal', true);
+    }
+
+    function renderizzaSezioneRecensioni(spaceId) {
+      const containerForm = document.getElementById('addReviewFormContainer');
+      const listContainer = document.getElementById('spaceReviewsList');
+      const countHeader = document.getElementById('reviewCountHeader');
+
+      const spaceRevs = localReviews.filter(r => r.spaceId === spaceId && !r.flagged);
+      countHeader.innerText = `${spaceRevs.length} commenti`;
+
+      const isLoggedIn = !!currentUser;
+      const puoRecensire = isLoggedIn && haGiaContattatoSpazio(currentUser.id, spaceId);
+
+      if (!isLoggedIn) {
+        containerForm.innerHTML = `
+          <div class="text-center text-gray-500 py-1">
+            <p><strong>🔒 Accedi per lasciare una recensione.</strong></p>
+          </div>
+        `;
+      } else if (!puoRecensire) {
+        containerForm.innerHTML = `
+          <div class="text-amber-800 bg-amber-50 p-3 rounded-xl border border-amber-200 text-center font-medium">
+            ⚠️ Puedes recensire questo spazio solo dopo aver contattato l'Host o effettuato una prenotazione.
+          </div>
+        `;
+      } else {
+        selectedRatingStar = 5;
+        containerForm.innerHTML = `
+          <form onsubmit="salvaNuovaRecensione(event, '${spaceId}')" class="space-y-2.5">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-gray-800">Scrivi una recensione per questo spazio:</span>
+              <div class="flex gap-1 text-lg cursor-pointer" id="starRatingSelector">
+                <span onclick="setStarRating(1)" class="star-btn text-amber-400">★</span>
+                <span onclick="setStarRating(2)" class="star-btn text-amber-400">★</span>
+                <span onclick="setStarRating(3)" class="star-btn text-amber-400">★</span>
+                <span onclick="setStarRating(4)" class="star-btn text-amber-400">★</span>
+                <span onclick="setStarRating(5)" class="star-btn text-amber-400">★</span>
+              </div>
+            </div>
+            <textarea id="reviewCommentText" required rows="2" placeholder="Racconta la tua esperienza con lo spazio e l'Host..." class="w-full border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:border-brand bg-white"></textarea>
+            <div class="flex justify-end">
+              <button type="submit" class="bg-brand hover:bg-brand-hover text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition-colors">
+                Invia Recensione
+              </button>
+            </div>
+          </form>
+        `;
+      }
+
+      listContainer.innerHTML = '';
+      if (spaceRevs.length === 0) {
+        listContainer.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-3">Ancora nessuna recensione. Sii il primo a lasciarne una!</p>';
+      } else {
+        spaceRevs.forEach(r => {
+          const starsStr = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+          const authorName = r.authorEmail.split('@')[0];
+
+          const revCard = document.createElement('div');
+          revCard.className = 'bg-gray-50 border border-gray-200/80 rounded-xl p-3 space-y-1.5 text-xs';
+          revCard.innerHTML = `
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-1.5">
+                <strong class="text-gray-900 font-bold">${authorName}</strong>
+                ${r.isVerified ? '<span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-full">✔️ Profilo Verificato</span>' : ''}
+              </div>
+              <span class="text-amber-500 font-bold tracking-widest">${starsStr}</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed">${r.comment}</p>
+            <div class="flex justify-between items-center text-[10px] text-gray-400 pt-1 border-t border-gray-200/50">
+              <span>${r.createdAt}</span>
+              <button onclick="segnalaRecensione('${r.id}')" class="text-gray-400 hover:text-red-600 font-semibold transition-colors flex items-center gap-0.5">
+                🚩 Segnala
+              </button>
+            </div>
+          `;
+          listContainer.appendChild(revCard);
+        });
+      }
+    }
+
+    function setStarRating(num) {
+      selectedRatingStar = num;
+      const stars = document.querySelectorAll('#starRatingSelector .star-btn');
+      stars.forEach((s, idx) => {
+        if (idx < num) {
+          s.classList.add('text-amber-400');
+          s.classList.remove('text-gray-300');
+        } else {
+          s.classList.remove('text-amber-400');
+          s.classList.add('text-gray-300');
+        }
+      });
+    }
+
+    function salvaNuovaRecensione(e, spaceId) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const comment = document.getElementById('reviewCommentText').value.trim();
+      if (!comment) return;
+
+      const newRev = {
+        id: 'rev_' + Date.now(),
+        spaceId: spaceId,
+        authorId: currentUser.id,
+        authorEmail: currentUser.email,
+        rating: selectedRatingStar,
+        comment: comment,
+        createdAt: new Date().toISOString().split('T')[0],
+        isVerified: true,
+        flagged: false
+      };
+
+      localReviews.unshift(newRev);
+      localStorage.setItem('cs_reviews', JSON.stringify(localReviews));
+
+      renderizzaSezioneRecensioni(spaceId);
+      cercaSpazi();
+    }
+
+    function segnalaRecensione(reviewId) {
+      const rev = localReviews.find(r => r.id === reviewId);
+      if (rev) {
+        rev.flagged = true;
+        localStorage.setItem('cs_reviews', JSON.stringify(localReviews));
+        document.getElementById('notifDetailsText').innerText = "Segnalazione inviata con successo. Un moderatore analizzerà il commento.";
+        toggleModal('notificationToastModal', true);
+        if (rev.spaceId) renderizzaSezioneRecensioni(rev.spaceId);
+      }
     }
 
     function eliminaSpazioHost(spaceId) {
@@ -1628,6 +1754,8 @@
         localBookings.push(newBooking);
         localStorage.setItem('cs_bookings', JSON.stringify(localBookings));
 
+        registraContattoHost(space_id);
+
         localChats[bookingId] = [
           { sender: 'host', text: `Ciao! Grazie per aver prenotato ${spz.name}. Mandami pure un messaggio qui per concordare l'arrivo!`, time: 'Adesso' }
         ];
@@ -1788,6 +1916,32 @@
         tableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">Nessuna prenotazione presente.</td></tr>';
       }
 
+      // STORICO RECENSIONI UTENTE
+      const myReviewsContainer = document.getElementById('myUserReviewsList');
+      myReviewsContainer.innerHTML = '';
+
+      const myRevs = localReviews.filter(r => r.authorId === currentUser.id);
+      if (myRevs.length === 0) {
+        myReviewsContainer.innerHTML = '<p class="text-xs text-gray-400 italic">Non hai ancora pubblicato recensioni.</p>';
+      } else {
+        myRevs.forEach(r => {
+          const spz = localSpazi.find(s => s.id === r.spaceId) || { name: 'Spazio' };
+          const starsStr = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+
+          const rBox = document.createElement('div');
+          rBox.className = 'bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1';
+          rBox.innerHTML = `
+            <div class="flex justify-between items-center">
+              <strong class="text-gray-900">${spz.name}</strong>
+              <span class="text-amber-500 font-bold">${starsStr}</span>
+            </div>
+            <p class="text-gray-600">${r.comment}</p>
+            <span class="text-[10px] text-gray-400 block">${r.createdAt}</span>
+          `;
+          myReviewsContainer.appendChild(rBox);
+        });
+      }
+
       if (isHost) {
         document.getElementById('totalHostEarnings').innerText = (totalAmount * 0.90).toFixed(2) + ' €';
       } else {
@@ -1918,6 +2072,11 @@
         let catSvgIcon = CATEGORY_ICONS[space.type] || CATEGORY_ICONS['coworking'];
         let placeholderGradient = 'bg-gradient-to-br from-slate-100 to-slate-200';
 
+        const ratingStats = calcolaMediaVoti(space.id);
+        const ratingTag = ratingStats.avg 
+          ? `<span class="text-xs font-bold text-gray-800 flex items-center gap-1">★ ${ratingStats.avg} <span class="text-gray-400 font-normal">(${ratingStats.count})</span></span>`
+          : `<span class="text-xs font-bold text-brand bg-pink-50 px-2 py-0.5 rounded-full border border-pink-100">★ Nuovo</span>`;
+
         const popupImageHeader = space.image 
           ? `<img src="${space.image}" class="w-full h-20 object-cover" />`
           : `<div class="w-full h-16 ${placeholderGradient} flex items-center justify-center border-b border-gray-200/80">${catSvgIcon}</div>`;
@@ -1995,8 +2154,9 @@
             </div>
             
             <div class="p-4 pb-2">
-              <div class="flex justify-between items-start">
+              <div class="flex justify-between items-start gap-1">
                 <h4 class="text-base font-bold text-gray-900 leading-snug">${space.name}</h4>
+                <div class="shrink-0 mt-0.5">${ratingTag}</div>
               </div>
               <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
               ${featuresBadges}
