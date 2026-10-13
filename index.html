@@ -30,12 +30,10 @@
   <!-- CDN Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Credenziali Reali Supabase ChairShare
     const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable__uD40U9DBYrKiQQ4aJLGYQ_w6pmAcxq';
 
-    // Inizializzazione Diretta del Client Supabase Globale
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
   </script>
 
   <style>
@@ -274,6 +272,15 @@
       <div id="mapSection" class="hidden lg:block lg:col-span-5 h-[calc(100vh-160px)] sticky top-[150px] z-0">
         <div class="apple-map-container w-full h-full relative">
           <div id="map" class="w-full h-full"></div>
+          
+          <div id="routeInfoBox" class="hidden absolute top-4 right-4 z-[999] bg-white/95 backdrop-blur-md border border-gray-200 p-3.5 rounded-2xl shadow-xl text-xs max-w-xs transition-all">
+            <div class="flex items-center gap-2 font-bold text-brand mb-1">
+              <span id="routeModeIcon">🚗</span>
+              <span id="routeTitle">Percorso Calcolato</span>
+            </div>
+            <div class="text-gray-700">Distanza: <strong id="routeDistanceText" class="text-gray-900">0 km</strong></div>
+            <div class="text-gray-500 text-[11px] mt-0.5" id="routeTimeText">Tempo stimato: --</div>
+          </div>
         </div>
       </div>
     </main>
@@ -305,7 +312,7 @@
       <span class="text-[10px] font-bold text-brand mt-0.5">Pubblica</span>
     </button>
 
-    <button onclick="openModal('favoritesModal')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800 flex-1">
+    <button onclick="apriModalFavorites()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800 flex-1">
       <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
       <span class="text-[10px] font-medium">Preferiti</span>
     </button>
@@ -323,6 +330,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h2 class="text-2xl font-bold text-gray-900">Area Personale</h2>
+            <span id="userRoleBadge" class="text-xs px-3 py-1 rounded-full font-bold"></span>
           </div>
           <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
         </div>
@@ -334,6 +342,14 @@
             🚪 Logout
           </button>
         </div>
+      </div>
+
+      <div id="hostSpacesSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+        <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+          <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi in Vetrina</h3>
+          <button onclick="apriAggiungiSpazio()" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Aggiungi Spazio</button>
+        </div>
+        <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
     </div>
   </div>
@@ -442,9 +458,99 @@
     </div>
   </div>
 
-  <!-- SCRIPT LOGICA APPLICAZIONE -->
+  <!-- MODALE: PREFERITI -->
+  <div id="favoritesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-center space-y-4">
+      <button onclick="closeModal('favoritesModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <div class="w-14 h-14 bg-pink-50 text-brand rounded-full flex items-center justify-center mx-auto text-2xl shadow-sm border border-pink-100">❤️</div>
+      <div>
+        <h3 class="text-xl font-extrabold text-gray-900">Preferiti</h3>
+        <p class="text-xs text-gray-500 mt-1">Salva i tuoi spazi migliori qui!</p>
+      </div>
+      <div class="pt-2">
+        <button onclick="closeModal('favoritesModal')" class="w-full py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md transition-all">Ho Capito</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE: COME FUNZIONA -->
+  <div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative text-xs text-gray-700 space-y-5">
+      <button onclick="closeModal('howItWorksModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <h3 class="text-xl font-extrabold text-gray-900 border-b border-gray-100 pb-3 flex items-center gap-2">
+        💡 Come Funziona ChairShare
+      </h3>
+
+      <div class="space-y-4 text-sm">
+        <div class="flex gap-3 items-start">
+          <span class="text-2xl">🔍</span>
+          <div>
+            <strong class="text-brand block text-base mb-1">1. Cerca lo Spazio Ideale</strong>
+            <p class="text-gray-600 leading-relaxed">Filtra le strutture per città, tipologia o servizi desiderati.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start">
+          <span class="text-2xl">🔓</span>
+          <div>
+            <strong class="text-brand block text-base mb-1">2. Sblocca i Contatti Gratuitamente</strong>
+            <p class="text-gray-600 leading-relaxed">Registrati gratis per accedere all'indirizzo esatto e ai recapiti diretti dell'Host.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-4 border-t border-gray-100">
+        <button onclick="closeModal('howItWorksModal')" class="px-6 py-2.5 bg-brand text-white font-bold rounded-xl text-sm shadow-md">
+          Ho Capito
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE: AGGIUNGI SPAZIO -->
+  <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeModal('addModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <h3 class="text-xl font-extrabold text-gray-900 mb-2">Pubblica il tuo Spazio</h3>
+      <p class="text-xs text-gray-500 mb-4">Metti in vetrina la tua struttura e i tuoi recapiti.</p>
+
+      <form id="addSpaceForm" class="space-y-3">
+        <div>
+          <label class="text-xs text-gray-500 uppercase font-bold">Nome dello Spazio</label>
+          <input id="newName" type="text" required placeholder="Es. Studio Psicoterapia Toledo" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 uppercase font-bold">Città</label>
+          <input id="newCity" type="text" required placeholder="Napoli" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 uppercase font-bold">Prezzo Indicativo (€/giorno)</label>
+          <input id="newPrice" type="number" required placeholder="50" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+        </div>
+        
+        <div class="flex justify-end pt-3">
+          <button type="submit" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
+            Pubblica Ora
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODALE: PRIVACY -->
+  <div id="legalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xl shadow-2xl relative text-xs text-gray-600 space-y-3">
+      <button onclick="closeModal('legalModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <h3 class="text-lg font-extrabold text-gray-900 border-b border-gray-100 pb-2">⚖️ Termini di Servizio & Note Legali</h3>
+      <p>ChairShare è una piattaforma vetrina che permette la messa in contatto tra lavoratori ed Host.</p>
+    </div>
+  </div>
+
+  <!-- SCRIPT COMPLETO LOGICA JS -->
   <script>
-    // UNIFORMAZIONE GESTIONE MODALI
+    // UTILITIES MODALI
     function openModal(id) {
       const modal = document.getElementById(id);
       if (modal) {
@@ -466,6 +572,18 @@
         openModal(modalId);
       } else {
         closeModal(modalId);
+      }
+    }
+
+    function apriModalFavorites() {
+      openModal('favoritesModal');
+    }
+
+    function apriAggiungiSpazio() {
+      if (!currentUser) {
+        openModal('register-modal');
+      } else {
+        openModal('addModal');
       }
     }
 
@@ -500,20 +618,22 @@
     document.addEventListener('DOMContentLoaded', async () => {
       
       // Controllo Sessione Utente
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        aggiornaInterfacciaUtente(session?.user || null);
-
-        supabase.auth.onAuthStateChange((_event, session) => {
+      if (supabase) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
           aggiornaInterfacciaUtente(session?.user || null);
-        });
-      } catch (err) {
-        console.error("Errore Auth Session:", err);
+
+          supabase.auth.onAuthStateChange((_event, session) => {
+            aggiornaInterfacciaUtente(session?.user || null);
+          });
+        } catch (err) {
+          console.error("Errore Auth Session:", err);
+        }
       }
 
       renderizzaRisultati(localSpazi);
 
-      // EVENT LISTENER REGISTRAZIONE
+      // FORM REGISTRAZIONE
       const registerForm = document.getElementById('form-register');
       if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
@@ -523,37 +643,30 @@
           const email = document.getElementById('reg-email').value.trim();
           const password = document.getElementById('reg-password').value;
 
-          console.log("Tentativo registrazione per:", email);
-
           try {
             const { data, error } = await supabase.auth.signUp({
               email: email,
               password: password,
               options: {
                 emailRedirectTo: 'https://chairshare-app.vercel.app',
-                data: {
-                  full_name: fullName
-                }
+                data: { full_name: fullName }
               }
             });
 
             if (error) {
-              console.error("Errore Supabase SignUp:", error.message);
               alert("Errore registrazione: " + error.message);
             } else {
-              console.log("Risposta Supabase SignUp:", data);
               alert("Registrazione effettuata! Controlla la tua email per confermare l'account.");
               closeModal('register-modal');
               registerForm.reset();
             }
           } catch (err) {
-            console.error("Errore imprevisto:", err);
-            alert("Si è verificato un errore di connessione.");
+            alert("Errore di connessione durante la registrazione.");
           }
         });
       }
 
-      // EVENT LISTENER LOGIN
+      // FORM LOGIN
       const loginForm = document.getElementById('form-login');
       if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -579,6 +692,35 @@
           }
         });
       }
+
+      // FORM AGGIUNGI SPAZIO
+      const addSpaceForm = document.getElementById('addSpaceForm');
+      if (addSpaceForm) {
+        addSpaceForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('newName').value;
+          const city = document.getElementById('newCity').value;
+          const price = document.getElementById('newPrice').value;
+
+          const newSpz = {
+            id: 'spz_' + Date.now(),
+            name: name,
+            city: city,
+            area: 'Zona Generica',
+            address: 'Indirizzo Visibile ai Loggati',
+            type: 'coworking',
+            price: price,
+            lat: 40.8518 + (Math.random() - 0.5) * 0.05,
+            lon: 14.2681 + (Math.random() - 0.5) * 0.05
+          };
+
+          localSpazi.unshift(newSpz);
+          renderizzaRisultati(localSpazi);
+          closeModal('addModal');
+          addSpaceForm.reset();
+          alert("Spazio pubblicato con successo!");
+        });
+      }
     });
 
     function aggiornaInterfacciaUtente(user) {
@@ -599,7 +741,7 @@
     }
 
     async function gestisciLogout() {
-      await supabase.auth.signOut();
+      if (supabase) await supabase.auth.signOut();
       alert("Disconnessione effettuata.");
       mostraPagina('homePage');
     }
@@ -673,6 +815,23 @@
       isMapViewMobile = !isMapViewMobile;
       document.getElementById('listSection').classList.toggle('hidden', isMapViewMobile);
       document.getElementById('mapSection').classList.toggle('hidden', !isMapViewMobile);
+    }
+
+    function toggleCustomPrice(selectId, inputId) {
+      const selectElem = document.getElementById(selectId);
+      const inputElem = document.getElementById(inputId);
+      if (selectElem.value === 'custom') {
+        inputElem.classList.remove('hidden');
+      } else {
+        inputElem.classList.add('hidden');
+      }
+    }
+
+    function syncMobileToDesktopSearch(e) {
+      const val = e.target.value;
+      const deskInput = document.getElementById('cityInput');
+      if (deskInput) deskInput.value = val;
+      if (e.key === 'Enter') cercaSpazi();
     }
   </script>
 </body>
