@@ -30,11 +30,12 @@
   <!-- CDN Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Inserisci le tue credenziali da Supabase (Project Settings -> API)
-    const SUPABASE_URL = 'https://TUO-PROJECT-REF.supabase.co';
-    const SUPABASE_ANON_KEY = 'LA_TUA_CHIAVE_ANON_PUBLIC';
+    // Inserisci le tue credenziali reali da Supabase (Project Settings -> API)
+    const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co/rest';
+    const SUPABASE_ANON_KEY = 'sb_publishable__uD40U9DBYrKiQQ4aJLGYQ_w6pmAcxq';
 
-    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    // Inizializzazione diretta senza ternario/null
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
 
   <style>
@@ -892,35 +893,36 @@
       }
     }
 
-    // HANDLER REGISTRAZIONE UTENTE
-    document.getElementById('form-register')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fullName = document.getElementById('reg-fullname').value;
-      const email = document.getElementById('reg-email').value;
-      const password = document.getElementById('reg-password').value;
+  // HANDLER REGISTRAZIONE UTENTE AGGIORNATO
+document.getElementById('form-register')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fullName = document.getElementById('reg-fullname').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
 
-      if (!supabase) {
-        alert("Client Supabase non configurato.");
-        return;
-      }
-
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            full_name: fullName
-          }
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        emailRedirectTo: 'https://chairshare-app.vercel.app',
+        data: {
+          full_name: fullName
         }
-      });
-
-      if (error) {
-        alert("Errore registrazione: " + error.message);
-      } else {
-        alert("Registrazione completata! Controlla la tua email per confermare l'account.");
-        closeModal('register-modal');
       }
     });
+
+    if (error) {
+      alert("Errore registrazione: " + error.message);
+    } else {
+      alert("Registrazione effettuata! Controlla la tua email per confermare l'account.");
+      closeModal('register-modal');
+      document.getElementById('form-register').reset();
+    }
+  } catch (err) {
+    alert("Si è verificato un errore durante la registrazione.");
+  }
+});
 
     // HANDLER LOGIN UTENTE
     document.getElementById('form-login')?.addEventListener('submit', async (e) => {
@@ -962,21 +964,30 @@
       mostraPagina('homePage');
     }
 
-    // UTILITIES PER MODALI
-    function openModal(id) {
-      const modal = document.getElementById(id);
-      if (modal) modal.style.display = 'flex';
-    }
+   // UTILITIES PER MODALI (Uniformate)
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+  }
+}
 
-    function closeModal(id) {
-      const modal = document.getElementById(id);
-      if (modal) modal.style.display = 'none';
-    }
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+  }
+}
 
-    function toggleModal(modalId, show) {
-      const modal = document.getElementById(modalId);
-      if (modal) modal.classList.toggle('hidden', !show);
-    }
+function toggleModal(modalId, show) {
+  if (show) {
+    openModal(modalId);
+  } else {
+    closeModal(modalId);
+  }
+}
 
     // ============================================================
     // MAPPA PICKER CON MARKER TRASCINABILE (DRAGGABLE)
