@@ -30,11 +30,11 @@
   <!-- CDN Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Inserisci le tue credenziali reali da Supabase (Project Settings -> API)
-    const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co/rest';
+    // Credenziali Reali Supabase ChairShare
+    const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable__uD40U9DBYrKiQQ4aJLGYQ_w6pmAcxq';
 
-    // Inizializzazione diretta senza ternario/null
+    // Inizializzazione Diretta del Client Supabase Globale
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
 
@@ -274,15 +274,6 @@
       <div id="mapSection" class="hidden lg:block lg:col-span-5 h-[calc(100vh-160px)] sticky top-[150px] z-0">
         <div class="apple-map-container w-full h-full relative">
           <div id="map" class="w-full h-full"></div>
-          
-          <div id="routeInfoBox" class="hidden absolute top-4 right-4 z-[999] bg-white/95 backdrop-blur-md border border-gray-200 p-3.5 rounded-2xl shadow-xl text-xs max-w-xs transition-all">
-            <div class="flex items-center gap-2 font-bold text-brand mb-1">
-              <span id="routeModeIcon">🚗</span>
-              <span id="routeTitle">Percorso Calcolato</span>
-            </div>
-            <div class="text-gray-700">Distanza: <strong id="routeDistanceText" class="text-gray-900">0 km</strong></div>
-            <div class="text-gray-500 text-[11px] mt-0.5" id="routeTimeText">Tempo stimato: --</div>
-          </div>
         </div>
       </div>
     </main>
@@ -314,7 +305,7 @@
       <span class="text-[10px] font-bold text-brand mt-0.5">Pubblica</span>
     </button>
 
-    <button onclick="apriModalFavorites()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800 flex-1">
+    <button onclick="openModal('favoritesModal')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800 flex-1">
       <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
       <span class="text-[10px] font-medium">Preferiti</span>
     </button>
@@ -325,14 +316,13 @@
     </button>
   </nav>
 
-  <!-- AREA PERSONALE PERSONALIZZATA -->
+  <!-- AREA PERSONALE -->
   <div id="profilePage" class="hidden flex-1 max-w-5xl mx-auto w-full p-4 md:p-8">
     <div class="space-y-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-gray-200 shadow-sm gap-4">
         <div>
           <div class="flex items-center gap-2">
             <h2 class="text-2xl font-bold text-gray-900">Area Personale</h2>
-            <span id="userRoleBadge" class="text-xs px-3 py-1 rounded-full font-bold"></span>
           </div>
           <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
         </div>
@@ -344,27 +334,6 @@
             🚪 Logout
           </button>
         </div>
-      </div>
-
-      <!-- SEZIONE SPAZI PUBBLICATI (SOLO HOST) -->
-      <div id="hostSpacesSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
-          <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi in Vetrina</h3>
-          <button onclick="apriAggiungiSpazio()" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Aggiungi Spazio</button>
-        </div>
-        <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </div>
-
-      <!-- SEZIONE STORICO CONTATTI SBLOCCATI -->
-      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">📞 Spazi Contattati & Sbloccati</h3>
-        <div id="myUnlockedContactsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </div>
-
-      <!-- SEZIONE LE MIE RECENSIONI -->
-      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">⭐ Le mie Recensioni Lasciate</h3>
-        <div id="myUserReviewsList" class="space-y-3"></div>
       </div>
     </div>
   </div>
@@ -383,8 +352,8 @@
   <!-- ==================== MODALI ==================== -->
 
   <!-- MODALE LOGIN -->
-  <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 modal" style="display:none;">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative modal-content">
+  <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
       <button onclick="closeModal('login-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <h2 class="text-xl font-extrabold text-gray-900 mb-1">Accedi a ChairShare</h2>
@@ -411,8 +380,8 @@
   </div>
 
   <!-- MODALE REGISTRAZIONE -->
-  <div id="register-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 modal" style="display:none;">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative modal-content">
+  <div id="register-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
       <button onclick="closeModal('register-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <h2 class="text-xl font-extrabold text-gray-900 mb-1">Crea un account</h2>
@@ -442,43 +411,10 @@
     </div>
   </div>
 
-  <!-- MODALE NOTIFICA TOAST -->
-  <div id="notificationToastModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-center space-y-4 border-2 border-emerald-500">
-      <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-sm">
-        📲
-      </div>
-      <div>
-        <h3 class="text-lg font-extrabold text-gray-900">Operazione Effettuata!</h3>
-        <p id="notifDetailsText" class="text-xs text-gray-600 mt-2 leading-relaxed">
-          Notifica completata con successo.
-        </p>
-      </div>
-      <button onclick="toggleModal('notificationToastModal', false)" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-all">
-        Perfetto, Ho Capito!
-      </button>
-    </div>
-  </div>
-
-  <!-- MODALE: PREFERITI -->
-  <div id="favoritesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-center space-y-4">
-      <button onclick="toggleModal('favoritesModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-      <div class="w-14 h-14 bg-pink-50 text-brand rounded-full flex items-center justify-center mx-auto text-2xl shadow-sm border border-pink-100">❤️</div>
-      <div>
-        <h3 class="text-xl font-extrabold text-gray-900">Preferiti</h3>
-        <p class="text-xs text-gray-500 mt-1">Salva i tuoi spazi migliori qui!</p>
-      </div>
-      <div class="pt-2">
-        <button onclick="toggleModal('favoritesModal', false)" class="w-full py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md transition-all">Ho Capito</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODALE: DETTAGLIO COMPLETO SERVIZI, CONTATTI E RECENSIONI -->
+  <!-- MODALE DETTAGLI -->
   <div id="detailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
-      <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <button onclick="closeModal('detailModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <div class="border-b border-gray-100 pb-3">
         <div class="flex justify-between items-start gap-2">
@@ -494,22 +430,8 @@
         <div id="detailServicesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
       </div>
 
-      <!-- BOX INFORMATIVO DINAMICO CONTATTI / REGISTRAZIONE -->
       <div id="contactLockNotice" class="rounded-2xl p-4 flex items-center justify-between gap-3 text-xs transition-all"></div>
 
-      <!-- SEZIONE RECENSIONI E RATING -->
-      <div class="border-t border-gray-100 pt-4 space-y-3">
-        <div class="flex justify-between items-center">
-          <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider">Recensioni degli Utenti</h4>
-          <span id="reviewCountHeader" class="text-xs font-bold text-gray-600"></span>
-        </div>
-
-        <div id="addReviewFormContainer" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 text-xs space-y-3"></div>
-
-        <div id="spaceReviewsList" class="space-y-3 max-h-60 overflow-y-auto pr-1"></div>
-      </div>
-
-      <!-- FOOTER DEL MODAL DETTAGLI -->
       <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
         <div>
           <span class="text-xs text-gray-400 uppercase font-bold block">Tariffa Indicativa</span>
@@ -520,323 +442,51 @@
     </div>
   </div>
 
-  <!-- MODALE: COME FUNZIONA -->
-  <div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative text-xs text-gray-700 space-y-5">
-      <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">✕</button>
-
-      <h3 class="text-xl font-extrabold text-gray-900 border-b border-gray-100 pb-3 flex items-center gap-2">
-        💡 Come Funziona ChairShare (Vetrina Diretta)
-      </h3>
-
-      <div class="space-y-4 text-sm">
-        <div class="flex gap-3 items-start">
-          <span class="text-2xl">🔍</span>
-          <div>
-            <strong class="text-brand block text-base mb-1">1. Cerca lo Spazio Ideale</strong>
-            <p class="text-gray-600 leading-relaxed">Filtra le strutture per città, tipologia o servizi desiderati in tutta Italia.</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3 items-start">
-          <span class="text-2xl">🔓</span>
-          <div>
-            <strong class="text-brand block text-base mb-1">2. Sblocca i Contatti Gratuitamente</strong>
-            <p class="text-gray-600 leading-relaxed">Registrati gratis per accedere all'indirizzo esatto e ai recapiti diretti (Telefono, WhatsApp ed Email) dell'Host.</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3 items-start">
-          <span class="text-2xl">🤝</span>
-          <div>
-            <strong class="text-brand block text-base mb-1">3. Contatta in Autonomia</strong>
-            <p class="text-gray-600 leading-relaxed">Accordati direttamente con il proprietario senza intermediazioni, pagamenti online o commissioni di servizio.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-end pt-4 border-t border-gray-100">
-        <button onclick="toggleModal('howItWorksModal', false)" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-sm transition-colors shadow-md">
-          Ho Capito
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODALE: AGGIUNGI / MODIFICA SPAZIO CON MAPPA TRASCINABILE -->
-  <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
-    <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative h-full sm:h-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
-      
-      <button onclick="toggleModal('addModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-
-      <div class="mb-5 pr-6">
-        <h3 id="modalSpaceTitle" class="text-xl font-extrabold text-gray-900">Pubblica il tuo Spazio</h3>
-        <p class="text-xs text-gray-500">Metti in vetrina la tua struttura e i tuoi recapiti.</p>
-        
-        <div class="flex items-center justify-between mt-4 relative">
-          <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -z-0"></div>
-          <div id="stepDot1" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10">1</div>
-          <div id="stepDot2" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10">2</div>
-          <div id="stepDot3" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10">3</div>
-        </div>
-      </div>
-      
-      <form id="addSpaceForm">
-        <input type="hidden" id="editingSpaceId" />
-
-        <!-- STEP 1: INFO GENERALI, INDIRIZZO & PICKER MAPPA -->
-        <div id="stepSection1" class="space-y-3">
-          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 1: Informazioni Generali & Posizione Mappa</h4>
-          <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Nome dello Spazio</label>
-            <input id="newName" type="text" required placeholder="Es. Studio Psicoterapia Toledo" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
-          </div>
-          <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Descrizione</label>
-            <textarea id="newDescription" rows="2" placeholder="Descrivi brevemente lo spazio..." class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white"></textarea>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Città</label>
-              <input id="newCity" type="text" required placeholder="Napoli" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
-            </div>
-            <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo Completo</label>
-              <input id="newAddress" type="text" required placeholder="Via Toledo 10" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
-            </div>
-          </div>
-
-          <!-- CONTAINER MAPPA PER AFFINAMENTO MARKER TRASCINABILE -->
-          <div class="pt-1">
-            <div class="flex justify-between items-center mb-1">
-              <label class="text-xs text-gray-500 uppercase font-bold">Posizione sulla Mappa (Trascina il Marker per affinare)</label>
-              <button type="button" onclick="aggiornaMappaDaIndirizzoForm()" class="text-[11px] text-brand font-bold hover:underline">📍 Trova Indirizzo</button>
-            </div>
-            <div id="pickerMapContainer" class="w-full h-44 rounded-2xl border border-gray-300 overflow-hidden shadow-inner"></div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
-            <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Tipologia Spazio</label>
-              <select id="newType" onchange="aggiornaFormServiziPerCategoria()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white">
-                <option value="psicoterapia">Studio Psicoterapia / Counseling</option>
-                <option value="massaggi">Cabina Massaggi / Fisioterapia</option>
-                <option value="barbiere">Barbiere / Parrucchiere</option>
-                <option value="estetica">Centro Estetico / Tatuaggi</option>
-                <option value="fotografia">Studio Fotografico</option>
-                <option value="coworking">Postazione Coworking</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Telefono / WhatsApp Contatto</label>
-              <input id="newWhatsapp" type="tel" placeholder="3331234567" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
-            </div>
-          </div>
-          <div class="flex justify-end pt-3">
-            <button type="button" onclick="goToStep(2)" class="w-full sm:w-auto px-6 py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">
-              Avanti: Orari & Prezzi →
-            </button>
-          </div>
-        </div>
-
-        <!-- STEP 2: ORARI APERTURA, GIORNI E SERVIZI -->
-        <div id="stepSection2" class="hidden space-y-4">
-          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Giorni, Orari & Tariffe Indicative</h4>
-          
-          <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 space-y-3">
-            <label class="text-xs text-gray-700 uppercase font-extrabold block">📅 Giorni di Disponibilità</label>
-            <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5 text-center text-xs">
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white has-[:checked]:border-brand font-bold transition-all">
-                <input type="checkbox" value="1" class="hidden day-checkbox" checked /> Lun
-              </label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white has-[:checked]:border-brand font-bold transition-all">
-                <input type="checkbox" value="2" class="hidden day-checkbox" checked /> Mar
-              </label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white has-[:checked]:border-brand font-bold transition-all">
-                <input type="checkbox" value="3" class="hidden day-checkbox" checked /> Mer
-              </label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white has-[:checked]:border-brand font-bold transition-all">
-                <input type="checkbox" value="4" class="hidden day-checkbox" checked /> Gio
-              </label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white has-[:checked]:border-brand font-bold transition-all">
-                <input type="checkbox" value="5" class="hidden day-checkbox" checked /> Ven
-              </label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white has-[:checked]:border-brand font-bold transition-all">
-                <input type="checkbox" value="6" class="hidden day-checkbox" checked /> Sab
-              </label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white has-[:checked]:border-brand font-bold transition-all">
-                <input type="checkbox" value="0" class="hidden day-checkbox" /> Dom
-              </label>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200">
-              <div>
-                <label class="text-[10px] text-gray-500 uppercase font-bold">Orario Apertura</label>
-                <input id="newOpenTime" type="time" value="09:00" required class="w-full mt-1 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 bg-white" />
-              </div>
-              <div>
-                <label class="text-[10px] text-gray-500 uppercase font-bold">Orario Chiusura</label>
-                <input id="newCloseTime" type="time" value="19:00" required class="w-full mt-1 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 bg-white" />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Prezzo Indicativo (€/giorno)</label>
-            <input id="newPrice" type="number" required placeholder="Es. 50" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
-          </div>
-
-          <div class="space-y-3">
-            <label class="text-xs text-gray-500 uppercase font-bold block">Servizi Inclusi</label>
-            <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200">
-              <span class="text-[11px] font-bold text-gray-700 block mb-2 uppercase">1. Servizi Generali & Comfort</span>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs text-gray-700">
-                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" value="wifi" id="chk_wifi" class="service-checkbox accent-brand" /> 📶 Wi-Fi Veloce</label>
-                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" value="ac" id="chk_ac" class="service-checkbox accent-brand" /> ❄️ Aria Condizionata</label>
-                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" value="heating" id="chk_heating" class="service-checkbox accent-brand" /> 🔥 Riscaldamento</label>
-                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" value="waiting_room" id="chk_waiting" class="service-checkbox accent-brand" /> 🛋️ Sala d'attesa</label>
-                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" value="coffee" id="chk_coffee" class="service-checkbox accent-brand" /> ☕ Area Break/Caffè</label>
-                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" value="parking" id="chk_parking" class="service-checkbox accent-brand" /> 🅿️ Parcheggio</label>
-              </div>
-            </div>
-
-            <div id="categorySpecificServicesBox" class="bg-pink-50/50 p-3 rounded-2xl border border-pink-100">
-              <span id="categorySpecificTitle" class="text-[11px] font-bold text-brand block mb-2 uppercase">2. Servizi Specifici Categoria</span>
-              <div id="categorySpecificCheckboxes" class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs text-gray-700"></div>
-            </div>
-          </div>
-
-          <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Foto dello Spazio</label>
-            <input id="newImageInput" type="file" accept="image/*" multiple class="w-full mt-1 text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-brand file:text-white cursor-pointer" />
-          </div>
-          <div class="flex justify-between pt-3">
-            <button type="button" onclick="goToStep(1)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
-            <button type="button" onclick="goToStep(3)" class="px-6 py-2.5 bg-brand text-white font-bold rounded-xl text-xs">Avanti →</button>
-          </div>
-        </div>
-
-        <!-- STEP 3: CONFORMITÀ -->
-        <div id="stepSection3" class="hidden space-y-4">
-          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 3: Pubblicazione Vetrina</h4>
-          
-          <div class="bg-emerald-50 p-3.5 rounded-2xl border border-emerald-200 text-xs text-emerald-800 space-y-1">
-            <strong class="block font-bold">💡 Contatto Diretto Inserito:</strong>
-            <p>Gli utenti interessati potranno contattarti direttamente via WhatsApp, telefono ed email.</p>
-          </div>
-
-          <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 text-xs text-gray-600 space-y-2">
-            <label class="flex items-start gap-2 cursor-pointer">
-              <input type="checkbox" id="hostLegalCheck" required class="mt-0.5 accent-brand" />
-              <span>Dichiaro che lo spazio rispetta le normative vigenti in materia di idoneità dei locali e requisiti igienico-sanitari.</span>
-            </label>
-          </div>
-
-          <div class="flex justify-between pt-3">
-            <button type="button" onclick="goToStep(2)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
-            <button type="submit" id="saveBtn" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
-              Salva e Pubblica
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODALE: PRIVACY E NOTE LEGALI -->
-  <div id="legalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-xl shadow-2xl relative max-h-[85vh] overflow-y-auto text-xs text-gray-600 space-y-3">
-      <button onclick="toggleModal('legalModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-      <h3 class="text-lg font-extrabold text-gray-900 border-b border-gray-100 pb-2">⚖️ Termini di Servizio & Note Legali</h3>
-      <p>ChairShare è una piattaforma vetrina che permette la messa in contatto tra lavoratori ed Host nel rispetto del D.L. 78/2010 per l'affitto di poltrona e cabina.</p>
-      <div class="flex justify-end pt-3 border-t border-gray-100">
-        <button onclick="toggleModal('legalModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">Chiudi</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SCRIPT COMPLETO APPLICAZIONE LOGICA JS -->
+  <!-- SCRIPT LOGICA APPLICAZIONE -->
   <script>
-    // ============================================================
-    // UTILITY SANITIZZAZIONE XSS
-    // ============================================================
+    // UNIFORMAZIONE GESTIONE MODALI
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+      }
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+      }
+    }
+
+    function toggleModal(modalId, show) {
+      if (show) {
+        openModal(modalId);
+      } else {
+        closeModal(modalId);
+      }
+    }
+
     function sanitizeHTML(str) {
       if (!str) return '';
       return String(str).replace(/[&<>"']/g, match => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[match]));
     }
 
-    const DAYS_MAP = {
-      0: 'Domenica', 1: 'Lunedì', 2: 'Martedì', 3: 'Mercoledì', 4: 'Giovedì', 5: 'Venerdì', 6: 'Sabato'
-    };
-
-    const CATEGORY_ICONS = {
-      psicoterapia: `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/></svg>`,
-      massaggi: `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>`,
-      barbiere: `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="17.5" r="3" /><circle cx="16.5" cy="17.5" r="3" /><line x1="9.5" y1="15.5" x2="18.5" y2="4.5" /><line x1="14.5" y1="15.5" x2="5.5" y2="4.5" /><circle cx="12" cy="11.5" r="1" fill="currentColor" /></svg>`,
-      estetica: `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>`,
-      fotografia: `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>`,
-      coworking: `<svg class="w-12 h-12 text-slate-700 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>`
-    };
-
-    const SERVICES_MASTER = {
-      wifi: { name: 'Wi-Fi ad alta velocità', icon: '📶', category: 'General' },
-      ac: { name: 'Aria Condizionata', icon: '❄️', category: 'General' },
-      heating: { name: 'Riscaldamento', icon: '🔥', category: 'General' },
-      waiting_room: { name: 'Sala d\'attesa clienti', icon: '🛋️', category: 'General' },
-      coffee: { name: 'Area Break / Macchina Caffè', icon: '☕', category: 'General' },
-      parking: { name: 'Parcheggio riservato', icon: '🅿️', category: 'General' },
-      
-      reclining_chair: { name: 'Poltrona reclinabile', icon: '💺', category: 'barbiere' },
-      hair_wash: { name: 'Lavatesta ergonomico', icon: 'Shower', category: 'barbiere' },
-      towels_included: { name: 'Asciugamani inclusi', icon: '🧺', category: 'barbiere' },
-
-      nails_table: { name: 'Tavolo Nails con aspiratore', icon: '💅', category: 'estetica' },
-      aesthetic_bed: { name: 'Lettino Estetico', icon: '🛏️', category: 'estetica' },
-
-      massage_bed: { name: 'Lettino massaggio regolabile', icon: '🛋️', category: 'massaggi' },
-      oil_warmer: { name: 'Scalda-olio / Scalda-asciugamani', icon: '🪔', category: 'massaggi' },
-
-      soundproof: { name: 'Insonorizzazione acustica', icon: '🔇', category: 'psicoterapia' },
-      sofa_therapy: { name: 'Poltrone / Divano Terapeutico', icon: '🛋️', category: 'psicoterapia' },
-
-      led_lights: { name: 'Luci continue LED + Softbox', icon: '📸', category: 'fotografia' },
-      backdrop: { name: 'Limbo / Fondali Carta', icon: '🎨', category: 'fotografia' },
-
-      external_monitor: { name: 'Monitor esterno', icon: '🖥️', category: 'coworking' }
-    };
-
-    // GLOBAL STATE UTENTE
     let currentUser = null;
     let selectedCategory = '';
-    let currentStep = 1;
     let isMapViewMobile = false;
-    let selectedRatingStar = 5;
-    let editingStarRating = 5;
 
-    let userLocation = { lat: 40.8518, lon: 14.2681 };
-    let currentRouteLine = null;
-    let activeMarkersMap = {};
-
-    let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
-      { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', area: 'Zona Toledo/Centro', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_name: 'Marco V.', host_id: 'sample', host_email: 'marco.vesuvio@chairshare.it', whatsapp: '393331234567', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'heating', 'waiting_room', 'led_lights', 'backdrop'], available: true },
-      { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', area: 'Zona Centro Storico', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_name: 'Luigi B.', host_id: 'sample', host_email: 'barber.spaccanapoli@chairshare.it', whatsapp: '393409876543', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'reclining_chair', 'hair_wash', 'towels_included'], available: true },
-      { id: 'spz_3', name: 'Postazione Hairstylist Chiaia', city: 'Napoli', area: 'Zona Chiaia', address: 'Via Chiaia 88', type: 'barbiere', price: 50, lat: 40.8420, lon: 14.2495, image: null, host_name: 'Elena C.', host_id: 'sample', host_email: 'elena.chiaia@chairshare.it', whatsapp: '393381122334', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'soundproof', 'sofa_therapy', 'waiting_room'], available: true }
+    let localSpazi = [
+      { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', area: 'Zona Toledo/Centro', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_name: 'Marco V.', whatsapp: '393331234567', openTime: '09:00', closeTime: '19:00' },
+      { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', area: 'Zona Centro Storico', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_name: 'Luigi B.', whatsapp: '393409876543', openTime: '09:00', closeTime: '19:00' }
     ];
 
-    let localUnlocked = JSON.parse(localStorage.getItem('cs_unlocked')) || [];
-    let localReviews = JSON.parse(localStorage.getItem('cs_reviews')) || [
-      { id: 'rev_1', spaceId: 'spz_1', authorId: 'usr_demo1', authorEmail: 'm.rossi@email.it', rating: 5, comment: 'Spazio eccezionale, ben illuminato e pulito. L\'host Marco è stato gentilissimo!', createdAt: '2026-02-10', isVerified: true, hasBeenEdited: false },
-      { id: 'rev_2', spaceId: 'spz_2', authorId: 'usr_demo2', authorEmail: 'f.bianchi@email.it', rating: 4, comment: 'Posizione ottima al centro. Poltrona comodissima.', createdAt: '2026-03-01', isVerified: true, hasBeenEdited: false }
-    ];
-
-    // INIZIALIZZAZIONE MAPPA PRINCIPALE
-    const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
+    // INIZIALIZZAZIONE MAPPA
+    const map = L.map('map', { zoomControl: false }).setView([40.8518, 14.2681], 12);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -846,34 +496,89 @@
 
     let markersGroup = L.layerGroup().addTo(map);
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        userLocation.lat = pos.coords.latitude;
-        userLocation.lon = pos.coords.longitude;
-        map.setView([userLocation.lat, userLocation.lon], 13);
-        
-        L.circleMarker([userLocation.lat, userLocation.lon], {
-          radius: 8, fillColor: '#FF385C', color: '#ffffff', weight: 2, opacity: 1, fillOpacity: 0.9
-        }).addTo(map).bindPopup('<b>La tua posizione</b>');
-      }, () => {});
-    }
-
-    // ============================================================
-    // INITIALIZATION & SESSION CHECK SUPABASE AUTH
-    // ============================================================
+    // BINDING EVENTI AL CARICAMENTO
     document.addEventListener('DOMContentLoaded', async () => {
-      if (supabase) {
+      
+      // Controllo Sessione Utente
+      try {
         const { data: { session } } = await supabase.auth.getSession();
         aggiornaInterfacciaUtente(session?.user || null);
 
         supabase.auth.onAuthStateChange((_event, session) => {
           aggiornaInterfacciaUtente(session?.user || null);
         });
+      } catch (err) {
+        console.error("Errore Auth Session:", err);
       }
 
-      caricaSpazi().then(spaziRecuperati => {
-        aggiornaMappaELista(spaziRecuperati);
-      });
+      renderizzaRisultati(localSpazi);
+
+      // EVENT LISTENER REGISTRAZIONE
+      const registerForm = document.getElementById('form-register');
+      if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const fullName = document.getElementById('reg-fullname').value.trim();
+          const email = document.getElementById('reg-email').value.trim();
+          const password = document.getElementById('reg-password').value;
+
+          console.log("Tentativo registrazione per:", email);
+
+          try {
+            const { data, error } = await supabase.auth.signUp({
+              email: email,
+              password: password,
+              options: {
+                emailRedirectTo: 'https://chairshare-app.vercel.app',
+                data: {
+                  full_name: fullName
+                }
+              }
+            });
+
+            if (error) {
+              console.error("Errore Supabase SignUp:", error.message);
+              alert("Errore registrazione: " + error.message);
+            } else {
+              console.log("Risposta Supabase SignUp:", data);
+              alert("Registrazione effettuata! Controlla la tua email per confermare l'account.");
+              closeModal('register-modal');
+              registerForm.reset();
+            }
+          } catch (err) {
+            console.error("Errore imprevisto:", err);
+            alert("Si è verificato un errore di connessione.");
+          }
+        });
+      }
+
+      // EVENT LISTENER LOGIN
+      const loginForm = document.getElementById('form-login');
+      if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('login-email').value.trim();
+          const password = document.getElementById('login-password').value;
+
+          try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+              email: email,
+              password: password
+            });
+
+            if (error) {
+              alert("Errore di accesso: " + error.message);
+            } else {
+              alert("Accesso eseguito!");
+              closeModal('login-modal');
+              loginForm.reset();
+            }
+          } catch (err) {
+            alert("Impossibile completare l'accesso.");
+          }
+        });
+      }
     });
 
     function aggiornaInterfacciaUtente(user) {
@@ -893,924 +598,81 @@
       }
     }
 
-  // HANDLER REGISTRAZIONE UTENTE AGGIORNATO
-document.getElementById('form-register')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const fullName = document.getElementById('reg-fullname').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const password = document.getElementById('reg-password').value;
-
-  try {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        emailRedirectTo: 'https://chairshare-app.vercel.app',
-        data: {
-          full_name: fullName
-        }
-      }
-    });
-
-    if (error) {
-      alert("Errore registrazione: " + error.message);
-    } else {
-      alert("Registrazione effettuata! Controlla la tua email per confermare l'account.");
-      closeModal('register-modal');
-      document.getElementById('form-register').reset();
-    }
-  } catch (err) {
-    alert("Si è verificato un errore durante la registrazione.");
-  }
-});
-
-    // HANDLER LOGIN UTENTE
-    document.getElementById('form-login')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-
-      if (!supabase) {
-        alert("Client Supabase non configurato.");
-        return;
-      }
-
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
-
-      if (error) {
-        alert("Errore di accesso: " + error.message);
-      } else {
-        alert("Bentornato!");
-        closeModal('login-modal');
-      }
-    });
-
-    // LOGOUT UTENTE
     async function gestisciLogout() {
-      if (supabase) {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-          alert("Errore durante il logout: " + error.message);
-        } else {
-          alert("Disconnessione effettuata.");
-        }
-      } else {
-        currentUser = null;
-        aggiornaInterfacciaUtente(null);
-      }
+      await supabase.auth.signOut();
+      alert("Disconnessione effettuata.");
       mostraPagina('homePage');
     }
 
-   // UTILITIES PER MODALI (Uniformate)
-function openModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) {
-    modal.style.display = 'flex';
-    modal.classList.remove('hidden');
-  }
-}
-
-function closeModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) {
-    modal.style.display = 'none';
-    modal.classList.add('hidden');
-  }
-}
-
-function toggleModal(modalId, show) {
-  if (show) {
-    openModal(modalId);
-  } else {
-    closeModal(modalId);
-  }
-}
-
-    // ============================================================
-    // MAPPA PICKER CON MARKER TRASCINABILE (DRAGGABLE)
-    // ============================================================
-    let pickerMap = null;
-    let pickerMarker = null;
-
-    function inizializzaPickerMappa(lat, lng) {
-      const mapContainer = document.getElementById('pickerMapContainer');
-      if (!mapContainer) return;
-
-      if (!pickerMap) {
-        pickerMap = L.map('pickerMapContainer', { zoomControl: true }).setView([lat, lng], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap'
-        }).addTo(pickerMap);
-
-        pickerMarker = L.marker([lat, lng], { draggable: true }).addTo(pickerMap);
-
-        pickerMarker.on('dragend', function (e) {
-          const position = pickerMarker.getLatLng();
-          window.coordinateSelezionate = {
-            lat: position.lat,
-            lng: position.lng
-          };
-        });
-      } else {
-        pickerMap.setView([lat, lng], 15);
-        pickerMarker.setLatLng([lat, lng]);
-      }
-
-      window.coordinateSelezionate = { lat, lng };
-      setTimeout(() => pickerMap.invalidateSize(), 300);
-    }
-
-    async function geocodeAddress(address, city) {
-      try {
-        const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', ' + city)}`);
-        const geoData = await geoRes.json();
-        
-        if (!geoData || geoData.length === 0) {
-          alert("⚠️ Impossibile geolocalizzare l'indirizzo inserito. Controlla la correttezza di Via e Città o imposta la posizione trascinando il pin sulla mappa.");
-          return null;
-        }
-        
-        return {
-          lat: parseFloat(geoData[0].lat),
-          lng: parseFloat(geoData[0].lon)
-        };
-      } catch (err) {
-        console.error("Errore durante la geocodifica:", err);
-        alert("⚠️ Errore di connessione durante la geolocalizzazione dell'indirizzo.");
-        return null;
-      }
-    }
-
-    async function aggiornaMappaDaIndirizzoForm() {
-      const address = document.getElementById('newAddress').value;
-      const city = document.getElementById('newCity').value;
-
-      if (!address || !city) {
-        alert("Inserisci sia l'indirizzo che la città prima di cercare.");
-        return;
-      }
-
-      const coords = await geocodeAddress(address, city);
-      if (coords) {
-        inizializzaPickerMappa(coords.lat, coords.lng);
-      }
-    }
-
-    // ============================================================
-    // CARICAMENTO ED ELABORAZIONE SPAZI SUPABASE
-    // ============================================================
-    async function caricaSpazi() {
-      if (!supabase) return localSpazi;
-
-      try {
-        const { data: spazi, error } = await supabase
-          .from('spazi')
-          .select(`
-            *,
-            profiles (
-              full_name,
-              avatar_url,
-              phone
-            )
-          `)
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error("Errore nel caricamento degli spazi:", error.message);
-          return localSpazi;
-        }
-
-        if (spazi && spazi.length > 0) {
-          const spaziMappati = spazi.map(s => ({
-            id: s.id,
-            name: s.title || s.name || 'Spazio Senza Nome',
-            city: s.city || 'Napoli',
-            address: s.address || '',
-            area: 'Zona ' + (s.city || 'Napoli'),
-            type: s.features?.type || s.type || 'coworking',
-            price: parseFloat(s.price_per_day || s.price || 0),
-            lat: parseFloat(s.lat || 40.8518),
-            lon: parseFloat(s.lng || s.lon || 14.2681),
-            image: (s.images && s.images.length > 0) ? s.images[0] : (s.image || null),
-            host_name: s.profiles?.full_name || 'Host Registrato',
-            host_id: s.user_id,
-            host_email: 'host@chairshare.it',
-            whatsapp: s.profiles?.phone || s.features?.whatsapp || '393330000000',
-            openDays: s.features?.openDays || [1,2,3,4,5,6],
-            openTime: s.features?.openTime || '09:00',
-            closeTime: s.features?.closeTime || '19:00',
-            features: s.features?.features || (Array.isArray(s.features) ? s.features : []),
-            available: true
-          }));
-
-          localSpazi = spaziMappati;
-          localStorage.setItem('cs_spazi', JSON.stringify(localSpazi));
-          return localSpazi;
-        }
-      } catch (e) {
-        console.error("Errore nella chiamata Supabase caricaSpazi:", e);
-      }
-
-      return localSpazi;
-    }
-
-    function aggiornaMappaELista(annunci) {
-      renderizzaRisultati(annunci);
-    }
-
-    async function uploadImmaginiSpazio(files) {
-      const urls = [];
-      if (!supabase) return urls;
-
-      for (const file of files) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
-        const filePath = `annunci/${fileName}`;
-
-        const { data, error } = await supabase
-          .storage
-          .from('spazi-images')
-          .upload(filePath, file);
-
-        if (error) {
-          console.error('Errore nel caricamento dell\'immagine:', error.message);
-          continue;
-        }
-
-        const { data: publicUrlData } = supabase
-          .storage
-          .from('spazi-images')
-          .getPublicUrl(filePath);
-
-        if (publicUrlData && publicUrlData.publicUrl) {
-          urls.push(publicUrlData.publicUrl);
-        }
-      }
-
-      return urls;
-    }
-
-    async function salvaNuovoSpazio(datiSpazio, fileImmagini) {
-      try {
-        if (!supabase) return null;
-
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-          alert("Devi essere autenticato per creare un annuncio.");
-          return null;
-        }
-
-        let imageUrls = [];
-        if (fileImmagini && fileImmagini.length > 0) {
-          imageUrls = await uploadImmaginiSpazio(fileImmagini);
-        }
-
-        const { data, error } = await supabase
-          .from('spazi')
-          .insert([
-            {
-              user_id: user.id,
-              title: datiSpazio.titolo,
-              description: datiSpazio.descrizione,
-              address: datiSpazio.indirizzo,
-              city: datiSpazio.citta,
-              lat: datiSpazio.lat || null,
-              lng: datiSpazio.lng || null,
-              price_per_day: parseFloat(datiSpazio.prezzoGiornaliero),
-              images: imageUrls,
-              features: datiSpazio.caratteristiche || {}
-            }
-          ])
-          .select();
-
-        if (error) {
-          console.error("Errore durante il salvataggio:", error.message);
-          alert("Si è verificato un errore durante il salvataggio dell'annuncio.");
-          return null;
-        }
-
-        alert("Annuncio creato con successo!");
-        return data ? data[0] : null;
-
-      } catch (err) {
-        console.error("Errore imprevisto:", err);
-        return null;
-      }
-    }
-
-    // ============================================================
-    // BINDING SUBMIT FORM DI CREAZIONE CON GEOLOCALIZZAZIONE
-    // ============================================================
-    document.getElementById('addSpaceForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const saveBtn = document.getElementById('saveBtn');
-      saveBtn.disabled = true;
-
-      const inputFiles = document.getElementById('newImageInput').files;
-      const address = document.getElementById('newAddress').value;
-      const city = document.getElementById('newCity').value;
-
-      let lat = window.coordinateSelezionate?.lat;
-      let lng = window.coordinateSelezionate?.lng;
-
-      if (!lat || !lng) {
-        const coords = await geocodeAddress(address, city);
-        if (!coords) {
-          saveBtn.disabled = false;
-          return; // Blocca il salvataggio se geocodifica fallita
-        }
-        lat = coords.lat;
-        lng = coords.lng;
-      }
-
-      const openDays = [];
-      document.querySelectorAll('.day-checkbox:checked').forEach(cb => {
-        openDays.push(parseInt(cb.value));
-      });
-
-      const selectedFeatures = [];
-      document.querySelectorAll('.service-checkbox:checked').forEach(cb => {
-        selectedFeatures.push(cb.value);
-      });
-
-      const datiSpazio = {
-        titolo: document.getElementById('newName').value,
-        descrizione: document.getElementById('newDescription')?.value || `Spazio di tipologia ${document.getElementById('newType').value} a ${city}`,
-        indirizzo: address,
-        citta: city,
-        prezzoGiornaliero: document.getElementById('newPrice').value,
-        lat: lat,
-        lng: lng,
-        caratteristiche: {
-          type: document.getElementById('newType').value,
-          whatsapp: document.getElementById('newWhatsapp').value,
-          openDays: openDays,
-          openTime: document.getElementById('newOpenTime').value,
-          closeTime: document.getElementById('newCloseTime').value,
-          wifi: document.getElementById('chk_wifi')?.checked || false,
-          features: selectedFeatures
-        }
-      };
-
-      await salvaNuovoSpazio(datiSpazio, inputFiles);
-
-      const annunciAggiornati = await caricaSpazi();
-      aggiornaMappaELista(annunciAggiornati);
-
-      document.getElementById('addSpaceForm').reset();
-      toggleModal('addModal', false);
-      caricaDatiProfilo();
-      saveBtn.disabled = false;
-    });
-
-    // ============================================================
-    // RENDERING CON SANITIZZAZIONE XSS (`sanitizeHTML`)
-    // ============================================================
     function renderizzaRisultati(spaces) {
       markersGroup.clearLayers();
-      activeMarkersMap = {};
       const listContainer = document.getElementById('spacesList');
       listContainer.innerHTML = '';
       document.getElementById('resultsCount').innerText = spaces.length;
 
-      if (spaces.length === 0) {
-        listContainer.innerHTML = `
-          <div class="col-span-2 text-center py-12 text-gray-400">
-            <p class="text-sm font-medium">Nessun risultato trovato con i filtri selezionati.</p>
-          </div>
-        `;
-        return;
-      }
-
-      const isLoggedIn = !!currentUser;
-
       spaces.forEach(space => {
-        let catSvgIcon = CATEGORY_ICONS[space.type] || CATEGORY_ICONS['coworking'];
-        let placeholderGradient = 'bg-gradient-to-br from-slate-100 to-slate-200';
-
-        const ratingStats = calcolaMediaVoti(space.id);
-        const ratingTag = ratingStats.avg 
-          ? `<span class="text-xs font-bold text-gray-800 flex items-center gap-1">★ ${sanitizeHTML(ratingStats.avg)} <span class="text-gray-400 font-normal">(${sanitizeHTML(ratingStats.count)})</span></span>`
-          : `<span class="text-xs font-bold text-brand bg-pink-50 px-2 py-0.5 rounded-full border border-pink-100">★ Nuovo</span>`;
-
-        const popupImageHeader = space.image 
-          ? `<img src="${sanitizeHTML(space.image)}" class="w-full h-20 object-cover" />`
-          : `<div class="w-full h-16 ${placeholderGradient} flex items-center justify-center border-b border-gray-200/80">${catSvgIcon}</div>`;
-
-        const contactLockBadge = isLoggedIn 
-          ? `<span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">🔓 Sbloccato</span>`
-          : `<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">🔒 Registrati per Sbloccare</span>`;
-
-        const locationText = isLoggedIn 
-          ? `📍 ${sanitizeHTML(space.address || 'Via Toledo 12')}, ${sanitizeHTML(space.city)}`
-          : `📍 ${sanitizeHTML(space.city)} • ${sanitizeHTML(space.area || 'Zona Generica')}`;
-
-        const popupHTML = `
-          <div class="p-0 overflow-hidden text-gray-800">
-            ${popupImageHeader}
-            <div class="p-2.5 space-y-1.5">
-              <div class="flex justify-between items-start gap-1">
-                <h4 class="font-extrabold text-xs text-gray-900 leading-tight">${sanitizeHTML(space.name)}</h4>
-                <span class="text-[11px] font-extrabold text-brand shrink-0">${sanitizeHTML(space.price)}€</span>
-              </div>
-              <p class="text-[10px] text-gray-500 truncate">${locationText}</p>
-              <div class="my-1">${contactLockBadge}</div>
-              
-              <div class="pt-1.5 border-t border-gray-100 flex gap-1">
-                <button onclick="mostraDettagliSpazio('${sanitizeHTML(space.id)}')" class="flex-1 bg-brand hover:bg-brand-hover text-white font-bold py-1 px-1.5 rounded-lg text-[10px] text-center shadow-sm">
-                  Vedi Dettagli
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
         const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
-        marker.bindPopup(popupHTML);
-        marker.on('click', () => {
-          evidenziaSchedaEPopUp(space.id);
-        });
-        activeMarkersMap[space.id] = marker;
-
-        const imgHeaderTag = space.image 
-          ? `<div class="w-full h-52 overflow-hidden rounded-t-3xl"><img src="${sanitizeHTML(space.image)}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" /></div>`
-          : `<div class="w-full h-52 ${placeholderGradient} rounded-t-3xl flex items-center justify-center border-b border-gray-100">${catSvgIcon}</div>`;
-
-        let featuresBadges = '';
-        if (space.features && space.features.length > 0) {
-          featuresBadges = '<div class="flex flex-wrap gap-1.5 my-2.5">';
-          space.features.slice(0, 3).forEach(key => {
-            const master = SERVICES_MASTER[key];
-            if (master) {
-              featuresBadges += `<span class="inline-flex items-center gap-1 rounded-full py-1 px-2.5 text-[11px] font-medium bg-gray-100 text-gray-700">
-                <span>${sanitizeHTML(master.icon)}</span> ${sanitizeHTML(master.name.split(' ')[0])}
-              </span>`;
-            }
-          });
-          featuresBadges += '</div>';
-        }
+        marker.bindPopup(`<b>${sanitizeHTML(space.name)}</b><br>${sanitizeHTML(space.price)}€/giorno`);
 
         const card = document.createElement('div');
-        card.id = 'card_' + space.id;
-        card.className = 'space-card cursor-pointer bg-white rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden relative';
-        
-        card.onclick = () => {
-          mostraDettagliSpazio(space.id);
-        };
-
+        card.className = 'space-card cursor-pointer bg-white rounded-3xl p-4 shadow-sm hover:shadow-lg transition-all';
+        card.onclick = () => mostraDettagliSpazio(space.id);
         card.innerHTML = `
-          <div>
-            <div class="relative">
-              ${imgHeaderTag}
-              <div class="absolute top-3 right-3 bg-white/95 backdrop-blur-md rounded-full px-2.5 py-1 flex items-center gap-1 shadow-md border border-gray-100 z-10 text-[10px] font-bold text-gray-800">
-                🕒 ${sanitizeHTML(space.openTime || '09:00')}-${sanitizeHTML(space.closeTime || '19:00')}
-              </div>
-            </div>
-            
-            <div class="p-4 pb-2">
-              <div class="flex justify-between items-start gap-1">
-                <h4 class="text-base font-bold text-gray-900 leading-snug">${sanitizeHTML(space.name)}</h4>
-                <div class="shrink-0 mt-0.5">${ratingTag}</div>
-              </div>
-              <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
-              ${featuresBadges}
-            </div>
-          </div>
-
-          <div class="flex justify-between items-center px-4 py-3 border-t border-gray-100 bg-gray-50/50">
-            <div>
-              <span class="text-base font-extrabold text-gray-900">${sanitizeHTML(space.price)} €</span>
-              <span class="text-xs text-gray-500 font-normal"> /giorno</span>
-            </div>
-            <button onclick="event.stopPropagation(); mostraDettagliSpazio('${sanitizeHTML(space.id)}')" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all">
-              ${isLoggedIn ? 'Contatta Host' : 'Sblocca Contatti'}
-            </button>
+          <h4 class="text-base font-bold text-gray-900">${sanitizeHTML(space.name)}</h4>
+          <p class="text-xs text-gray-500">${sanitizeHTML(space.city)} • ${sanitizeHTML(space.area)}</p>
+          <div class="mt-3 flex justify-between items-center">
+            <span class="text-brand font-extrabold text-sm">${sanitizeHTML(space.price)} € /giorno</span>
+            <button class="bg-brand text-white text-xs font-bold px-3 py-1.5 rounded-xl">Dettagli</button>
           </div>
         `;
         listContainer.appendChild(card);
       });
     }
 
-    function gestisciClickProfilo() {
-      if (!currentUser) {
-        openModal('login-modal');
-      } else {
-        mostraPagina('profilePage');
-      }
+    function mostraDettagliSpazio(spaceId) {
+      const spz = localSpazi.find(s => s.id === spaceId);
+      if (!spz) return;
+
+      document.getElementById('detailSpaceTitle').innerText = spz.name;
+      document.getElementById('detailSpacePrice').innerText = `${spz.price} € /giorno`;
+      openModal('detailModal');
     }
 
-    function apriAggiungiSpazio() {
-      if (!currentUser) {
-        openModal('register-modal');
-      } else {
-        document.getElementById('editingSpaceId').value = '';
-        document.getElementById('modalSpaceTitle').innerText = 'Pubblica il tuo Spazio';
-        document.getElementById('addSpaceForm').reset();
-        aggiornaFormServiziPerCategoria();
-        goToStep(1);
-        toggleModal('addModal', true);
-        
-        setTimeout(() => {
-          inizializzaPickerMappa(userLocation.lat, userLocation.lon);
-        }, 200);
-      }
-    }
-
-    function goToStep(step) {
-      currentStep = step;
-      document.getElementById('stepSection1').classList.toggle('hidden', step !== 1);
-      document.getElementById('stepSection2').classList.toggle('hidden', step !== 2);
-      document.getElementById('stepSection3').classList.toggle('hidden', step !== 3);
-
-      for (let i = 1; i <= 3; i++) {
-        const dot = document.getElementById('stepDot' + i);
-        if (i <= step) {
-          dot.className = 'w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10';
-        } else {
-          dot.className = 'w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10';
-        }
-      }
-    }
-
-    function toggleCustomPrice(selectId, inputId) {
-      const selectElem = document.getElementById(selectId);
-      const inputElem = document.getElementById(inputId);
-      
-      if (selectElem.value === 'custom') {
-        inputElem.classList.remove('hidden');
-        inputElem.focus();
-      } else {
-        inputElem.classList.add('hidden');
-        inputElem.value = '';
-        cercaSpazi();
-      }
-    }
-
-    function syncMobileToDesktopSearch(e) {
-      const val = e.target.value;
-      const deskInput = document.getElementById('cityInput');
-      if (deskInput) deskInput.value = val;
-      if (e.key === 'Enter') cercaSpazi();
-    }
-
-    function toggleMobileView() {
-      isMapViewMobile = !isMapViewMobile;
-      const listSec = document.getElementById('listSection');
-      const mapSec = document.getElementById('mapSection');
-      const switchBtn = document.getElementById('mobileSwitchBtn');
-
-      if (isMapViewMobile) {
-        listSec.classList.add('hidden');
-        mapSec.classList.remove('hidden');
-        mapSec.classList.add('h-[calc(100vh-180px)]');
-        switchBtn.innerHTML = '<span>📋 Mostra Lista</span>';
-        setTimeout(() => map.invalidateSize(), 200);
-      } else {
-        listSec.classList.remove('hidden');
-        mapSec.classList.add('hidden', 'lg:block');
-        switchBtn.innerHTML = '<span>🗺️ Mostra Mappa</span>';
-      }
+    function cercaSpazi() {
+      const city = (document.getElementById('cityInput').value || document.getElementById('mobileCityInput').value || '').toLowerCase().trim();
+      const res = localSpazi.filter(s => !city || s.city.toLowerCase().includes(city));
+      renderizzaRisultati(res);
     }
 
     function selectCategory(cat) {
       selectedCategory = cat;
-      const selectElem = document.getElementById('typeSelect');
-      if (selectElem) selectElem.value = cat;
-
-      document.querySelectorAll('.cat-pill').forEach(btn => {
-        btn.classList.remove('text-brand', 'border-b-2', 'border-brand', 'font-bold');
-        btn.classList.add('text-gray-600', 'font-medium');
-      });
-      if (event && event.currentTarget) {
-        event.currentTarget.classList.remove('text-gray-600', 'font-medium');
-        event.currentTarget.classList.add('text-brand', 'border-b-2', 'border-brand', 'font-bold');
-      }
       cercaSpazi();
     }
 
     function resetFilters() {
-      selectedCategory = '';
       document.getElementById('cityInput').value = '';
       document.getElementById('mobileCityInput').value = '';
-      document.getElementById('typeSelect').value = '';
-      
-      document.getElementById('priceSelect').value = '';
-      document.getElementById('priceInput').value = '';
-      document.getElementById('priceInput').classList.add('hidden');
-      
-      document.getElementById('mobilePriceSelect').value = '';
-      document.getElementById('mobilePriceInput').value = '';
-      document.getElementById('mobilePriceInput').classList.add('hidden');
-
       cercaSpazi();
+    }
+
+    function gestisciClickProfilo() {
+      if (!currentUser) openModal('login-modal');
+      else mostraPagina('profilePage');
     }
 
     function mostraPagina(pageId) {
       document.getElementById('homePage').classList.toggle('hidden', pageId !== 'homePage');
       document.getElementById('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
-      if (pageId === 'profilePage') caricaDatiProfilo();
     }
 
     function resetToHome() {
-      resetFilters();
-      if (currentRouteLine) {
-        map.removeLayer(currentRouteLine);
-        currentRouteLine = null;
-      }
-      document.getElementById('routeInfoBox').classList.add('hidden');
-      map.setView([userLocation.lat, userLocation.lon], 12);
       mostraPagina('homePage');
     }
 
-    function calcolaMediaVoti(spaceId) {
-      const revs = localReviews.filter(r => r.spaceId === spaceId && !r.flagged);
-      if (revs.length === 0) return { avg: null, count: 0 };
-      const sum = revs.reduce((acc, r) => acc + r.rating, 0);
-      return { avg: (sum / revs.length).toFixed(1), count: revs.length };
-    }
-
-    function mostraDettagliSpazio(spaceId) {
-      const spz = localSpazi.find(s => s.id === spaceId);
-      if (!spz) return;
-
-      const isLoggedIn = !!currentUser;
-
-      document.getElementById('detailSpaceTitle').innerText = sanitizeHTML(spz.name);
-      
-      const ratingStats = calcolaMediaVoti(spz.id);
-      const ratingBadge = document.getElementById('detailRatingBadge');
-      if (ratingStats.avg) {
-        ratingBadge.innerText = `★ ${sanitizeHTML(ratingStats.avg)} (${sanitizeHTML(ratingStats.count)})`;
-      } else {
-        ratingBadge.innerText = `★ Nuovo`;
-      }
-
-      if (isLoggedIn) {
-        document.getElementById('detailSpaceLocation').innerHTML = `<span class="text-emerald-700 font-bold">📍 ${sanitizeHTML(spz.address || 'Via Toledo 12')}, ${sanitizeHTML(spz.city)}</span>`;
-      } else {
-        document.getElementById('detailSpaceLocation').innerText = `📍 ${sanitizeHTML(spz.city)} • ${sanitizeHTML(spz.area || 'Zona Generica')}`;
-      }
-        
-      document.getElementById('detailSpacePrice').innerText = `${sanitizeHTML(spz.price)} € /giorno`;
-
-      const daysStr = (spz.openDays || [1,2,3,4,5,6]).map(d => DAYS_MAP[d].substring(0,3)).join(', ');
-      document.getElementById('detailHoursBadge').innerText = `🕒 Giorni aperti: ${daysStr} | Orario: ${sanitizeHTML(spz.openTime || '09:00')} - ${sanitizeHTML(spz.closeTime || '19:00')}`;
-
-      const noticeBox = document.getElementById('contactLockNotice');
-      if (!isLoggedIn) {
-        noticeBox.className = "bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-amber-900 text-xs shadow-sm";
-        noticeBox.innerHTML = `
-          <div class="flex items-center gap-3">
-            <span class="text-2xl shrink-0">🔒</span>
-            <div>
-              <strong class="block text-amber-950 font-bold">Indirizzo e Contatti diretti protetti</strong>
-              <p class="text-amber-800 leading-tight">Iscriviti o accedi gratis per sbloccare l'indirizzo esatto e i contatti diretti dell'Host.</p>
-            </div>
-          </div>
-          <button onclick="toggleModal('detailModal', false); openModal('register-modal');" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-2 rounded-xl text-[11px] shrink-0 transition-colors">
-            Sblocca Ora
-          </button>
-        `;
-      } else {
-        const cleanWa = (spz.whatsapp || '393330000000').replace(/[^0-9]/g, '');
-        noticeBox.className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-emerald-900 text-xs shadow-sm";
-        noticeBox.innerHTML = `
-          <div class="flex items-center gap-3">
-            <span class="text-2xl shrink-0">🔓</span>
-            <div>
-              <strong class="block text-emerald-950 font-bold">Contatti Host Sbloccati (${sanitizeHTML(spz.host_name || 'Proprietario')})</strong>
-              <p class="text-emerald-800">📱 Tel/WhatsApp: <strong>+${sanitizeHTML(cleanWa)}</strong> | ✉️ Email: <strong>${sanitizeHTML(spz.host_email || 'host@chairshare.it')}</strong></p>
-            </div>
-          </div>
-        `;
-      }
-
-      const grid = document.getElementById('detailServicesGrid');
-      grid.innerHTML = '';
-      if (spz.features && spz.features.length > 0) {
-        spz.features.forEach(featKey => {
-          const item = SERVICES_MASTER[featKey] || { name: featKey, icon: '✔' };
-          const card = document.createElement('div');
-          card.className = 'bg-gray-50 border border-gray-200 rounded-xl p-2.5 flex items-center gap-2 font-medium text-gray-800';
-          card.innerHTML = `<span class="text-base">${sanitizeHTML(item.icon)}</span> <span>${sanitizeHTML(item.name)}</span>`;
-          grid.appendChild(card);
-        });
-      } else {
-        grid.innerHTML = '<p class="text-gray-400 italic col-span-2">Nessun servizio aggiuntivo specificato.</p>';
-      }
-
-      renderizzaSezioneRecensioni(spz.id);
-
-      const actionBtnsContainer = document.getElementById('detailActionButtons');
-      actionBtnsContainer.innerHTML = '';
-
-      if (!isLoggedIn) {
-        actionBtnsContainer.innerHTML = `
-          <button onclick="toggleModal('detailModal', false); openModal('login-modal');" class="bg-gray-900 hover:bg-black text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all w-full sm:w-auto">
-            Accedi per Contattare
-          </button>
-          <button onclick="toggleModal('detailModal', false); openModal('register-modal');" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all w-full sm:w-auto">
-            Registrati Gratis
-          </button>
-        `;
-      } else {
-        const cleanWa = (spz.whatsapp || '393330000000').replace(/[^0-9]/g, '');
-        actionBtnsContainer.innerHTML = `
-          <a href="https://wa.me/${sanitizeHTML(cleanWa)}?text=Ciao!%20Ho%20visto%20il%20tuo%20spazio%20'${encodeURIComponent(spz.name)}'%20su%20ChairShare." target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
-            💬 Chatta su WhatsApp
-          </a>
-          <a href="tel:+${sanitizeHTML(cleanWa)}" class="bg-gray-900 hover:bg-black text-white text-xs font-bold px-5 py-3 rounded-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
-            📞 Chiama Host
-          </a>
-        `;
-      }
-
-      toggleModal('detailModal', true);
-    }
-
-    function renderizzaSezioneRecensioni(spaceId) {
-      const containerForm = document.getElementById('addReviewFormContainer');
-      const listContainer = document.getElementById('spaceReviewsList');
-      const countHeader = document.getElementById('reviewCountHeader');
-
-      const spaceRevs = localReviews.filter(r => r.spaceId === spaceId && !r.flagged);
-      countHeader.innerText = `${spaceRevs.length} commenti`;
-
-      const isLoggedIn = !!currentUser;
-      const userReview = isLoggedIn ? localReviews.find(r => r.spaceId === spaceId && r.authorId === currentUser.id) : null;
-
-      if (!isLoggedIn) {
-        containerForm.innerHTML = `
-          <div class="text-center text-gray-500 py-1">
-            <p><strong>🔒 Accedi per lasciare una recensione.</strong></p>
-          </div>
-        `;
-      } else if (userReview) {
-        const starsStr = '★'.repeat(userReview.rating) + '☆'.repeat(5 - userReview.rating);
-        containerForm.innerHTML = `
-          <div class="bg-pink-50/60 border border-pink-200 rounded-2xl p-3.5 text-xs space-y-2">
-            <div class="flex justify-between items-center border-b border-pink-200/60 pb-2">
-              <span class="font-extrabold text-brand flex items-center gap-1">
-                ✔️ La tua recensione pubblicata ${userReview.hasBeenEdited ? '<span class="text-[10px] text-gray-500 font-normal">(Modificata)</span>' : ''}
-              </span>
-              <span class="text-amber-500 font-bold tracking-widest text-sm">${starsStr}</span>
-            </div>
-            <p class="text-gray-800 italic">"${sanitizeHTML(userReview.comment)}"</p>
-          </div>
-        `;
-      } else {
-        containerForm.innerHTML = `
-          <form onsubmit="salvaNuovaRecensione(event, '${sanitizeHTML(spaceId)}')" class="space-y-2.5">
-            <div class="flex justify-between items-center">
-              <span class="font-bold text-gray-800">Scrivi una recensione per questo spazio:</span>
-              <div class="flex gap-1 text-lg cursor-pointer" id="starRatingSelector">
-                <span onclick="setStarRating(1)" class="star-btn text-amber-400">★</span>
-                <span onclick="setStarRating(2)" class="star-btn text-amber-400">★</span>
-                <span onclick="setStarRating(3)" class="star-btn text-amber-400">★</span>
-                <span onclick="setStarRating(4)" class="star-btn text-amber-400">★</span>
-                <span onclick="setStarRating(5)" class="star-btn text-amber-400">★</span>
-              </div>
-            </div>
-            <textarea id="reviewCommentText" required rows="2" placeholder="Racconta la tua esperienza con lo spazio e l'Host..." class="w-full border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:border-brand bg-white"></textarea>
-            <div class="flex justify-end">
-              <button type="submit" class="bg-brand hover:bg-brand-hover text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition-colors">
-                Invia Recensione
-              </button>
-            </div>
-          </form>
-        `;
-      }
-
-      listContainer.innerHTML = '';
-      if (spaceRevs.length === 0) {
-        listContainer.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-3">Ancora nessuna recensione.</p>';
-      } else {
-        spaceRevs.forEach(r => {
-          const starsStr = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-          const authorName = r.authorEmail.split('@')[0];
-
-          const revCard = document.createElement('div');
-          revCard.className = 'bg-gray-50 border border-gray-200/80 rounded-xl p-3 space-y-1.5 text-xs';
-          revCard.innerHTML = `
-            <div class="flex justify-between items-center">
-              <strong class="text-gray-900 font-bold">${sanitizeHTML(authorName)}</strong>
-              <span class="text-amber-500 font-bold tracking-widest">${starsStr}</span>
-            </div>
-            <p class="text-gray-700 leading-relaxed">${sanitizeHTML(r.comment)}</p>
-          `;
-          listContainer.appendChild(revCard);
-        });
-      }
-    }
-
-    function setStarRating(num) {
-      selectedRatingStar = num;
-      const stars = document.querySelectorAll('#starRatingSelector .star-btn');
-      stars.forEach((s, idx) => {
-        if (idx < num) {
-          s.classList.add('text-amber-400');
-          s.classList.remove('text-gray-300');
-        } else {
-          s.classList.remove('text-amber-400');
-          s.classList.add('text-gray-300');
-        }
-      });
-    }
-
-    function salvaNuovaRecensione(e, spaceId) {
-      e.preventDefault();
-      if (!currentUser) return;
-
-      const comment = document.getElementById('reviewCommentText').value.trim();
-      if (!comment) return;
-
-      const newRev = {
-        id: 'rev_' + Date.now(),
-        spaceId: spaceId,
-        authorId: currentUser.id,
-        authorEmail: currentUser.email,
-        rating: selectedRatingStar,
-        comment: comment,
-        createdAt: new Date().toISOString().split('T')[0],
-        isVerified: true,
-        hasBeenEdited: false,
-        flagged: false
-      };
-
-      localReviews.unshift(newRev);
-      localStorage.setItem('cs_reviews', JSON.stringify(localReviews));
-
-      renderizzaSezioneRecensioni(spaceId);
-    }
-
-    function cercaSpazi() {
-      const cityDesktop = document.getElementById('cityInput') ? document.getElementById('cityInput').value.trim().toLowerCase() : '';
-      const cityMobile = document.getElementById('mobileCityInput') ? document.getElementById('mobileCityInput').value.trim().toLowerCase() : '';
-      const city = cityDesktop || cityMobile;
-
-      const typeSelect = document.getElementById('typeSelect');
-      const type = typeSelect ? typeSelect.value : selectedCategory;
-
-      let res = localSpazi.filter(s => {
-        let match = true;
-        if (city && !s.city.toLowerCase().includes(city)) match = false;
-        if (type && s.type !== type) match = false;
-        return match;
-      });
-
-      renderizzaRisultati(res);
-    }
-
-    function evidenziaSchedaEPopUp(spaceId) {
-      document.querySelectorAll('.space-card').forEach(card => {
-        card.classList.remove('selected-card');
-      });
-      
-      const activeCard = document.getElementById('card_' + spaceId);
-      if (activeCard) {
-        activeCard.classList.add('selected-card');
-        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-
-      const spz = localSpazi.find(s => s.id === spaceId);
-      if (spz) {
-        map.flyTo([spz.lat, spz.lon], 15, { animate: true, duration: 1 });
-      }
-
-      const marker = activeMarkersMap[spaceId];
-      if (marker) marker.openPopup();
-    }
-
-    function caricaDatiProfilo() {
-      if (!currentUser) return;
-      document.getElementById('profileUserEmail').innerText = sanitizeHTML(currentUser.email);
-    }
-
-    function aggiornaFormServiziPerCategoria() {
-      const type = document.getElementById('newType').value;
-      const titleElem = document.getElementById('categorySpecificTitle');
-      const boxContainer = document.getElementById('categorySpecificCheckboxes');
-
-      boxContainer.innerHTML = '';
-      titleElem.innerText = `2. Servizi Specifici (${sanitizeHTML(type.toUpperCase())})`;
-
-      Object.keys(SERVICES_MASTER).forEach(key => {
-        const item = SERVICES_MASTER[key];
-        if (item.category === type) {
-          const lbl = document.createElement('label');
-          lbl.className = 'flex items-center gap-1.5 cursor-pointer';
-          lbl.innerHTML = `<input type="checkbox" value="${sanitizeHTML(key)}" class="service-checkbox accent-brand" /> <span>${sanitizeHTML(item.icon)} ${sanitizeHTML(item.name)}</span>`;
-          boxContainer.appendChild(lbl);
-        }
-      });
-    }
-
-    function apriModalFavorites() {
-      toggleModal('favoritesModal', true);
+    function toggleMobileView() {
+      isMapViewMobile = !isMapViewMobile;
+      document.getElementById('listSection').classList.toggle('hidden', isMapViewMobile);
+      document.getElementById('mapSection').classList.toggle('hidden', !isMapViewMobile);
     }
   </script>
 </body>
