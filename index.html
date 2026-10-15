@@ -107,7 +107,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col pb-20 lg:pb-0 selection:bg-brand selection:text-white">
 
-  <!-- HEADER AIRBNB STYLE CON AREA UTENTE DINAMICA -->
+  <!-- HEADER AIRBNB STYLE CON AREA UTENTE DINAMICA E NOME REALE -->
   <header class="bg-white border-b border-gray-200 sticky top-0 z-40 px-4 py-3 md:px-8 shadow-sm navbar">
     <div class="max-w-7xl mx-auto flex justify-between items-center gap-2 md:gap-4">
       
@@ -169,14 +169,14 @@
 
         <!-- SE L'UTENTE È LOGGATO -->
         <div id="auth-user-links" class="hidden items-center gap-2">
-          <span id="user-display-name" class="text-xs font-bold text-gray-800 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200">Ciao!</span>
+          <span id="user-display-name" class="text-xs font-bold text-gray-800 bg-gray-100 px-3.5 py-2 rounded-full border border-gray-200 shadow-sm">Ciao!</span>
           <button onclick="apriAggiungiSpazio()" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-3.5 py-2 rounded-full shadow-md transition-all hidden sm:block">
             + Pubblica Spazio
           </button>
-          <button onclick="gestisciClickProfilo()" class="flex items-center gap-1.5 border border-gray-300 hover:shadow-md px-2.5 py-1.5 rounded-full transition-all">
-            <span class="text-xs">👤 Profilo</span>
+          <button onclick="gestisciClickProfilo()" class="flex items-center gap-1.5 border border-gray-300 hover:shadow-md px-3 py-2 rounded-full transition-all">
+            <span class="text-xs font-bold">👤 Profilo</span>
           </button>
-          <button onclick="gestisciLogout()" class="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-full transition-colors">
+          <button onclick="gestisciLogout()" class="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-2 rounded-full transition-colors">
             Esci
           </button>
         </div>
@@ -220,22 +220,28 @@
     <!-- CATEGORY BAR -->
     <div class="bg-white border-b border-gray-200 py-3 px-4 shadow-sm sticky top-[150px] md:top-[61px] z-20">
       <div class="max-w-7xl mx-auto flex items-center gap-8 overflow-x-auto no-scrollbar" id="categoryPills">
-        <button onclick="selectCategory('')" class="cat-pill active flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all">
-          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25-2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>
+        
+        <button onclick="selectCategory('')" data-cat="" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all">
+          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
+            <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
+            <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" />
+            <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
+          </svg>
           <span>Tutti gli Spazi</span>
         </button>
 
-        <button onclick="selectCategory('psicoterapia')" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-600 hover:text-gray-900 pb-1.5 text-xs font-medium transition-all">
+        <button onclick="selectCategory('psicoterapia')" data-cat="psicoterapia" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
           <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/></svg>
           <span>Psicoterapia</span>
         </button>
 
-        <button onclick="selectCategory('massaggi')" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-600 hover:text-gray-900 pb-1.5 text-xs font-medium transition-all">
+        <button onclick="selectCategory('massaggi')" data-cat="massaggi" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
           <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
           <span>Massaggi</span>
         </button>
 
-        <button onclick="selectCategory('barbiere')" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-600 hover:text-gray-900 pb-1.5 text-xs font-medium transition-all">
+        <button onclick="selectCategory('barbiere')" data-cat="barbiere" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
           <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="7.5" cy="17.5" r="3" />
             <circle cx="16.5" cy="17.5" r="3" />
@@ -246,17 +252,17 @@
           <span>Hair & Barber</span>
         </button>
 
-        <button onclick="selectCategory('estetica')" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-600 hover:text-gray-900 pb-1.5 text-xs font-medium transition-all">
+        <button onclick="selectCategory('estetica')" data-cat="estetica" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
           <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
           <span>Estetica & Nails</span>
         </button>
 
-        <button onclick="selectCategory('fotografia')" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-600 hover:text-gray-900 pb-1.5 text-xs font-medium transition-all">
+        <button onclick="selectCategory('fotografia')" data-cat="fotografia" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
           <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
           <span>Foto & Video</span>
         </button>
 
-        <button onclick="selectCategory('coworking')" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-600 hover:text-gray-900 pb-1.5 text-xs font-medium transition-all">
+        <button onclick="selectCategory('coworking')" data-cat="coworking" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
           <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
           <span>Coworking</span>
         </button>
@@ -278,15 +284,6 @@
       <div id="mapSection" class="hidden lg:block lg:col-span-5 h-[calc(100vh-160px)] sticky top-[150px] z-0">
         <div class="apple-map-container w-full h-full relative">
           <div id="map" class="w-full h-full"></div>
-          
-          <div id="routeInfoBox" class="hidden absolute top-4 right-4 z-[999] bg-white/95 backdrop-blur-md border border-gray-200 p-3.5 rounded-2xl shadow-xl text-xs max-w-xs transition-all">
-            <div class="flex items-center gap-2 font-bold text-brand mb-1">
-              <span id="routeModeIcon">🚗</span>
-              <span id="routeTitle">Percorso Calcolato</span>
-            </div>
-            <div class="text-gray-700">Distanza: <strong id="routeDistanceText" class="text-gray-900">0 km</strong></div>
-            <div class="text-gray-500 text-[11px] mt-0.5" id="routeTimeText">Tempo stimato: --</div>
-          </div>
         </div>
       </div>
     </main>
@@ -299,43 +296,13 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION DOCK MOBILE -->
-  <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 py-2 px-2 flex justify-around items-center shadow-lg">
-    <button onclick="toggleModal('howItWorksModal', true)" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800 flex-1">
-      <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
-      <span class="text-[10px] font-medium">Info</span>
-    </button>
-
-    <button onclick="resetToHome()" class="flex flex-col items-center gap-1 text-brand flex-1">
-      <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
-      <span class="text-[10px] font-bold">Esplora</span>
-    </button>
-    
-    <button onclick="apriAggiungiSpazio()" class="flex flex-col items-center justify-center flex-1 -mt-5">
-      <div class="w-12 h-12 rounded-full bg-brand text-white flex items-center justify-center font-extrabold text-2xl shadow-lg ring-4 ring-white border border-brand transition-transform active:scale-95">
-        +
-      </div>
-      <span class="text-[10px] font-bold text-brand mt-0.5">Pubblica</span>
-    </button>
-
-    <button onclick="apriModalFavorites()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800 flex-1">
-      <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
-      <span class="text-[10px] font-medium">Preferiti</span>
-    </button>
-
-    <button onclick="gestisciClickProfilo()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-800 flex-1">
-      <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-      <span class="text-[10px] font-medium">Profilo</span>
-    </button>
-  </nav>
-
-  <!-- AREA PERSONALE PERSONALIZZATA -->
+  <!-- AREA PERSONALE PERSONALIZZATA CON NOME COMPLETO -->
   <div id="profilePage" class="hidden flex-1 max-w-5xl mx-auto w-full p-4 md:p-8">
     <div class="space-y-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-gray-200 shadow-sm gap-4">
         <div>
           <div class="flex items-center gap-2">
-            <h2 class="text-2xl font-bold text-gray-900">Area Personale</h2>
+            <h2 id="profileUserFullName" class="text-2xl font-bold text-gray-900">Francesco Borrelli</h2>
             <span id="userRoleBadge" class="text-xs px-3 py-1 rounded-full font-bold bg-pink-100 text-brand">Utente Registrato</span>
           </div>
           <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
@@ -350,7 +317,7 @@
         </div>
       </div>
 
-      <!-- SEZIONE SPAZI PUBBLICATI (SOLO HOST) -->
+      <!-- SEZIONE SPAZI PUBBLICATI CON FUNZIONE MODIFICA ED ELIMINA -->
       <div id="hostSpacesSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
           <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi in Vetrina</h3>
@@ -413,7 +380,7 @@
     </div>
   </div>
 
-  <!-- MODALE REGISTRAZIONE -->
+  <!-- MODALE REGISTRAZIONE CON NOME E COGNOME COMPLETO -->
   <div id="register-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 modal" style="display:none;">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative modal-content">
       <button onclick="closeModal('register-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
@@ -424,7 +391,7 @@
       <form id="form-register" class="space-y-3">
         <div>
           <label class="text-xs text-gray-500 uppercase font-bold">Nome e Cognome</label>
-          <input type="text" id="reg-fullname" placeholder="Nome e Cognome" required class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          <input type="text" id="reg-fullname" placeholder="Es. Francesco Borrelli" required class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
         </div>
         <div>
           <label class="text-xs text-gray-500 uppercase font-bold">Email</label>
@@ -445,21 +412,17 @@
     </div>
   </div>
 
-  <!-- MODALE DETTAGLIO COMPLETO SERVIZI, CONTATTI E RECENSIONI -->
+  <!-- MODALE DETTAGLIO SPAZIO -->
   <div id="detailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
-      
-      <!-- FIX TASTO X DI CHIUSURA SENZA SOVRAPPOSIZIONI -->
       <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold z-20">✕</button>
 
       <div class="border-b border-gray-100 pb-3 pr-10">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h3 id="detailSpaceTitle" class="text-xl font-extrabold text-gray-900">Nome Spazio</h3>
-          <!-- FIX SPATIAL BADGE RATING DALLA X -->
           <span id="detailRatingBadge" class="text-xs font-bold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200 shrink-0">⭐ 5.0</span>
         </div>
         
-        <!-- INDIRIZZO / ZONA OSCURATA SE NON LOGGATO -->
         <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-1 font-medium">Città • Zona</p>
         <div id="detailHoursBadge" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 space-y-1"></div>
       </div>
@@ -490,7 +453,7 @@
     </div>
   </div>
 
-  <!-- MODALE AGGIUNGI SPAZIO A 3 STEP CON ORARI E SERVIZI GIORNO PER GIORNO -->
+  <!-- MODALE CREAZIONE E MODIFICA SPAZIO A 3 STEP -->
   <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
     <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative h-full sm:h-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
       
@@ -509,14 +472,14 @@
       </div>
       
       <form id="addSpaceForm">
-        <input type="hidden" id="editingSpaceId" />
+        <input type="hidden" id="editingSpaceId" value="" />
 
-        <!-- STEP 1: INFO GENERALI, INDIRIZZO E ZONA -->
+        <!-- STEP 1 -->
         <div id="stepSection1" class="space-y-3">
           <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 1: Posizione & Tipologia</h4>
           <div>
             <label class="text-xs text-gray-500 uppercase font-bold">Nome dello Spazio</label>
-            <input id="newName" type="text" required placeholder="Es. Studio Psicoterapia Toledo" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            <input id="newName" type="text" required placeholder="Es. Studio Falco" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
           </div>
           <div>
             <label class="text-xs text-gray-500 uppercase font-bold">Descrizione</label>
@@ -530,11 +493,11 @@
             </div>
             <div>
               <label class="text-xs text-gray-500 uppercase font-bold">Quartiere / Zona</label>
-              <input id="newZone" type="text" required placeholder="Es. Chiaiano / Centro" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <input id="newZone" type="text" required placeholder="Es. Chiaiano" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
             <div>
               <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo Riservato</label>
-              <input id="newAddress" type="text" required placeholder="Via Toledo 10 (Visibile solo se loggati)" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <input id="newAddress" type="text" required placeholder="Via Cupa Spinelli 158" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
 
@@ -562,25 +525,20 @@
           </div>
         </div>
 
-        <!-- STEP 2: ORARI GIORNO PER GIORNO & SPUNTE SERVIZI INCLUSI -->
+        <!-- STEP 2 -->
         <div id="stepSection2" class="hidden space-y-4">
           <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Orari Giorno per Giorno & Servizi Inclusi</h4>
           
-          <!-- SELEZIONE ORARI PER OGNI GIORNO -->
           <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
             <label class="text-xs text-gray-700 uppercase font-extrabold block">📅 Orari di Apertura per Singolo Giorno</label>
-            <div id="dailyHoursContainer" class="space-y-1.5 text-xs">
-              <!-- DINAMICO GENERA LUN-DOM -->
-            </div>
+            <div id="dailyHoursContainer" class="space-y-1.5 text-xs"></div>
           </div>
 
-          <!-- SERVIZI SPECIFICI DINAMICI CATEGORIA -->
           <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
-            <label class="text-xs text-gray-700 uppercase font-extrabold block">🛠️ Cosa è incluso nel prezzo (Specifico per la categoria)</label>
+            <label class="text-xs text-gray-700 uppercase font-extrabold block">🛠️ Cosa è incluso nel prezzo</label>
             <div id="categoryServicesCheckboxes" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
           </div>
 
-          <!-- TARIFFA -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="text-xs text-gray-500 uppercase font-bold">Modalità Affitto</label>
@@ -591,7 +549,7 @@
             </div>
             <div>
               <label class="text-xs text-gray-500 uppercase font-bold">Prezzo (€)</label>
-              <input id="newPrice" type="number" required placeholder="Es. 50" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <input id="newPrice" type="number" required placeholder="Es. 35" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
 
@@ -601,7 +559,7 @@
           </div>
         </div>
 
-        <!-- STEP 3: PUBBLICAZIONE -->
+        <!-- STEP 3 -->
         <div id="stepSection3" class="hidden space-y-4">
           <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 3: Pubblicazione Vetrina</h4>
           
@@ -621,7 +579,7 @@
     </div>
   </div>
 
-  <!-- SCRIPT COMPLETO APPLICAZIONE LOGICA JS -->
+  <!-- SCRIPT COMPLETO CON GESTIONE MODIFICA E NOME COMPLETO UTENTE -->
   <script>
     function sanitizeHTML(str) {
       if (!str) return '';
@@ -688,7 +646,8 @@
           try {
             const { data, error } = await client.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
             if (!error) {
-              currentUser = data.user || { email: email };
+              currentUser = data.user || { email: email, user_metadata: { full_name: fullName } };
+              if (!currentUser.user_metadata) currentUser.user_metadata = { full_name: fullName };
               aggiornaStatoAuth();
               closeModal('register-modal');
             }
@@ -718,60 +677,14 @@
       }
     });
 
-    function generaCampiOrariGiornalieri() {
-      const container = document.getElementById('dailyHoursContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      GIORNI_SETTIMANA.forEach((giorno, idx) => {
-        const isChecked = idx < 5;
-        const div = document.createElement('div');
-        div.className = "flex items-center justify-between gap-2 p-1.5 bg-white border border-gray-200 rounded-xl";
-        div.innerHTML = `
-          <label class="flex items-center gap-2 cursor-pointer font-bold w-28">
-            <input type="checkbox" id="check_${giorno}" ${isChecked ? 'checked' : ''} onchange="toggleDayTimeRow('${giorno}')" class="rounded text-brand focus:ring-brand" />
-            <span>${giorno}</span>
-          </label>
-          <div id="times_${giorno}" class="flex items-center gap-1 ${isChecked ? '' : 'opacity-30 pointer-events-none'}">
-            <input type="time" id="open_${giorno}" value="09:00" class="border rounded p-1 text-[11px]" />
-            <span>-</span>
-            <input type="time" id="close_${giorno}" value="18:00" class="border rounded p-1 text-[11px]" />
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function toggleDayTimeRow(giorno) {
-      const chk = document.getElementById(`check_${giorno}`).checked;
-      const box = document.getElementById(`times_${giorno}`);
-      if (chk) {
-        box.classList.remove('opacity-30', 'pointer-events-none');
-      } else {
-        box.classList.add('opacity-30', 'pointer-events-none');
-      }
-    }
-
-    function aggiornaServiziInclusiForm() {
-      const cat = document.getElementById('newType').value;
-      const container = document.getElementById('categoryServicesCheckboxes');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const servizi = SERVIZI_PER_CATEGORIA[cat] || [];
-      servizi.forEach((srv, i) => {
-        const label = document.createElement('label');
-        label.className = "flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand";
-        label.innerHTML = `<input type="checkbox" value="${srv}" class="service-checkbox rounded text-brand focus:ring-brand" checked /> <span>${srv}</span>`;
-        container.appendChild(label);
-      });
-    }
-
     function aggiornaStatoAuth() {
       if (currentUser) {
+        let nomeCompleto = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0];
+        
         document.getElementById('auth-guest-links').style.display = 'none';
         document.getElementById('auth-user-links').style.display = 'flex';
-        document.getElementById('user-display-name').innerText = `Ciao, ${currentUser.email.split('@')[0]}`;
+        document.getElementById('user-display-name').innerText = `Ciao, ${nomeCompleto}`;
+        document.getElementById('profileUserFullName').innerText = nomeCompleto;
         document.getElementById('profileUserEmail').innerText = currentUser.email;
       } else {
         document.getElementById('auth-guest-links').style.display = 'flex';
@@ -791,7 +704,6 @@
       const isLoggedIn = !!currentUser;
 
       spaces.forEach(space => {
-        // OSCURAMENTO INDIRIZZO SE NON LOGGATO
         const locationText = isLoggedIn 
           ? `📍 ${sanitizeHTML(space.address)}, ${sanitizeHTML(space.city)}`
           : `📍 ${sanitizeHTML(space.city)} • Zona ${sanitizeHTML(space.zone || 'Riservata')}`;
@@ -822,7 +734,68 @@
       });
     }
 
+    function apriAggiungiSpazio() {
+      if (!currentUser) openModal('register-modal');
+      else {
+        document.getElementById('editingSpaceId').value = '';
+        document.getElementById('modalSpaceTitle').innerText = 'Pubblica il tuo Spazio';
+        document.getElementById('saveBtn').innerText = 'Salva e Pubblica';
+        document.getElementById('addSpaceForm').reset();
+        generaCampiOrariGiornalieri();
+        aggiornaServiziInclusiForm();
+        goToStep(1);
+        toggleModal('addModal', true);
+      }
+    }
+
+    function apriModificaSpazio(spaceId) {
+      const s = localSpazi.find(item => item.id === spaceId);
+      if (!s) return;
+
+      document.getElementById('editingSpaceId').value = s.id;
+      document.getElementById('modalSpaceTitle').innerText = 'Modifica il tuo Spazio';
+      document.getElementById('saveBtn').innerText = 'Salva Modifiche';
+
+      document.getElementById('newName').value = s.name || '';
+      document.getElementById('newCity').value = s.city || '';
+      document.getElementById('newZone').value = s.zone || '';
+      document.getElementById('newAddress').value = s.address || '';
+      document.getElementById('newType').value = s.type || 'psicoterapia';
+      document.getElementById('newWhatsapp').value = s.phone || '';
+      document.getElementById('newPriceUnit').value = s.priceUnit || 'giorno';
+      document.getElementById('newPrice').value = s.price || '';
+
+      aggiornaServiziInclusiForm();
+
+      if (s.services) {
+        document.querySelectorAll('.service-checkbox').forEach(cb => {
+          cb.checked = s.services.includes(cb.value);
+        });
+      }
+
+      if (s.dailySchedule) {
+        GIORNI_SETTIMANA.forEach(giorno => {
+          const chk = document.getElementById(`check_${giorno}`);
+          if (s.dailySchedule[giorno]) {
+            chk.checked = true;
+            const parts = s.dailySchedule[giorno].split(' - ');
+            if (parts.length === 2) {
+              document.getElementById(`open_${giorno}`).value = parts[0];
+              document.getElementById(`close_${giorno}`).value = parts[1];
+            }
+          } else if (chk) {
+            chk.checked = false;
+          }
+          toggleDayTimeRow(giorno);
+        });
+      }
+
+      goToStep(1);
+      toggleModal('addModal', true);
+    }
+
     function pubblicaNuovoSpazio() {
+      const editId = document.getElementById('editingSpaceId').value;
       const name = document.getElementById('newName').value.trim();
       const city = document.getElementById('newCity').value.trim();
       const zone = document.getElementById('newZone').value.trim();
@@ -848,25 +821,35 @@
 
       const selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map(cb => cb.value);
 
-      const newSpace = {
-        id: 'spz_' + Date.now(),
-        name, city, zone, address, price, priceUnit, type, phone,
-        dailySchedule,
-        services: selectedServices,
-        lat: 40.8518 + (Math.random() - 0.5) * 0.05,
-        lon: 14.2681 + (Math.random() - 0.5) * 0.05,
-        hostEmail: currentUser ? currentUser.email : 'mio.account@mail.it'
-      };
+      if (editId) {
+        const index = localSpazi.findIndex(s => s.id === editId);
+        if (index !== -1) {
+          localSpazi[index] = {
+            ...localSpazi[index],
+            name, city, zone, address, price, priceUnit, type, phone,
+            dailySchedule, services: selectedServices
+          };
+          alert("🎉 Spazio modificato con successo!");
+        }
+      } else {
+        const newSpace = {
+          id: 'spz_' + Date.now(),
+          name, city, zone, address, price, priceUnit, type, phone,
+          dailySchedule, services: selectedServices,
+          lat: 40.8518 + (Math.random() - 0.5) * 0.05,
+          lon: 14.2681 + (Math.random() - 0.5) * 0.05,
+          hostEmail: currentUser ? currentUser.email : 'mio.account@mail.it'
+        };
+        localSpazi.unshift(newSpace);
+        alert("🎉 Spazio pubblicato con successo in vetrina!");
+      }
 
-      localSpazi.unshift(newSpace);
       renderizzaRisultati(localSpazi);
       renderizzaSpaziUtente();
 
       toggleModal('addModal', false);
       document.getElementById('addSpaceForm').reset();
       goToStep(1);
-
-      alert("🎉 Spazio pubblicato con successo in vetrina!");
     }
 
     function renderizzaSpaziUtente() {
@@ -883,14 +866,17 @@
 
       mySpaces.forEach(s => {
         const div = document.createElement('div');
-        div.className = 'border border-gray-200 rounded-2xl p-4 bg-gray-50 flex flex-col justify-between';
+        div.className = 'border border-gray-200 rounded-2xl p-4 bg-gray-50 flex flex-col justify-between shadow-sm';
         div.innerHTML = `
           <div>
             <h4 class="font-bold text-sm text-gray-900">${sanitizeHTML(s.name)}</h4>
             <p class="text-xs text-gray-500 mt-0.5">📍 ${sanitizeHTML(s.address)}, ${sanitizeHTML(s.city)}</p>
             <p class="text-xs font-bold text-brand mt-1">${s.price} € / ${s.priceUnit}</p>
           </div>
-          <button onclick="eliminaSpazio('${s.id}')" class="mt-3 text-xs text-red-600 font-bold hover:underline text-left">Elimina Spazio</button>
+          <div class="flex items-center gap-3 mt-4 pt-2 border-t border-gray-200">
+            <button onclick="apriModificaSpazio('${s.id}')" class="text-xs text-blue-600 font-bold hover:underline">✏️ Modifica</button>
+            <button onclick="eliminaSpazio('${s.id}')" class="text-xs text-red-600 font-bold hover:underline">🗑️ Elimina</button>
+          </div>
         `;
         container.appendChild(div);
       });
@@ -904,6 +890,74 @@
       }
     }
 
+    function selectCategory(cat) {
+      selectedCategory = cat;
+
+      const pills = document.querySelectorAll('#categoryPills .cat-pill');
+      pills.forEach(pill => {
+        const pCat = pill.getAttribute('data-cat');
+        if (pCat === cat) {
+          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all";
+        } else {
+          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all";
+        }
+      });
+
+      const selectElem = document.getElementById('typeSelect');
+      if (selectElem) selectElem.value = cat;
+      cercaSpazi();
+    }
+
+    function generaCampiOrariGiornalieri() {
+      const container = document.getElementById('dailyHoursContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      GIORNI_SETTIMANA.forEach((giorno, idx) => {
+        const isChecked = idx < 5;
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between gap-2 p-1.5 bg-white border border-gray-200 rounded-xl";
+        div.innerHTML = `
+          <label class="flex items-center gap-2 cursor-pointer font-bold w-28">
+            <input type="checkbox" id="check_${giorno}" ${isChecked ? 'checked' : ''} onchange="toggleDayTimeRow('${giorno}')" class="rounded text-brand focus:ring-brand" />
+            <span>${giorno}</span>
+          </label>
+          <div id="times_${giorno}" class="flex items-center gap-1 ${isChecked ? '' : 'opacity-30 pointer-events-none'}">
+            <input type="time" id="open_${giorno}" value="09:00" class="border rounded p-1 text-[11px]" />
+            <span>-</span>
+            <input type="time" id="close_${giorno}" value="18:00" class="border rounded p-1 text-[11px]" />
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleDayTimeRow(giorno) {
+      const chk = document.getElementById(`check_${giorno}`)?.checked;
+      const box = document.getElementById(`times_${giorno}`);
+      if (!box) return;
+      if (chk) {
+        box.classList.remove('opacity-30', 'pointer-events-none');
+      } else {
+        box.classList.add('opacity-30', 'pointer-events-none');
+      }
+    }
+
+    function aggiornaServiziInclusiForm() {
+      const cat = document.getElementById('newType').value;
+      const container = document.getElementById('categoryServicesCheckboxes');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const servizi = SERVIZI_PER_CATEGORIA[cat] || [];
+      servizi.forEach((srv) => {
+        const label = document.createElement('label');
+        label.className = "flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand";
+        label.innerHTML = `<input type="checkbox" value="${srv}" class="service-checkbox rounded text-brand focus:ring-brand" checked /> <span>${srv}</span>`;
+        container.appendChild(label);
+      });
+    }
+
     function mostraDettagliSpazio(spaceId) {
       activeSelectedSpace = localSpazi.find(s => s.id === spaceId);
       if (!activeSelectedSpace) return;
@@ -913,12 +967,10 @@
       document.getElementById('detailSpaceTitle').innerText = sanitizeHTML(activeSelectedSpace.name);
       document.getElementById('detailSpacePrice').innerText = `${sanitizeHTML(activeSelectedSpace.price)} € / ${activeSelectedSpace.priceUnit}`;
       
-      // INDIRIZZO / ZONA OSCURATA
       document.getElementById('detailSpaceLocation').innerText = isLoggedIn
         ? `${sanitizeHTML(activeSelectedSpace.city)} • ${sanitizeHTML(activeSelectedSpace.address)}`
-        : `${sanitizeHTML(activeSelectedSpace.city)} • Zona ${sanitizeHTML(activeSelectedSpace.zone || 'Riservata (Accedi per l\'indirizzo)')}`;
+        : `${sanitizeHTML(activeSelectedSpace.city)} • Zona ${sanitizeHTML(activeSelectedSpace.zone || 'Riservata')}`;
 
-      // RENDERIZZA ORARI GIORNO PER GIORNO
       const hoursContainer = document.getElementById('detailHoursBadge');
       hoursContainer.innerHTML = '<strong class="block font-bold mb-1">⏰ Orari di Apertura:</strong>';
       if (activeSelectedSpace.dailySchedule) {
@@ -927,7 +979,6 @@
         });
       }
 
-      // RENDERIZZA SERVIZI SPECIFICI
       const servicesGrid = document.getElementById('detailServicesGrid');
       servicesGrid.innerHTML = '';
       if (activeSelectedSpace.services && activeSelectedSpace.services.length > 0) {
@@ -961,14 +1012,6 @@
     function gestisciClickProfilo() {
       if (!currentUser) openModal('login-modal');
       else mostraPagina('profilePage');
-    }
-
-    function apriAggiungiSpazio() {
-      if (!currentUser) openModal('register-modal');
-      else {
-        goToStep(1);
-        toggleModal('addModal', true);
-      }
     }
 
     function goToStep(step) {
@@ -1013,15 +1056,8 @@
       }
     }
 
-    function selectCategory(cat) {
-      selectedCategory = cat;
-      const selectElem = document.getElementById('typeSelect');
-      if (selectElem) selectElem.value = cat;
-      cercaSpazi();
-    }
-
     function resetFilters() {
-      selectedCategory = '';
+      selectCategory('');
       if(document.getElementById('cityInput')) document.getElementById('cityInput').value = '';
       cercaSpazi();
     }
