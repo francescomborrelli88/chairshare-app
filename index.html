@@ -445,42 +445,28 @@
     </div>
   </div>
 
-  <!-- MODALE PREFERITI -->
-  <div id="favoritesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-center space-y-4">
-      <button onclick="toggleModal('favoritesModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-      <div class="w-14 h-14 bg-pink-50 text-brand rounded-full flex items-center justify-center mx-auto text-2xl shadow-sm border border-pink-100">❤️</div>
-      <div>
-        <h3 class="text-xl font-extrabold text-gray-900">Preferiti</h3>
-        <p class="text-xs text-gray-500 mt-1">Salva i tuoi spazi migliori qui!</p>
-      </div>
-      <div class="pt-2">
-        <button onclick="toggleModal('favoritesModal', false)" class="w-full py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md transition-all">Ho Capito</button>
-      </div>
-    </div>
-  </div>
-
   <!-- MODALE DETTAGLIO COMPLETO SERVIZI, CONTATTI E RECENSIONI -->
   <div id="detailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
-      <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      
+      <!-- FIX TASTO X DI CHIUSURA SENZA SOVRAPPOSIZIONI -->
+      <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold z-20">✕</button>
 
-      <div class="border-b border-gray-100 pb-3">
-        <div class="flex justify-between items-start gap-2">
+      <div class="border-b border-gray-100 pb-3 pr-10">
+        <div class="flex flex-wrap items-center justify-between gap-2">
           <h3 id="detailSpaceTitle" class="text-xl font-extrabold text-gray-900">Nome Spazio</h3>
-          <span id="detailRatingBadge" class="text-xs font-bold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200">⭐ 5.0</span>
+          <!-- FIX SPATIAL BADGE RATING DALLA X -->
+          <span id="detailRatingBadge" class="text-xs font-bold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200 shrink-0">⭐ 5.0</span>
         </div>
-        <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-0.5">Città • Indirizzo</p>
-        <div id="detailHoursBadge" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2 rounded-xl border border-emerald-100">Disponibilità: Lun-Sab | 09:00 - 19:00</div>
+        
+        <!-- INDIRIZZO / ZONA OSCURATA SE NON LOGGATO -->
+        <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-1 font-medium">Città • Zona</p>
+        <div id="detailHoursBadge" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 space-y-1"></div>
       </div>
 
       <div>
-        <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Tutti i Servizi Inclusi nello Spazio</h4>
-        <div id="detailServicesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <div class="p-2 bg-gray-50 rounded-xl">📶 Wi-Fi ad alta velocità</div>
-          <div class="p-2 bg-gray-50 rounded-xl">❄️ Aria Condizionata</div>
-          <div class="p-2 bg-gray-50 rounded-xl">🛋️ Sala d'attesa clienti</div>
-        </div>
+        <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Servizi Inclusi nello Spazio</h4>
+        <div id="detailServicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
       </div>
 
       <div id="contactLockNotice" class="bg-pink-50 border border-pink-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-xs transition-all">
@@ -504,50 +490,7 @@
     </div>
   </div>
 
-  <!-- MODALE COME FUNZIONA -->
-  <div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative text-xs text-gray-700 space-y-5">
-      <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">✕</button>
-
-      <h3 class="text-xl font-extrabold text-gray-900 border-b border-gray-100 pb-3 flex items-center gap-2">
-        💡 Come Funziona ChairShare
-      </h3>
-
-      <div class="space-y-4 text-sm">
-        <div class="flex gap-3 items-start">
-          <span class="text-2xl">🔍</span>
-          <div>
-            <strong class="text-brand block text-base mb-1">1. Cerca lo Spazio Ideale</strong>
-            <p class="text-gray-600 leading-relaxed">Filtra le strutture per città, tipologia o servizi desiderati.</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3 items-start">
-          <span class="text-2xl">🔓</span>
-          <div>
-            <strong class="text-brand block text-base mb-1">2. Sblocca i Contatti Gratuitamente</strong>
-            <p class="text-gray-600 leading-relaxed">Registrati gratis per accedere all'indirizzo esatto e ai recapiti diretti dell'Host.</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3 items-start">
-          <span class="text-2xl">🤝</span>
-          <div>
-            <strong class="text-brand block text-base mb-1">3. Contatta in Autonomia</strong>
-            <p class="text-gray-600 leading-relaxed">Accordati direttamente con il proprietario senza commissioni.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-end pt-4 border-t border-gray-100">
-        <button onclick="toggleModal('howItWorksModal', false)" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-sm transition-colors shadow-md">
-          Ho Capito
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODALE AGGIUNGI SPAZIO A 3 STEP -->
+  <!-- MODALE AGGIUNGI SPAZIO A 3 STEP CON ORARI E SERVIZI GIORNO PER GIORNO -->
   <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
     <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative h-full sm:h-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
       
@@ -568,9 +511,9 @@
       <form id="addSpaceForm">
         <input type="hidden" id="editingSpaceId" />
 
-        <!-- STEP 1: INFO GENERALI & INDIRIZZO -->
+        <!-- STEP 1: INFO GENERALI, INDIRIZZO E ZONA -->
         <div id="stepSection1" class="space-y-3">
-          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 1: Informazioni Generali & Posizione</h4>
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 1: Posizione & Tipologia</h4>
           <div>
             <label class="text-xs text-gray-500 uppercase font-bold">Nome dello Spazio</label>
             <input id="newName" type="text" required placeholder="Es. Studio Psicoterapia Toledo" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
@@ -579,21 +522,26 @@
             <label class="text-xs text-gray-500 uppercase font-bold">Descrizione</label>
             <textarea id="newDescription" rows="2" placeholder="Descrivi brevemente lo spazio..." class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white"></textarea>
           </div>
-          <div class="grid grid-cols-2 gap-2">
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div>
               <label class="text-xs text-gray-500 uppercase font-bold">Città</label>
               <input id="newCity" type="text" required placeholder="Napoli" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo Completo</label>
-              <input id="newAddress" type="text" required placeholder="Via Toledo 10" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <label class="text-xs text-gray-500 uppercase font-bold">Quartiere / Zona</label>
+              <input id="newZone" type="text" required placeholder="Es. Chiaiano / Centro" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo Riservato</label>
+              <input id="newAddress" type="text" required placeholder="Via Toledo 10 (Visibile solo se loggati)" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
             <div>
               <label class="text-xs text-gray-500 uppercase font-bold">Tipologia Spazio</label>
-              <select id="newType" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white">
+              <select id="newType" onchange="aggiornaServiziInclusiForm()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white font-bold">
                 <option value="psicoterapia">Studio Psicoterapia / Counseling</option>
                 <option value="massaggi">Cabina Massaggi / Fisioterapia</option>
                 <option value="barbiere">Barbiere / Parrucchiere</option>
@@ -609,41 +557,30 @@
           </div>
           <div class="flex justify-end pt-3">
             <button type="button" onclick="goToStep(2)" class="w-full sm:w-auto px-6 py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">
-              Avanti: Orari & Prezzi →
+              Avanti: Orari & Servizi Inclusi →
             </button>
           </div>
         </div>
 
-        <!-- STEP 2: ORARI, PREZZI & TIPO AFFITTO -->
+        <!-- STEP 2: ORARI GIORNO PER GIORNO & SPUNTE SERVIZI INCLUSI -->
         <div id="stepSection2" class="hidden space-y-4">
-          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Giorni, Orari & Tariffe Indicative</h4>
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Orari Giorno per Giorno & Servizi Inclusi</h4>
           
-          <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 space-y-3">
-            <label class="text-xs text-gray-700 uppercase font-extrabold block">📅 Giorni di Disponibilità</label>
-            <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5 text-center text-xs">
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="Lun" class="day-check" checked /> Lun</label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="Mar" class="day-check" checked /> Mar</label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="Mer" class="day-check" checked /> Mer</label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="Gio" class="day-check" checked /> Gio</label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="Ven" class="day-check" checked /> Ven</label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="Sab" class="day-check" checked /> Sab</label>
-              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="Dom" class="day-check" /> Dom</label>
+          <!-- SELEZIONE ORARI PER OGNI GIORNO -->
+          <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
+            <label class="text-xs text-gray-700 uppercase font-extrabold block">📅 Orari di Apertura per Singolo Giorno</label>
+            <div id="dailyHoursContainer" class="space-y-1.5 text-xs">
+              <!-- DINAMICO GENERA LUN-DOM -->
             </div>
           </div>
 
-          <!-- ORARI APERTURA E CHIUSURA -->
-          <div class="grid grid-cols-2 gap-3 bg-gray-50 p-3.5 rounded-2xl border border-gray-200">
-            <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">⏰ Orario Apertura</label>
-              <input id="newOpenTime" type="time" value="09:00" required class="w-full mt-1 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 bg-white" />
-            </div>
-            <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">⏰ Orario Chiusura</label>
-              <input id="newCloseTime" type="time" value="19:00" required class="w-full mt-1 border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 bg-white" />
-            </div>
+          <!-- SERVIZI SPECIFICI DINAMICI CATEGORIA -->
+          <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
+            <label class="text-xs text-gray-700 uppercase font-extrabold block">🛠️ Cosa è incluso nel prezzo (Specifico per la categoria)</label>
+            <div id="categoryServicesCheckboxes" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
           </div>
 
-          <!-- TIPO TARIFFA E PREZZO -->
+          <!-- TARIFFA -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="text-xs text-gray-500 uppercase font-bold">Modalità Affitto</label>
@@ -653,7 +590,7 @@
               </select>
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Prezzo Indicativo (€)</label>
+              <label class="text-xs text-gray-500 uppercase font-bold">Prezzo (€)</label>
               <input id="newPrice" type="number" required placeholder="Es. 50" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
@@ -669,8 +606,8 @@
           <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 3: Pubblicazione Vetrina</h4>
           
           <div class="bg-emerald-50 p-3.5 rounded-2xl border border-emerald-200 text-xs text-emerald-800">
-            <strong class="block font-bold">💡 Contatto Diretto Inserito:</strong>
-            <p>Gli utenti interessati potranno contattarti direttamente via WhatsApp e Telefono.</p>
+            <strong class="block font-bold">💡 Protezione Indirizzo Attiva:</strong>
+            <p>L'indirizzo esatto sarà protetto e visibile solo agli utenti registrati.</p>
           </div>
 
           <div class="flex justify-between pt-3">
@@ -681,18 +618,6 @@
           </div>
         </div>
       </form>
-    </div>
-  </div>
-
-  <!-- MODALE PRIVACY E NOTE LEGALI -->
-  <div id="legalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 w-full max-w-xl shadow-2xl relative max-h-[85vh] overflow-y-auto text-xs text-gray-600 space-y-3">
-      <button onclick="toggleModal('legalModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-      <h3 class="text-lg font-extrabold text-gray-900 border-b border-gray-100 pb-2">⚖️ Termini di Servizio & Note Legali</h3>
-      <p>ChairShare è una piattaforma vetrina che permette la messa in contatto tra lavoratori ed Host nel rispetto delle normative vigenti.</p>
-      <div class="flex justify-end pt-3 border-t border-gray-100">
-        <button onclick="toggleModal('legalModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">Chiudi</button>
-      </div>
     </div>
   </div>
 
@@ -718,9 +643,20 @@
     let activeMarkersMap = {};
     let activeSelectedSpace = null;
 
+    const SERVIZI_PER_CATEGORIA = {
+      psicoterapia: ["Insonorizzazione acustica", "Poltrone ergonomiche", "Sala d'attesa clienti", "Wi-Fi ad alta velocità", "Aria condizionata"],
+      massaggi: ["Lettino professionale", "Scaldawater / Oli", "Cassa Bluetooth", "Lavatesta / Doccia", "Aria condizionata"],
+      barbiere: ["Poltrona da barbiere idraulica", "Lavatesta professionale", "Sterilizzatore strumenti", "Specchio con luce LED", "Aria condizionata"],
+      estetica: ["Lettino estetica elettrico", "Lampada d'ingrandimento", "Autoclave / Sterilizzatore", "Postazione Nails", "Aria condizionata"],
+      fotografia: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Softbox & Modificatori", "Camerino con truccatricì", "Wi-Fi per Tethering"],
+      coworking: ["Scrivania dedicata", "Seduta ergonomica", "Prese di corrente dedicate", "Wi-Fi Fibra 1Gbps", "Servizio Stampa / Scanner"]
+    };
+
+    const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
+
     let localSpazi = [
-      { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', address: 'Via Toledo 12', type: 'fotografia', price: 45, priceUnit: 'giorno', openTime: '09:00', closeTime: '20:00', days: 'Lun-Sab', phone: '3331234567', lat: 40.8359, lon: 14.2488, hostEmail: 'demo@host.it' },
-      { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', address: 'Via dei Tribunali 45', type: 'barbiere', price: 15, priceUnit: 'ora', openTime: '08:30', closeTime: '19:30', days: 'Mar-Sab', phone: '3339876543', lat: 40.8502, lon: 14.2571, hostEmail: 'demo2@host.it' }
+      { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', zone: 'Chiaiano', address: 'Via Santa Maria a Cubito 15', type: 'fotografia', price: 45, priceUnit: 'giorno', dailySchedule: { "Lunedì": "09:00 - 18:00", "Mercoledì": "09:00 - 18:00", "Venerdì": "14:00 - 20:00" }, services: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Wi-Fi per Tethering"], phone: '3331234567', lat: 40.8359, lon: 14.2488, hostEmail: 'demo@host.it' },
+      { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', zone: 'Centro Storico', address: 'Via dei Tribunali 45', type: 'barbiere', price: 15, priceUnit: 'ora', dailySchedule: { "Martedì": "08:30 - 19:30", "Giovedì": "08:30 - 19:30", "Sabato": "08:30 - 20:00" }, services: ["Poltrona da barbiere idraulica", "Lavatesta professionale", "Sterilizzatore strumenti"], phone: '3339876543', lat: 40.8502, lon: 14.2571, hostEmail: 'demo2@host.it' }
     ];
 
     const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
@@ -735,47 +671,28 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       renderizzaRisultati(localSpazi);
+      generaCampiOrariGiornalieri();
+      aggiornaServiziInclusiForm();
 
       const regForm = document.getElementById('form-register');
       if (regForm) {
         regForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           const client = getSupabase();
-          if (!client) {
-            alert("⚠️ Servizio momentaneamente non disponibile. Ricarica la pagina.");
-            return;
-          }
+          if (!client) return;
 
           const fullName = document.getElementById('reg-fullname').value.trim();
           const email = document.getElementById('reg-email').value.trim();
           const password = document.getElementById('reg-password').value;
-          const btn = document.getElementById('reg-submit-btn');
-
-          btn.disabled = true;
-          btn.innerText = "Registrazione in corso...";
 
           try {
-            const { data, error } = await client.auth.signUp({
-              email: email,
-              password: password,
-              options: { data: { full_name: fullName } }
-            });
-
-            if (error) {
-              alert("Errore registrazione: " + error.message);
-            } else {
-              alert("🎉 Registrazione completata con successo!");
+            const { data, error } = await client.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
+            if (!error) {
               currentUser = data.user || { email: email };
               aggiornaStatoAuth();
               closeModal('register-modal');
-              regForm.reset();
             }
-          } catch (err) {
-            alert("Errore imprevisto: " + err.message);
-          } finally {
-            btn.disabled = false;
-            btn.innerText = "Registrati";
-          }
+          } catch (err) {}
         });
       }
 
@@ -791,21 +708,64 @@
 
           try {
             const { data, error } = await client.auth.signInWithPassword({ email, password });
-            if (error) {
-              alert("Errore login: " + error.message);
-            } else {
-              alert("Login effettuato con successo!");
+            if (!error) {
               currentUser = data.user;
               aggiornaStatoAuth();
               closeModal('login-modal');
-              loginForm.reset();
             }
-          } catch (err) {
-            alert("Errore di connessione: " + err.message);
-          }
+          } catch (err) {}
         });
       }
     });
+
+    function generaCampiOrariGiornalieri() {
+      const container = document.getElementById('dailyHoursContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      GIORNI_SETTIMANA.forEach((giorno, idx) => {
+        const isChecked = idx < 5;
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between gap-2 p-1.5 bg-white border border-gray-200 rounded-xl";
+        div.innerHTML = `
+          <label class="flex items-center gap-2 cursor-pointer font-bold w-28">
+            <input type="checkbox" id="check_${giorno}" ${isChecked ? 'checked' : ''} onchange="toggleDayTimeRow('${giorno}')" class="rounded text-brand focus:ring-brand" />
+            <span>${giorno}</span>
+          </label>
+          <div id="times_${giorno}" class="flex items-center gap-1 ${isChecked ? '' : 'opacity-30 pointer-events-none'}">
+            <input type="time" id="open_${giorno}" value="09:00" class="border rounded p-1 text-[11px]" />
+            <span>-</span>
+            <input type="time" id="close_${giorno}" value="18:00" class="border rounded p-1 text-[11px]" />
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleDayTimeRow(giorno) {
+      const chk = document.getElementById(`check_${giorno}`).checked;
+      const box = document.getElementById(`times_${giorno}`);
+      if (chk) {
+        box.classList.remove('opacity-30', 'pointer-events-none');
+      } else {
+        box.classList.add('opacity-30', 'pointer-events-none');
+      }
+    }
+
+    function aggiornaServiziInclusiForm() {
+      const cat = document.getElementById('newType').value;
+      const container = document.getElementById('categoryServicesCheckboxes');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const servizi = SERVIZI_PER_CATEGORIA[cat] || [];
+      servizi.forEach((srv, i) => {
+        const label = document.createElement('label');
+        label.className = "flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand";
+        label.innerHTML = `<input type="checkbox" value="${srv}" class="service-checkbox rounded text-brand focus:ring-brand" checked /> <span>${srv}</span>`;
+        container.appendChild(label);
+      });
+    }
 
     function aggiornaStatoAuth() {
       if (currentUser) {
@@ -828,17 +788,13 @@
       listContainer.innerHTML = '';
       document.getElementById('resultsCount').innerText = spaces.length;
 
-      if (spaces.length === 0) {
-        listContainer.innerHTML = `<div class="col-span-2 text-center py-12 text-gray-400"><p class="text-sm">Nessun risultato trovato.</p></div>`;
-        return;
-      }
-
       const isLoggedIn = !!currentUser;
 
       spaces.forEach(space => {
+        // OSCURAMENTO INDIRIZZO SE NON LOGGATO
         const locationText = isLoggedIn 
           ? `📍 ${sanitizeHTML(space.address)}, ${sanitizeHTML(space.city)}`
-          : `📍 ${sanitizeHTML(space.city)}`;
+          : `📍 ${sanitizeHTML(space.city)} • Zona ${sanitizeHTML(space.zone || 'Riservata')}`;
 
         const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
         activeMarkersMap[space.id] = marker;
@@ -854,7 +810,6 @@
           <div>
             <h4 class="text-base font-bold text-gray-900">${sanitizeHTML(space.name)}</h4>
             <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
-            <p class="text-[11px] font-semibold text-emerald-600 mt-1">🕒 ${sanitizeHTML(space.openTime || '09:00')} - ${sanitizeHTML(space.closeTime || '19:00')}</p>
           </div>
           <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 bg-gray-50/50">
             <span class="text-base font-extrabold text-gray-900">${sanitizeHTML(space.price)} ${unitText}</span>
@@ -870,25 +825,34 @@
     function pubblicaNuovoSpazio() {
       const name = document.getElementById('newName').value.trim();
       const city = document.getElementById('newCity').value.trim();
+      const zone = document.getElementById('newZone').value.trim();
       const address = document.getElementById('newAddress').value.trim();
       const price = document.getElementById('newPrice').value;
       const priceUnit = document.getElementById('newPriceUnit').value;
       const type = document.getElementById('newType').value;
       const phone = document.getElementById('newWhatsapp').value.trim();
-      const openTime = document.getElementById('newOpenTime').value;
-      const closeTime = document.getElementById('newCloseTime').value;
 
-      if (!name || !city || !address || !price || !phone) {
-        alert("⚠️ Per favore compila tutti i campi obbligatori!");
+      if (!name || !city || !zone || !address || !price || !phone) {
+        alert("⚠️ Compila tutti i campi obbligatori!");
         return;
       }
 
-      const selectedDays = Array.from(document.querySelectorAll('.day-check:checked')).map(cb => cb.value).join(', ') || 'Lun-Ven';
+      let dailySchedule = {};
+      GIORNI_SETTIMANA.forEach(giorno => {
+        if (document.getElementById(`check_${giorno}`)?.checked) {
+          const open = document.getElementById(`open_${giorno}`).value;
+          const close = document.getElementById(`close_${giorno}`).value;
+          dailySchedule[giorno] = `${open} - ${close}`;
+        }
+      });
+
+      const selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map(cb => cb.value);
 
       const newSpace = {
         id: 'spz_' + Date.now(),
-        name, city, address, price, priceUnit, type, phone, openTime, closeTime,
-        days: selectedDays,
+        name, city, zone, address, price, priceUnit, type, phone,
+        dailySchedule,
+        services: selectedServices,
         lat: 40.8518 + (Math.random() - 0.5) * 0.05,
         lon: 14.2681 + (Math.random() - 0.5) * 0.05,
         hostEmail: currentUser ? currentUser.email : 'mio.account@mail.it'
@@ -907,10 +871,8 @@
 
     function renderizzaSpaziUtente() {
       const container = document.getElementById('myHostSpacesGrid');
-      if (!container) return;
+      if (!container || !currentUser) return;
       container.innerHTML = '';
-
-      if (!currentUser) return;
 
       const mySpaces = localSpazi.filter(s => s.hostEmail === currentUser.email);
 
@@ -926,7 +888,6 @@
           <div>
             <h4 class="font-bold text-sm text-gray-900">${sanitizeHTML(s.name)}</h4>
             <p class="text-xs text-gray-500 mt-0.5">📍 ${sanitizeHTML(s.address)}, ${sanitizeHTML(s.city)}</p>
-            <p class="text-xs text-gray-600 mt-1">🕒 ${s.openTime} - ${s.closeTime} (${s.days})</p>
             <p class="text-xs font-bold text-brand mt-1">${s.price} € / ${s.priceUnit}</p>
           </div>
           <button onclick="eliminaSpazio('${s.id}')" class="mt-3 text-xs text-red-600 font-bold hover:underline text-left">Elimina Spazio</button>
@@ -936,7 +897,7 @@
     }
 
     function eliminaSpazio(id) {
-      if (confirm("Sei sicuro di voler rimuovere questo spazio dalla vetrina?")) {
+      if (confirm("Rimuovere lo spazio dalla vetrina?")) {
         localSpazi = localSpazi.filter(s => s.id !== id);
         renderizzaRisultati(localSpazi);
         renderizzaSpaziUtente();
@@ -947,17 +908,42 @@
       activeSelectedSpace = localSpazi.find(s => s.id === spaceId);
       if (!activeSelectedSpace) return;
 
+      const isLoggedIn = !!currentUser;
+
       document.getElementById('detailSpaceTitle').innerText = sanitizeHTML(activeSelectedSpace.name);
       document.getElementById('detailSpacePrice').innerText = `${sanitizeHTML(activeSelectedSpace.price)} € / ${activeSelectedSpace.priceUnit}`;
-      document.getElementById('detailSpaceLocation').innerText = `${sanitizeHTML(activeSelectedSpace.city)} • ${sanitizeHTML(activeSelectedSpace.address)}`;
-      document.getElementById('detailHoursBadge').innerText = `Disponibilità: ${activeSelectedSpace.days || 'Lun-Sab'} | ${activeSelectedSpace.openTime || '09:00'} - ${activeSelectedSpace.closeTime || '19:00'}`;
+      
+      // INDIRIZZO / ZONA OSCURATA
+      document.getElementById('detailSpaceLocation').innerText = isLoggedIn
+        ? `${sanitizeHTML(activeSelectedSpace.city)} • ${sanitizeHTML(activeSelectedSpace.address)}`
+        : `${sanitizeHTML(activeSelectedSpace.city)} • Zona ${sanitizeHTML(activeSelectedSpace.zone || 'Riservata (Accedi per l\'indirizzo)')}`;
 
-      if (currentUser) {
+      // RENDERIZZA ORARI GIORNO PER GIORNO
+      const hoursContainer = document.getElementById('detailHoursBadge');
+      hoursContainer.innerHTML = '<strong class="block font-bold mb-1">⏰ Orari di Apertura:</strong>';
+      if (activeSelectedSpace.dailySchedule) {
+        Object.entries(activeSelectedSpace.dailySchedule).forEach(([giorno, orari]) => {
+          hoursContainer.innerHTML += `<div class="flex justify-between text-[11px]"><span>${giorno}:</span> <span class="font-bold">${orari}</span></div>`;
+        });
+      }
+
+      // RENDERIZZA SERVIZI SPECIFICI
+      const servicesGrid = document.getElementById('detailServicesGrid');
+      servicesGrid.innerHTML = '';
+      if (activeSelectedSpace.services && activeSelectedSpace.services.length > 0) {
+        activeSelectedSpace.services.forEach(srv => {
+          servicesGrid.innerHTML += `<div class="p-2 bg-gray-50 rounded-xl border border-gray-200">✅ ${sanitizeHTML(srv)}</div>`;
+        });
+      } else {
+        servicesGrid.innerHTML = '<div class="text-gray-400">Nessun servizio specificato</div>';
+      }
+
+      if (isLoggedIn) {
         document.getElementById('detailPhoneText').innerHTML = `📞 Telefono / WhatsApp Host: <strong class="text-brand font-bold text-sm select-all">${sanitizeHTML(activeSelectedSpace.phone || 'Non specificato')}</strong>`;
         document.getElementById('detailBtnAction').innerText = "Chiama / Messaggia Host";
       } else {
-        document.getElementById('detailPhoneText').innerText = "Accedi gratuitamente per sbloccare il contatto telefonico e WhatsApp dell Host.";
-        document.getElementById('detailBtnAction').innerText = "Accedi per Sbloccare Contatti";
+        document.getElementById('detailPhoneText').innerText = "Accedi gratuitamente per sbloccare l'indirizzo esatto, il telefono e WhatsApp dell Host.";
+        document.getElementById('detailBtnAction').innerText = "Accedi per Sbloccare";
       }
 
       toggleModal('detailModal', true);
@@ -1076,8 +1062,6 @@
       aggiornaStatoAuth();
       mostraPagina('homePage');
     }
-
-    function apriModalFavorites() { toggleModal('favoritesModal', true); }
   </script>
 </body>
 </html>
