@@ -352,7 +352,68 @@
   </footer>
 
   <!-- ==================== MODALI ==================== -->
+<!-- MODALE COME FUNZIONA -->
+<div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
+    <h2 class="text-xl font-extrabold text-gray-900 mb-1">Come funziona ChairShare</h2>
+    <p class="text-xs text-gray-500 mb-5">Condividere e trovare postazioni di lavoro professionali non è mai stato così semplice.</p>
+
+    <div class="space-y-4 text-xs text-gray-700">
+      <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+        <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">1</span>
+        <div>
+          <h4 class="font-bold text-gray-900 mb-0.5">Trova lo spazio perfetto</h4>
+          <p class="text-gray-500">Cerca per città o categoria: studi di psicoterapia, cabine massaggi, postazioni barber/nails e coworking attrezzati.</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+        <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">2</span>
+        <div>
+          <h4 class="font-bold text-gray-900 mb-0.5">Sblocca e contatta direttamente l'Host</h4>
+          <p class="text-gray-500">Accedi o registrati gratuitamente per vedere l'indirizzo esatto e avviare una chat su WhatsApp o chiamare l'host senza commissioni di agenzia.</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+        <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">3</span>
+        <div>
+          <h4 class="font-bold text-gray-900 mb-0.5">Hai uno spazio inutilizzato? Pubblicalo</h4>
+          <p class="text-gray-500">Inserisci orari di disponibilità, tariffa giornaliera o oraria e servizi inclusi per metterlo in vetrina a professionisti della tua zona.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
+      <button onclick="toggleModal('howItWorksModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">
+        Ho capito
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE PRIVACY & NOTE LEGALI -->
+<div id="legalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <button onclick="toggleModal('legalModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+    <h2 class="text-xl font-extrabold text-gray-900 mb-1">Privacy & Note Legali</h2>
+    <p class="text-xs text-gray-500 mb-4">Termini d'uso della piattaforma ChairShare.</p>
+
+    <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
+      <p><strong>Piattaforma di contatto:</strong> ChairShare agisce come vetrina di annunci per favorire l'incontro tra proprietari/gestori di spazi e professionisti. I termini economici e le modalità di utilizzo sono concordati autonomamente tra le parti.</p>
+      <p><strong>Tutela dei dati:</strong> Gli indirizzi completi e i recapiti telefonici sono protetti e visibili unicamente agli utenti registrati alla piattaforma.</p>
+    </div>
+
+    <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
+      <button onclick="toggleModal('legalModal', false)" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold rounded-xl text-xs">
+        Chiudi
+      </button>
+    </div>
+  </div>
+</div>
   <!-- MODALE LOGIN -->
   <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 modal" style="display:none;">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative modal-content">
