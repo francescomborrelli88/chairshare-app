@@ -27,14 +27,13 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- CDN Supabase JS (Caricato prima di qualsiasi script personalizzato) -->
+  <!-- CDN Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Inserisci le tue credenziali reali da Supabase (Project Settings -> API)
+    // Inserisci le tue credenziali da Supabase (Project Settings -> API)
     const SUPABASE_URL = 'https://TUO-PROJECT-REF.supabase.co';
     const SUPABASE_ANON_KEY = 'LA_TUA_CHIAVE_ANON_PUBLIC';
 
-    // Inizializzazione Client Supabase Globale
     const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
   </script>
 
@@ -817,6 +816,7 @@
     let currentStep = 1;
     let isMapViewMobile = false;
     let selectedRatingStar = 5;
+    let editingStarRating = 5;
 
     let userLocation = { lat: 40.8518, lon: 14.2681 };
     let currentRouteLine = null;
@@ -873,76 +873,6 @@
       caricaSpazi().then(spaziRecuperati => {
         aggiornaMappaELista(spaziRecuperati);
       });
-
-      // EVENT LISTENER FORM DI REGISTRAZIONE
-      const registerForm = document.getElementById('form-register');
-      if (registerForm) {
-        registerForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          if (!supabase) {
-            alert("Client Supabase non configurato o non inizializzato.");
-            return;
-          }
-
-          const fullName = document.getElementById('reg-fullname').value.trim();
-          const email = document.getElementById('reg-email').value.trim();
-          const password = document.getElementById('reg-password').value;
-
-          console.log("Invio registrazione per:", email);
-
-          const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-              emailRedirectTo: 'https://chairshare-app.vercel.app',
-              data: {
-                full_name: fullName
-              }
-            }
-          });[cite: 3]
-
-          if (error) {
-            console.error("Errore Supabase SignUp:", error.message);
-            alert("Errore registrazione: " + error.message);
-          } else {
-            console.log("Risposta Supabase SignUp:", data);
-            alert("Registrazione effettuata! Controlla la tua email per confermare l'account.");
-            closeModal('register-modal');
-            registerForm.reset();
-          }
-        });
-      }
-
-      // EVENT LISTENER FORM DI LOGIN
-      const loginForm = document.getElementById('form-login');
-      if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const email = document.getElementById('login-email').value.trim();
-          const password = document.getElementById('login-password').value;
-
-          if (!supabase) {
-            alert("Client Supabase non configurato.");
-            return;
-          }
-
-          const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password
-          });
-
-          if (error) {
-            console.error("Errore Login Supabase:", error.message);
-            alert("Errore di accesso: " + error.message);
-          } else {
-            console.log("Login effettuato con successo:", data);
-            alert("Bentornato!");
-            closeModal('login-modal');
-            loginForm.reset();
-          }
-        });
-      }
     });
 
     function aggiornaInterfacciaUtente(user) {
@@ -961,6 +891,60 @@
         if (userNav) userNav.style.display = 'none';
       }
     }
+
+    // HANDLER REGISTRAZIONE UTENTE
+    document.getElementById('form-register')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById('reg-fullname').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+
+      if (!supabase) {
+        alert("Client Supabase non configurato.");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+      });
+
+      if (error) {
+        alert("Errore registrazione: " + error.message);
+      } else {
+        alert("Registrazione completata! Controlla la tua email per confermare l'account.");
+        closeModal('register-modal');
+      }
+    });
+
+    // HANDLER LOGIN UTENTE
+    document.getElementById('form-login')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      if (!supabase) {
+        alert("Client Supabase non configurato.");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        alert("Errore di accesso: " + error.message);
+      } else {
+        alert("Bentornato!");
+        closeModal('login-modal');
+      }
+    });
 
     // LOGOUT UTENTE
     async function gestisciLogout() {
@@ -1206,7 +1190,9 @@
       }
     }
 
-    // BINDING SUBMIT FORM DI CREAZIONE
+    // ============================================================
+    // BINDING SUBMIT FORM DI CREAZIONE CON GEOLOCALIZZAZIONE
+    // ============================================================
     document.getElementById('addSpaceForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -1224,7 +1210,7 @@
         const coords = await geocodeAddress(address, city);
         if (!coords) {
           saveBtn.disabled = false;
-          return;
+          return; // Blocca il salvataggio se geocodifica fallita
         }
         lat = coords.lat;
         lng = coords.lng;
@@ -1270,7 +1256,9 @@
       saveBtn.disabled = false;
     });
 
-    // RENDERING RISULTATI
+    // ============================================================
+    // RENDERING CON SANITIZZAZIONE XSS (`sanitizeHTML`)
+    // ============================================================
     function renderizzaRisultati(spaces) {
       markersGroup.clearLayers();
       activeMarkersMap = {};
