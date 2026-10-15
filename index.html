@@ -258,7 +258,7 @@
         </button>
 
         <button onclick="selectCategory('fotografia')" data-cat="fotografia" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
-          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-round stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
           <span>Foto & Video</span>
         </button>
 
@@ -350,6 +350,7 @@
       </div>
     </div>
   </footer>
+
   <!-- ==================== MODALI ==================== -->
 
   <!-- MODALE LOGIN -->
@@ -608,10 +609,16 @@
 
     const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 
-    let localSpazi = [
+    const DEFAULT_SPAZI = [
       { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', zone: 'Chiaiano', address: 'Via Santa Maria a Cubito 15', type: 'fotografia', price: 45, priceUnit: 'giorno', dailySchedule: { "Lunedì": "09:00 - 18:00", "Mercoledì": "09:00 - 18:00", "Venerdì": "14:00 - 20:00" }, services: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Wi-Fi per Tethering"], phone: '3331234567', lat: 40.8359, lon: 14.2488, hostEmail: 'demo@host.it' },
       { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', zone: 'Centro Storico', address: 'Via dei Tribunali 45', type: 'barbiere', price: 15, priceUnit: 'ora', dailySchedule: { "Martedì": "08:30 - 19:30", "Giovedì": "08:30 - 19:30", "Sabato": "08:30 - 20:00" }, services: ["Poltrona da barbiere idraulica", "Lavatesta professionale", "Sterilizzatore strumenti"], phone: '3339876543', lat: 40.8502, lon: 14.2571, hostEmail: 'demo2@host.it' }
     ];
+
+    let localSpazi = JSON.parse(localStorage.getItem('chairshare_spaces')) || DEFAULT_SPAZI;
+
+    function salvaSpaziLocali() {
+      localStorage.setItem('chairshare_spaces', JSON.stringify(localSpazi));
+    }
 
     const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -623,26 +630,44 @@
 
     let markersGroup = L.layerGroup().addTo(map);
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       renderizzaRisultati(localSpazi);
       generaCampiOrariGiornalieri();
       aggiornaServiziInclusiForm();
+
+      const client = getSupabase();
+      if (client) {
+        try {
+          const { data: { session } } = await client.auth.getSession();
+          if (session && session.user) {
+            currentUser = session.user;
+            aggiornaStatoAuth();
+          }
+
+          client.auth.onAuthStateChange((_event, session) => {
+            currentUser = session?.user || null;
+            aggiornaStatoAuth();
+          });
+        } catch (e) {
+          console.warn("Impossibile recuperare la sessione Supabase:", e);
+        }
+      }
 
       const regForm = document.getElementById('form-register');
       if (regForm) {
         regForm.addEventListener('submit', async (e) => {
           e.preventDefault();
-          const client = getSupabase();
-          if (!client) return;
+          const supabaseClient = getSupabase();
+          if (!supabaseClient) return;
 
           const fullName = document.getElementById('reg-fullname').value.trim();
           const email = document.getElementById('reg-email').value.trim();
           const password = document.getElementById('reg-password').value;
 
           try {
-            const { data, error } = await client.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
+            const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
             if (!error) {
-              currentUser = data.user || { email: email, user_metadata: { full_name: fullName } };
+              currentUser = data.user || { email: email.toLowerCase().trim(), user_metadata: { full_name: fullName } };
               if (!currentUser.user_metadata) currentUser.user_metadata = { full_name: fullName };
               aggiornaStatoAuth();
               closeModal('register-modal');
@@ -655,14 +680,14 @@
       if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
-          const client = getSupabase();
-          if (!client) return;
+          const supabaseClient = getSupabase();
+          if (!supabaseClient) return;
 
           const email = document.getElementById('login-email').value.trim();
           const password = document.getElementById('login-password').value;
 
           try {
-            const { data, error } = await client.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (!error) {
               currentUser = data.user;
               aggiornaStatoAuth();
@@ -816,6 +841,7 @@
       });
 
       const selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map(cb => cb.value);
+      const hostEmailNormalized = (currentUser && currentUser.email) ? currentUser.email.toLowerCase().trim() : '';
 
       if (editId) {
         const index = localSpazi.findIndex(s => s.id === editId);
@@ -834,12 +860,13 @@
           dailySchedule, services: selectedServices,
           lat: 40.8518 + (Math.random() - 0.5) * 0.05,
           lon: 14.2681 + (Math.random() - 0.5) * 0.05,
-          hostEmail: currentUser ? currentUser.email : 'mio.account@mail.it'
+          hostEmail: hostEmailNormalized
         };
         localSpazi.unshift(newSpace);
         alert("🎉 Spazio pubblicato con successo in vetrina!");
       }
 
+      salvaSpaziLocali();
       renderizzaRisultati(localSpazi);
       renderizzaSpaziUtente();
 
@@ -850,10 +877,11 @@
 
     function renderizzaSpaziUtente() {
       const container = document.getElementById('myHostSpacesGrid');
-      if (!container || !currentUser) return;
+      if (!container || !currentUser || !currentUser.email) return;
       container.innerHTML = '';
 
-      const mySpaces = localSpazi.filter(s => s.hostEmail === currentUser.email);
+      const userMail = currentUser.email.toLowerCase().trim();
+      const mySpaces = localSpazi.filter(s => (s.hostEmail || '').toLowerCase().trim() === userMail);
 
       if (mySpaces.length === 0) {
         container.innerHTML = `<p class="text-xs text-gray-400 col-span-3 py-4">Non hai ancora pubblicato alcuno spazio.</p>`;
@@ -881,6 +909,7 @@
     function eliminaSpazio(id) {
       if (confirm("Rimuovere lo spazio dalla vetrina?")) {
         localSpazi = localSpazi.filter(s => s.id !== id);
+        salvaSpaziLocali();
         renderizzaRisultati(localSpazi);
         renderizzaSpaziUtente();
       }
@@ -1089,7 +1118,13 @@
       if (modal) modal.classList.toggle('hidden', !show);
     }
 
-    function gestisciLogout() {
+    async function gestisciLogout() {
+      const client = getSupabase();
+      if (client) {
+        try {
+          await client.auth.signOut();
+        } catch (e) {}
+      }
       currentUser = null;
       aggiornaStatoAuth();
       mostraPagina('homePage');
