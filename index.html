@@ -27,10 +27,20 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- CREDENZIALI SUPABASE CORRETTE -->
+  <!-- CDN Supabase JS Ufficiale -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.8/supabase.min.js"></script>
   <script>
     const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5Z2h0bnh1aHhkeXFzYXlqeWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0Njc3NDgsImV4cCI6MjEwNzA0Mzc0OH0.uzupM1khyMAshMfgmGqjITPBLCr0t72pEirryibTyMY';
+
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (e) {
+      console.error("Errore init Supabase:", e);
+    }
   </script>
 
   <style>
@@ -821,15 +831,36 @@
 
     let markersGroup = L.layerGroup().addTo(map);
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Controllo sessione esistente
+      if (supabaseClient) {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session?.user) {
+            aggiornaInterfacciaUtente(session.user);
+          }
+
+          supabaseClient.auth.onAuthStateChange((_event, session) => {
+            aggiornaInterfacciaUtente(session?.user || null);
+          });
+        } catch (e) {
+          console.error("Errore recupero sessione Auth:", e);
+        }
+      }
+
       renderizzaRisultati(localSpazi);
 
-      // GESTIONE REGISTRAZIONE
+      // GESTIONE REGISTRAZIONE CON SDK UFFICIALE
       const regForm = document.getElementById('form-register');
       if (regForm) {
         regForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           
+          if (!supabaseClient) {
+            alert("⚠️ Supabase non è stato inizializzato correttamente. Ricarica la pagina.");
+            return;
+          }
+
           const fullName = document.getElementById('reg-fullname').value.trim();
           const email = document.getElementById('reg-email').value.trim();
           const password = document.getElementById('reg-password').value;
@@ -839,31 +870,23 @@
           btn.innerText = "Registrazione in corso...";
 
           try {
-            const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
-              method: 'POST',
-              headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                email: email,
-                password: password,
+            const { data, error } = await supabaseClient.auth.signUp({
+              email: email,
+              password: password,
+              options: {
                 data: { full_name: fullName }
-              })
+              }
             });
 
-            const data = await res.json();
-
-            if (!res.ok) {
-              alert("Errore registrazione: " + (data.msg || data.error_description || data.message || "Errore di configurazione"));
+            if (error) {
+              alert("Errore registrazione: " + error.message);
             } else {
               alert("🎉 Registrazione completata con successo! Controlla la tua email per confermare l'account.");
               closeModal('register-modal');
               regForm.reset();
             }
           } catch (err) {
-            alert("Errore di connessione: " + err.message);
+            alert("Errore imprevisto: " + err.message);
           } finally {
             btn.disabled = false;
             btn.innerText = "Registrati";
@@ -871,38 +894,33 @@
         });
       }
 
-      // GESTIONE LOGIN
+      // GESTIONE LOGIN CON SDK UFFICIALE
       const loginForm = document.getElementById('form-login');
       if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
+
+          if (!supabaseClient) {
+            alert("⚠️ Supabase non è pronto.");
+            return;
+          }
+
           const email = document.getElementById('login-email').value.trim();
           const password = document.getElementById('login-password').value;
 
           try {
-            const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-              method: 'POST',
-              headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ email, password })
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+              email: email,
+              password: password
             });
 
-            const data = await res.json();
-
-            if (!res.ok) {
-              alert("Errore login: " + (data.error_description || data.msg || "Credenziali errate"));
+            if (error) {
+              alert("Errore login: " + error.message);
             } else {
-              currentUser = data.user || { email: email };
               alert("Login effettuato con successo!");
-              document.getElementById('auth-guest-links').style.display = 'none';
-              document.getElementById('auth-user-links').style.display = 'flex';
-              document.getElementById('user-display-name').innerText = `Ciao, ${email.split('@')[0]}`;
+              aggiornaInterfacciaUtente(data.user);
               closeModal('login-modal');
               loginForm.reset();
-              renderizzaRisultati(localSpazi);
             }
           } catch (err) {
             alert("Errore di connessione: " + err.message);
@@ -910,6 +928,24 @@
         });
       }
     });
+
+    function aggiornaInterfacciaUtente(user) {
+      currentUser = user;
+      const guestNav = document.getElementById('auth-guest-links');
+      const userNav = document.getElementById('auth-user-links');
+      const userNameSpan = document.getElementById('user-display-name');
+
+      if (user) {
+        const name = user.user_metadata?.full_name || user.email;
+        if (userNameSpan) userNameSpan.textContent = `Ciao, ${sanitizeHTML(name)}`;
+        if (guestNav) guestNav.style.display = 'none';
+        if (userNav) userNav.style.display = 'flex';
+      } else {
+        if (guestNav) guestNav.style.display = 'flex';
+        if (userNav) userNav.style.display = 'none';
+      }
+      renderizzaRisultati(localSpazi);
+    }
 
     function renderizzaRisultati(spaces) {
       markersGroup.clearLayers();
@@ -1057,13 +1093,15 @@
       const modal = document.getElementById(modalId);
       if (modal) modal.classList.toggle('hidden', !show);
     }
-    function gestisciLogout() {
-      currentUser = null;
-      document.getElementById('auth-guest-links').style.display = 'flex';
-      document.getElementById('auth-user-links').style.display = 'none';
+
+    async function gestisciLogout() {
+      if (supabaseClient) {
+        await supabaseClient.auth.signOut();
+      }
+      aggiornaInterfacciaUtente(null);
       mostraPagina('homePage');
-      renderizzaRisultati(localSpazi);
     }
+
     function apriModalFavorites() { toggleModal('favoritesModal', true); }
   </script>
 </body>
