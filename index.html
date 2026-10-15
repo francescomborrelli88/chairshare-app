@@ -892,7 +892,7 @@
       }
     }
 
-    // HANDLER REGISTRAZIONE UTENTE
+    // HANDLER REGISTRAZIONE UTENTE (AGGIORNATO CON SALVATAGGIO IN TABELLA PROFILES)
     document.getElementById('form-register')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fullName = document.getElementById('reg-fullname').value;
@@ -904,7 +904,8 @@
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({
+      // 1. Creazione utente su Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
@@ -914,12 +915,30 @@
         }
       });
 
-      if (error) {
-        alert("Errore registrazione: " + error.message);
-      } else {
-        alert("Registrazione completata! Controlla la tua email per confermare l'account.");
-        closeModal('register-modal');
+      if (authError) {
+        alert("Errore registrazione Auth: " + authError.message);
+        return;
       }
+
+      // 2. Inserimento record nella tabella 'profiles' del Database
+      if (authData.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert([
+            {
+              id: authData.user.id,
+              full_name: fullName,
+              updated_at: new Date().toISOString()
+            }
+          ]);
+
+        if (profileError) {
+          console.error("Errore salvataggio profilo DB:", profileError.message);
+        }
+      }
+
+      alert("Registrazione completata! Controlla la tua email per confermare l'account.");
+      closeModal('register-modal');
     });
 
     // HANDLER LOGIN UTENTE
@@ -1210,7 +1229,7 @@
         const coords = await geocodeAddress(address, city);
         if (!coords) {
           saveBtn.disabled = false;
-          return; // Blocca il salvataggio se geocodifica fallita
+          return;
         }
         lat = coords.lat;
         lng = coords.lng;
