@@ -30,7 +30,7 @@
   <!-- CDN Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // CREDENZIALI DI SUPABASE COLLEGATE
+    // CREDENZIALI SUPABASE CORRETTE
     const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable__uD40U9DBYrKiQQ4aJLGYQ_w6pmA';
 
@@ -911,7 +911,7 @@
 
           } catch (err) {
             console.error("Errore registrazione imprevisto:", err);
-            alert("Si è verificato un errore durante la registrazione.");
+            alert("Si è verificato un errore durante la registrazione: " + (err.message || err));
           } finally {
             if (btn) btn.disabled = false;
           }
