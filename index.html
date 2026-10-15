@@ -30,18 +30,19 @@
   <!-- CDN Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // CREDENZIALI SUPABASE CORRETTE
     const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable__uD40U9DBYrKiQQ4aJLGYQ_w6pmA';
 
-    let supabase = null;
-    try {
-      if (window.supabase) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    var supabaseClient = null;
+    window.addEventListener('DOMContentLoaded', function() {
+      try {
+        if (window.supabase) {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+      } catch (e) {
+        console.error("Errore init Supabase:", e);
       }
-    } catch (err) {
-      console.error("Errore inizializzazione Supabase:", err);
-    }
+    });
   </script>
 
   <style>
@@ -763,6 +764,15 @@
 
   <!-- SCRIPT COMPLETO APPLICAZIONE LOGICA JS -->
   <script>
+    function getSupabase() {
+      if (window.supabaseClient) return window.supabaseClient;
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        return window.supabaseClient;
+      }
+      return null;
+    }
+
     function sanitizeHTML(str) {
       if (!str) return '';
       return String(str).replace(/[&<>"']/g, match => ({
@@ -812,7 +822,6 @@
     let selectedCategory = '';
     let currentStep = 1;
     let isMapViewMobile = false;
-    let selectedRatingStar = 5;
 
     let userLocation = { lat: 40.8518, lon: 14.2681 };
     let activeMarkersMap = {};
@@ -821,8 +830,6 @@
       { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', area: 'Zona Toledo/Centro', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_name: 'Marco V.', host_id: 'sample', host_email: 'marco.vesuvio@chairshare.it', whatsapp: '393331234567', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'heating', 'waiting_room', 'led_lights', 'backdrop'], available: true },
       { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', area: 'Zona Centro Storico', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_name: 'Luigi B.', host_id: 'sample', host_email: 'barber.spaccanapoli@chairshare.it', whatsapp: '393409876543', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'reclining_chair', 'hair_wash', 'towels_included'], available: true }
     ];
-
-    let localReviews = JSON.parse(localStorage.getItem('cs_reviews')) || [];
 
     // INIZIALIZZAZIONE MAPPA PRINCIPALE
     const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
@@ -836,13 +843,13 @@
     let markersGroup = L.layerGroup().addTo(map);
 
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. INIZIALIZZAZIONE SESSIONE UTENTE SUPABASE
-      if (supabase) {
+      const client = getSupabase();
+      if (client) {
         try {
-          const { data: { session } } = await supabase.auth.getSession();
+          const { data: { session } } = await client.auth.getSession();
           aggiornaInterfacciaUtente(session?.user || null);
 
-          supabase.auth.onAuthStateChange((_event, session) => {
+          client.auth.onAuthStateChange((_event, session) => {
             aggiornaInterfacciaUtente(session?.user || null);
           });
         } catch (e) {
@@ -854,14 +861,15 @@
         aggiornaMappaELista(spaziRecuperati);
       });
 
-      // 2. GESTIONE REGISTRAZIONE UTENTE
+      // REGISTRAZIONE UTENTE
       const registerForm = document.getElementById('form-register');
       if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
           e.preventDefault();
 
-          if (!supabase) {
-            alert("⚠️ Supabase non è stato configurato. Assicurati di aver inserito SUPABASE_URL e SUPABASE_ANON_KEY nel codice prima di registrare un utente.");
+          const client = getSupabase();
+          if (!client) {
+            alert("⚠️ Connessione al database non pronta. Riprova tra un istante.");
             return;
           }
 
@@ -873,8 +881,7 @@
           if (btn) btn.disabled = true;
 
           try {
-            // Registrazione Auth
-            const { data: authData, error: authError } = await supabase.auth.signUp({
+            const { data: authData, error: authError } = await client.auth.signUp({
               email: email,
               password: password,
               options: {
@@ -883,14 +890,13 @@
             });
 
             if (authError) {
-              alert("Errore registrazione Auth: " + authError.message);
+              alert("Errore registrazione: " + authError.message);
               if (btn) btn.disabled = false;
               return;
             }
 
-            // Inserimento / Aggiornamento record tabella 'profiles'
             if (authData?.user) {
-              const { error: profileError } = await supabase
+              const { error: profileError } = await client
                 .from('profiles')
                 .upsert([
                   {
@@ -911,28 +917,29 @@
 
           } catch (err) {
             console.error("Errore registrazione imprevisto:", err);
-            alert("Si è verificato un errore durante la registrazione: " + (err.message || err));
+            alert("Si è verificato un errore: " + (err.message || err));
           } finally {
             if (btn) btn.disabled = false;
           }
         });
       }
 
-      // 3. GESTIONE LOGIN UTENTE
+      // LOGIN UTENTE
       const loginForm = document.getElementById('form-login');
       if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           
-          if (!supabase) {
-            alert("⚠️ Supabase non è configurato con chiavi valide.");
+          const client = getSupabase();
+          if (!client) {
+            alert("⚠️ Connessione al database non pronta.");
             return;
           }
 
           const email = document.getElementById('login-email').value.trim();
           const password = document.getElementById('login-password').value;
 
-          const { data, error } = await supabase.auth.signInWithPassword({
+          const { data, error } = await client.auth.signInWithPassword({
             email: email,
             password: password
           });
@@ -966,8 +973,9 @@
     }
 
     async function gestisciLogout() {
-      if (supabase) {
-        await supabase.auth.signOut();
+      const client = getSupabase();
+      if (client) {
+        await client.auth.signOut();
       }
       currentUser = null;
       aggiornaInterfacciaUtente(null);
@@ -1040,10 +1048,11 @@
     }
 
     async function caricaSpazi() {
-      if (!supabase) return localSpazi;
+      const client = getSupabase();
+      if (!client) return localSpazi;
 
       try {
-        const { data: spazi, error } = await supabase
+        const { data: spazi, error } = await client
           .from('spazi')
           .select(`*, profiles(full_name, phone)`)
           .order('created_at', { ascending: false });
@@ -1102,8 +1111,9 @@
         lng = coords.lng;
       }
 
-      if (supabase && currentUser) {
-        await supabase.from('spazi').insert([{
+      const client = getSupabase();
+      if (client && currentUser) {
+        await client.from('spazi').insert([{
           user_id: currentUser.id,
           title: document.getElementById('newName').value,
           description: document.getElementById('newDescription').value,
