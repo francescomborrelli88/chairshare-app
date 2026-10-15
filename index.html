@@ -1099,5 +1099,526 @@
       mostraPagina('homePage');
     }
   </script>
+  <script>
+    function sanitizeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, match => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[match]));
+    }
+
+    let currentUser = null;
+    let selectedCategory = '';
+    let currentStep = 1;
+    let isMapViewMobile = false;
+
+    let userLocation = { lat: 40.8518, lon: 14.2681 };
+    let activeMarkersMap = {};
+    let activeSelectedSpace = null;
+
+    const SERVIZI_PER_CATEGORIA = {
+      psicoterapia: ["Insonorizzazione acustica", "Poltrone ergonomiche", "Sala d'attesa clienti", "Wi-Fi ad alta velocità", "Aria condizionata"],
+      massaggi: ["Lettino professionale", "Scaldawater / Oli", "Cassa Bluetooth", "Lavatesta / Doccia", "Aria condizionata"],
+      barbiere: ["Poltrona da barbiere idraulica", "Lavatesta professionale", "Sterilizzatore strumenti", "Specchio con luce LED", "Aria condizionata"],
+      estetica: ["Lettino estetica elettrico", "Lampada d'ingrandimento", "Autoclave / Sterilizzatore", "Postazione Nails", "Aria condizionata"],
+      fotografia: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Softbox & Modificatori", "Camerino con truccatricì", "Wi-Fi per Tethering"],
+      coworking: ["Scrivania dedicata", "Seduta ergonomica", "Prese di corrente dedicate", "Wi-Fi Fibra 1Gbps", "Servizio Stampa / Scanner"]
+    };
+
+    const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
+
+    let localSpazi = [
+      { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', description: 'Studio attrezzato per shooting professionali e ritratti.', city: 'Napoli', zone: 'Chiaiano', address: 'Via Santa Maria a Cubito 15', type: 'fotografia', price: 45, priceUnit: 'giorno', dailySchedule: { "Lunedì": "09:00 - 18:00", "Mercoledì": "09:00 - 18:00", "Venerdì": "14:00 - 20:00" }, services: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Wi-Fi per Tethering"], phone: '3331234567', lat: 40.8359, lon: 14.2488, hostEmail: 'demo@host.it' },
+      { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', description: 'Postazione lavoro in salone storico al centro', city: 'Napoli', zone: 'Centro Storico', address: 'Via dei Tribunali 45', type: 'barbiere', price: 15, priceUnit: 'ora', dailySchedule: { "Martedì": "08:30 - 19:30", "Giovedì": "08:30 - 19:30", "Sabato": "08:30 - 20:00" }, services: ["Poltrona da barbiere idraulica", "Lavatesta professionale", "Sterilizzatore strumenti"], phone: '3339876543', lat: 40.8502, lon: 14.2571, hostEmail: 'demo2@host.it' }
+    ];
+
+    const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    let markersGroup = L.layerGroup().addTo(map);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderizzaRisultati(localSpazi);
+      generaCampiOrariGiornalieri();
+      aggiornaServiziInclusiForm();
+
+      const regForm = document.getElementById('form-register');
+      if (regForm) {
+        regForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const client = getSupabase();
+          if (!client) return;
+
+          const fullName = document.getElementById('reg-fullname').value.trim();
+          const email = document.getElementById('reg-email').value.trim();
+          const password = document.getElementById('reg-password').value;
+
+          try {
+            const { data, error } = await client.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
+            if (!error) {
+              currentUser = data.user || { email: email, user_metadata: { full_name: fullName } };
+              if (!currentUser.user_metadata) currentUser.user_metadata = { full_name: fullName };
+              aggiornaStatoAuth();
+              closeModal('register-modal');
+            }
+          } catch (err) {}
+        });
+      }
+
+      const loginForm = document.getElementById('form-login');
+      if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const client = getSupabase();
+          if (!client) return;
+
+          const email = document.getElementById('login-email').value.trim();
+          const password = document.getElementById('login-password').value;
+
+          try {
+            const { data, error } = await client.auth.signInWithPassword({ email, password });
+            if (!error) {
+              currentUser = data.user;
+              aggiornaStatoAuth();
+              closeModal('login-modal');
+            }
+          } catch (err) {}
+        });
+      }
+    });
+
+    function aggiornaStatoAuth() {
+      if (currentUser) {
+        let nomeCompleto = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0];
+        
+        document.getElementById('auth-guest-links').style.display = 'none';
+        document.getElementById('auth-user-links').style.display = 'flex';
+        document.getElementById('user-display-name').innerText = `Ciao, ${nomeCompleto}`;
+        document.getElementById('profileUserFullName').innerText = nomeCompleto;
+        document.getElementById('profileUserEmail').innerText = currentUser.email;
+      } else {
+        document.getElementById('auth-guest-links').style.display = 'flex';
+        document.getElementById('auth-user-links').style.display = 'none';
+      }
+      renderizzaRisultati(localSpazi);
+      renderizzaSpaziUtente();
+    }
+
+    function renderizzaRisultati(spaces) {
+      markersGroup.clearLayers();
+      activeMarkersMap = {};
+      const listContainer = document.getElementById('spacesList');
+      listContainer.innerHTML = '';
+      document.getElementById('resultsCount').innerText = spaces.length;
+
+      const isLoggedIn = !!currentUser;
+
+      spaces.forEach(space => {
+        const locationText = isLoggedIn 
+          ? `📍 ${sanitizeHTML(space.address)}, ${sanitizeHTML(space.city)}`
+          : `📍 ${sanitizeHTML(space.city)} • Zona ${sanitizeHTML(space.zone || 'Riservata')}`;
+
+        const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
+        activeMarkersMap[space.id] = marker;
+
+        const card = document.createElement('div');
+        card.id = 'card_' + space.id;
+        card.className = 'space-card cursor-pointer bg-white rounded-3xl p-4 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden relative';
+        card.onclick = () => mostraDettagliSpazio(space.id);
+
+        const unitText = space.priceUnit === 'ora' ? '€/ora' : '€/giorno';
+
+        card.innerHTML = `
+          <div>
+            <h4 class="text-base font-bold text-gray-900">${sanitizeHTML(space.name)}</h4>
+            <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
+          </div>
+          <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 bg-gray-50/50">
+            <span class="text-base font-extrabold text-gray-900">${sanitizeHTML(space.price)} ${unitText}</span>
+            <button onclick="event.stopPropagation(); mostraDettagliSpazio('${sanitizeHTML(space.id)}')" class="bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl">
+              ${isLoggedIn ? 'Dettagli & Contatti' : 'Sblocca Contatti'}
+            </button>
+          </div>
+        `;
+        listContainer.appendChild(card);
+      });
+    }
+
+    function apriAggiungiSpazio() {
+      if (!currentUser) openModal('register-modal');
+      else {
+        document.getElementById('editingSpaceId').value = '';
+        document.getElementById('modalSpaceTitle').innerText = 'Pubblica il tuo Spazio';
+        document.getElementById('saveBtn').innerText = 'Salva e Pubblica';
+        document.getElementById('addSpaceForm').reset();
+        generaCampiOrariGiornalieri();
+        aggiornaServiziInclusiForm();
+        goToStep(1);
+        toggleModal('addModal', true);
+      }
+    }
+
+    function apriModificaSpazio(spaceId) {
+      const s = localSpazi.find(item => item.id === spaceId);
+      if (!s) return;
+
+      document.getElementById('editingSpaceId').value = s.id;
+      document.getElementById('modalSpaceTitle').innerText = 'Modifica il tuo Spazio';
+      document.getElementById('saveBtn').innerText = 'Salva Modifiche';
+
+      document.getElementById('newName').value = s.name || '';
+      document.getElementById('newDescription').value = s.description || ''; // <-- FIX: Carica la descrizione salvata
+      document.getElementById('newCity').value = s.city || '';
+      document.getElementById('newZone').value = s.zone || '';
+      document.getElementById('newAddress').value = s.address || '';
+      document.getElementById('newType').value = s.type || 'psicoterapia';
+      document.getElementById('newWhatsapp').value = s.phone || '';
+      document.getElementById('newPriceUnit').value = s.priceUnit || 'giorno';
+      document.getElementById('newPrice').value = s.price || '';
+
+      aggiornaServiziInclusiForm();
+
+      if (s.services) {
+        document.querySelectorAll('.service-checkbox').forEach(cb => {
+          cb.checked = s.services.includes(cb.value);
+        });
+      }
+
+      if (s.dailySchedule) {
+        GIORNI_SETTIMANA.forEach(giorno => {
+          const chk = document.getElementById(`check_${giorno}`);
+          if (s.dailySchedule[giorno]) {
+            chk.checked = true;
+            const parts = s.dailySchedule[giorno].split(' - ');
+            if (parts.length === 2) {
+              document.getElementById(`open_${giorno}`).value = parts[0];
+              document.getElementById(`close_${giorno}`).value = parts[1];
+            }
+          } else if (chk) {
+            chk.checked = false;
+          }
+          toggleDayTimeRow(giorno);
+        });
+      }
+
+      goToStep(1);
+      toggleModal('addModal', true);
+    }
+
+    function pubblicaNuovoSpazio() {
+      const editId = document.getElementById('editingSpaceId').value;
+      const name = document.getElementById('newName').value.trim();
+      const description = document.getElementById('newDescription').value.trim(); // <-- FIX: Legge la descrizione inserita
+      const city = document.getElementById('newCity').value.trim();
+      const zone = document.getElementById('newZone').value.trim();
+      const address = document.getElementById('newAddress').value.trim();
+      const price = document.getElementById('newPrice').value;
+      const priceUnit = document.getElementById('newPriceUnit').value;
+      const type = document.getElementById('newType').value;
+      const phone = document.getElementById('newWhatsapp').value.trim();
+
+      if (!name || !city || !zone || !address || !price || !phone) {
+        alert("⚠️ Compila tutti i campi obbligatori!");
+        return;
+      }
+
+      let dailySchedule = {};
+      GIORNI_SETTIMANA.forEach(giorno => {
+        if (document.getElementById(`check_${giorno}`)?.checked) {
+          const open = document.getElementById(`open_${giorno}`).value;
+          const close = document.getElementById(`close_${giorno}`).value;
+          dailySchedule[giorno] = `${open} - ${close}`;
+        }
+      });
+
+      const selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map(cb => cb.value);
+
+      if (editId) {
+        const index = localSpazi.findIndex(s => s.id === editId);
+        if (index !== -1) {
+          localSpazi[index] = {
+            ...localSpazi[index],
+            name, description, city, zone, address, price, priceUnit, type, phone, // <-- FIX: Salva la descrizione aggiornata
+            dailySchedule, services: selectedServices
+          };
+          alert("🎉 Spazio modificato con successo!");
+        }
+      } else {
+        const newSpace = {
+          id: 'spz_' + Date.now(),
+          name, description, city, zone, address, price, priceUnit, type, phone, // <-- FIX: Salva la nuova descrizione
+          dailySchedule, services: selectedServices,
+          lat: 40.8518 + (Math.random() - 0.5) * 0.05,
+          lon: 14.2681 + (Math.random() - 0.5) * 0.05,
+          hostEmail: currentUser ? currentUser.email : 'mio.account@mail.it'
+        };
+        localSpazi.unshift(newSpace);
+        alert("🎉 Spazio pubblicato con successo in vetrina!");
+      }
+
+      renderizzaRisultati(localSpazi);
+      renderizzaSpaziUtente();
+
+      toggleModal('addModal', false);
+      document.getElementById('addSpaceForm').reset();
+      goToStep(1);
+    }
+
+    function renderizzaSpaziUtente() {
+      const container = document.getElementById('myHostSpacesGrid');
+      if (!container || !currentUser) return;
+      container.innerHTML = '';
+
+      const mySpaces = localSpazi.filter(s => s.hostEmail === currentUser.email);
+
+      if (mySpaces.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 col-span-3 py-4">Non hai ancora pubblicato alcuno spazio.</p>`;
+        return;
+      }
+
+      mySpaces.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'border border-gray-200 rounded-2xl p-4 bg-gray-50 flex flex-col justify-between shadow-sm';
+        div.innerHTML = `
+          <div>
+            <h4 class="font-bold text-sm text-gray-900">${sanitizeHTML(s.name)}</h4>
+            <p class="text-xs text-gray-500 mt-0.5">📍 ${sanitizeHTML(s.address)}, ${sanitizeHTML(s.city)}</p>
+            <p class="text-xs font-bold text-brand mt-1">${s.price} € / ${s.priceUnit}</p>
+          </div>
+          <div class="flex items-center gap-3 mt-4 pt-2 border-t border-gray-200">
+            <button onclick="apriModificaSpazio('${s.id}')" class="text-xs text-blue-600 font-bold hover:underline">✏️ Modifica</button>
+            <button onclick="eliminaSpazio('${s.id}')" class="text-xs text-red-600 font-bold hover:underline">🗑️ Elimina</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function eliminaSpazio(id) {
+      if (confirm("Rimuovere lo spazio dalla vetrina?")) {
+        localSpazi = localSpazi.filter(s => s.id !== id);
+        renderizzaRisultati(localSpazi);
+        renderizzaSpaziUtente();
+      }
+    }
+
+    function selectCategory(cat) {
+      selectedCategory = cat;
+
+      const pills = document.querySelectorAll('#categoryPills .cat-pill');
+      pills.forEach(pill => {
+        const pCat = pill.getAttribute('data-cat');
+        if (pCat === cat) {
+          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all";
+        } else {
+          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all";
+        }
+      });
+
+      const selectElem = document.getElementById('typeSelect');
+      if (selectElem) selectElem.value = cat;
+      cercaSpazi();
+    }
+
+    function generaCampiOrariGiornalieri() {
+      const container = document.getElementById('dailyHoursContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      GIORNI_SETTIMANA.forEach((giorno, idx) => {
+        const isChecked = idx < 5;
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between gap-2 p-1.5 bg-white border border-gray-200 rounded-xl";
+        div.innerHTML = `
+          <label class="flex items-center gap-2 cursor-pointer font-bold w-28">
+            <input type="checkbox" id="check_${giorno}" ${isChecked ? 'checked' : ''} onchange="toggleDayTimeRow('${giorno}')" class="rounded text-brand focus:ring-brand" />
+            <span>${giorno}</span>
+          </label>
+          <div id="times_${giorno}" class="flex items-center gap-1 ${isChecked ? '' : 'opacity-30 pointer-events-none'}">
+            <input type="time" id="open_${giorno}" value="09:00" class="border rounded p-1 text-[11px]" />
+            <span>-</span>
+            <input type="time" id="close_${giorno}" value="18:00" class="border rounded p-1 text-[11px]" />
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleDayTimeRow(giorno) {
+      const chk = document.getElementById(`check_${giorno}`)?.checked;
+      const box = document.getElementById(`times_${giorno}`);
+      if (!box) return;
+      if (chk) {
+        box.classList.remove('opacity-30', 'pointer-events-none');
+      } else {
+        box.classList.add('opacity-30', 'pointer-events-none');
+      }
+    }
+
+    function aggiornaServiziInclusiForm() {
+      const cat = document.getElementById('newType').value;
+      const container = document.getElementById('categoryServicesCheckboxes');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const servizi = SERVIZI_PER_CATEGORIA[cat] || [];
+      servizi.forEach((srv) => {
+        const label = document.createElement('label');
+        label.className = "flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand";
+        label.innerHTML = `<input type="checkbox" value="${srv}" class="service-checkbox rounded text-brand focus:ring-brand" checked /> <span>${srv}</span>`;
+        container.appendChild(label);
+      });
+    }
+
+    function mostraDettagliSpazio(spaceId) {
+      activeSelectedSpace = localSpazi.find(s => s.id === spaceId);
+      if (!activeSelectedSpace) return;
+
+      const isLoggedIn = !!currentUser;
+
+      document.getElementById('detailSpaceTitle').innerText = sanitizeHTML(activeSelectedSpace.name);
+      document.getElementById('detailSpacePrice').innerText = `${sanitizeHTML(activeSelectedSpace.price)} € / ${activeSelectedSpace.priceUnit}`;
+      
+      document.getElementById('detailSpaceLocation').innerText = isLoggedIn
+        ? `${sanitizeHTML(activeSelectedSpace.city)} • ${sanitizeHTML(activeSelectedSpace.address)}`
+        : `${sanitizeHTML(activeSelectedSpace.city)} • Zona ${sanitizeHTML(activeSelectedSpace.zone || 'Riservata')}`;
+
+      const hoursContainer = document.getElementById('detailHoursBadge');
+      hoursContainer.innerHTML = '<strong class="block font-bold mb-1">⏰ Orari di Apertura:</strong>';
+      if (activeSelectedSpace.dailySchedule) {
+        Object.entries(activeSelectedSpace.dailySchedule).forEach(([giorno, orari]) => {
+          hoursContainer.innerHTML += `<div class="flex justify-between text-[11px]"><span>${giorno}:</span> <span class="font-bold">${orari}</span></div>`;
+        });
+      }
+
+      const servicesGrid = document.getElementById('detailServicesGrid');
+      servicesGrid.innerHTML = '';
+      if (activeSelectedSpace.services && activeSelectedSpace.services.length > 0) {
+        activeSelectedSpace.services.forEach(srv => {
+          servicesGrid.innerHTML += `<div class="p-2 bg-gray-50 rounded-xl border border-gray-200">✅ ${sanitizeHTML(srv)}</div>`;
+        });
+      } else {
+        servicesGrid.innerHTML = '<div class="text-gray-400">Nessun servizio specificato</div>';
+      }
+
+      if (isLoggedIn) {
+        document.getElementById('detailPhoneText').innerHTML = `📞 Telefono / WhatsApp Host: <strong class="text-brand font-bold text-sm select-all">${sanitizeHTML(activeSelectedSpace.phone || 'Non specificato')}</strong>`;
+        document.getElementById('detailBtnAction').innerText = "Chiama / Messaggia Host";
+      } else {
+        document.getElementById('detailPhoneText').innerText = "Accedi gratuitamente per sbloccare l'indirizzo esatto, il telefono e WhatsApp dell Host.";
+        document.getElementById('detailBtnAction').innerText = "Accedi per Sbloccare";
+      }
+
+      toggleModal('detailModal', true);
+    }
+
+    function sbloccaOContatta() {
+      if (!currentUser) {
+        toggleModal('detailModal', false);
+        openModal('login-modal');
+      } else if (activeSelectedSpace && activeSelectedSpace.phone) {
+        window.open(`https://wa.me/39${activeSelectedSpace.phone.replace(/\D/g,'')}`, '_blank');
+      }
+    }
+
+    function gestisciClickProfilo() {
+      if (!currentUser) openModal('login-modal');
+      else mostraPagina('profilePage');
+    }
+
+    function goToStep(step) {
+      currentStep = step;
+      document.getElementById('stepSection1').classList.toggle('hidden', step !== 1);
+      document.getElementById('stepSection2').classList.toggle('hidden', step !== 2);
+      document.getElementById('stepSection3').classList.toggle('hidden', step !== 3);
+      
+      document.getElementById('stepDot1').className = step >= 1 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
+      document.getElementById('stepDot2').className = step >= 2 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
+      document.getElementById('stepDot3').className = step >= 3 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
+    }
+
+    function toggleCustomPrice(selectId, inputId) {
+      const selectElem = document.getElementById(selectId);
+      const inputElem = document.getElementById(inputId);
+      if (selectElem.value === 'custom') {
+        inputElem.classList.remove('hidden');
+      } else {
+        inputElem.classList.add('hidden');
+        cercaSpazi();
+      }
+    }
+
+    function syncMobileToDesktopSearch(e) {
+      const val = e.target.value;
+      const deskInput = document.getElementById('cityInput');
+      if (deskInput) deskInput.value = val;
+      if (e.key === 'Enter') cercaSpazi();
+    }
+
+    function toggleMobileView() {
+      isMapViewMobile = !isMapViewMobile;
+      const listSec = document.getElementById('listSection');
+      const mapSec = document.getElementById('mapSection');
+      if (isMapViewMobile) {
+        listSec.classList.add('hidden');
+        mapSec.classList.remove('hidden');
+      } else {
+        listSec.classList.remove('hidden');
+        mapSec.classList.add('hidden', 'lg:block');
+      }
+    }
+
+    function resetFilters() {
+      selectCategory('');
+      if(document.getElementById('cityInput')) document.getElementById('cityInput').value = '';
+      cercaSpazi();
+    }
+
+    function mostraPagina(pageId) {
+      document.getElementById('homePage').classList.toggle('hidden', pageId !== 'homePage');
+      document.getElementById('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
+    }
+
+    function resetToHome() {
+      resetFilters();
+      mostraPagina('homePage');
+    }
+
+    function cercaSpazi() {
+      const city = document.getElementById('cityInput')?.value.trim().toLowerCase() || '';
+      const type = document.getElementById('typeSelect')?.value || selectedCategory;
+
+      let res = localSpazi.filter(s => {
+        let match = true;
+        if (city && !s.city.toLowerCase().includes(city)) match = false;
+        if (type && s.type !== type) match = false;
+        return match;
+      });
+
+      renderizzaRisultati(res);
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function toggleModal(modalId, show) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.toggle('hidden', !show);
+    }
+
+    function gestisciLogout() {
+      currentUser = null;
+      aggiornaStatoAuth();
+      mostraPagina('homePage');
+    }
+  </script>
 </body>
 </html>
