@@ -336,7 +336,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h2 class="text-2xl font-bold text-gray-900">Area Personale</h2>
-            <span id="userRoleBadge" class="text-xs px-3 py-1 rounded-full font-bold"></span>
+            <span id="userRoleBadge" class="text-xs px-3 py-1 rounded-full font-bold bg-pink-100 text-brand">Utente Registrato</span>
           </div>
           <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
         </div>
@@ -461,7 +461,7 @@
     </div>
   </div>
 
-  <!-- MODALE DETTAGLIO COMPLETO -->
+  <!-- MODALE DETTAGLIO COMPLETO SERVIZI, CONTATTI E RECENSIONI -->
   <div id="detailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
       <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
@@ -472,13 +472,36 @@
           <span id="detailRatingBadge" class="text-xs font-bold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200">⭐ 5.0</span>
         </div>
         <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-0.5">Città • Indirizzo</p>
+        <div id="detailHoursBadge" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2 rounded-xl border border-emerald-100">Disponibilità: Lun-Sab | 09:00 - 19:00</div>
       </div>
 
-      <div class="pt-2 border-t border-gray-100 flex justify-between items-center">
-        <span id="detailSpacePrice" class="text-lg font-extrabold text-brand">0 € /giorno</span>
-        <button onclick="alert('Puoi contattare direttamente l Host via telefono o WhatsApp!')" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
-          Contatta Host
-        </button>
+      <div>
+        <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Tutti i Servizi Inclusi nello Spazio</h4>
+        <div id="detailServicesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="p-2 bg-gray-50 rounded-xl">📶 Wi-Fi ad alta velocità</div>
+          <div class="p-2 bg-gray-50 rounded-xl">❄️ Aria Condizionata</div>
+          <div class="p-2 bg-gray-50 rounded-xl">🛋️ Sala d'attesa clienti</div>
+        </div>
+      </div>
+
+      <!-- BOX INFORMATIVO DINAMICO CONTATTI / REGISTRAZIONE -->
+      <div id="contactLockNotice" class="bg-pink-50 border border-pink-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-xs transition-all">
+        <div>
+          <strong class="text-brand font-bold block text-sm">Contatta l'Host</strong>
+          <p class="text-gray-600 mt-0.5">Accedi ai recapiti telefonici e WhatsApp diretti.</p>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div>
+          <span class="text-xs text-gray-400 uppercase font-bold block">Tariffa Indicativa</span>
+          <span id="detailSpacePrice" class="text-lg font-extrabold text-brand">0 € /giorno</span>
+        </div>
+        <div id="detailActionButtons" class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+          <button onclick="alert('Contatto sbloccato! WhatsApp: 393331234567')" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
+            Sblocca Contatti
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -486,65 +509,219 @@
   <!-- MODALE COME FUNZIONA -->
   <div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative text-xs text-gray-700 space-y-5">
-      <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-      <h3 class="text-xl font-extrabold text-gray-900 border-b border-gray-100 pb-3">💡 Come Funziona ChairShare</h3>
+      <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold transition-colors">✕</button>
+
+      <h3 class="text-xl font-extrabold text-gray-900 border-b border-gray-100 pb-3 flex items-center gap-2">
+        💡 Come Funziona ChairShare (Vetrina Diretta)
+      </h3>
+
       <div class="space-y-4 text-sm">
-        <p>1. Cerca lo spazio ideale per la tua professione.</p>
-        <p>2. Registrati gratis per accedere ai contatti diretti dell'Host.</p>
-        <p>3. Accordati direttamente senza commissioni o intermediari.</p>
+        <div class="flex gap-3 items-start">
+          <span class="text-2xl">🔍</span>
+          <div>
+            <strong class="text-brand block text-base mb-1">1. Cerca lo Spazio Ideale</strong>
+            <p class="text-gray-600 leading-relaxed">Filtra le strutture per città, tipologia o servizi desiderati in tutta Italia.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start">
+          <span class="text-2xl">🔓</span>
+          <div>
+            <strong class="text-brand block text-base mb-1">2. Sblocca i Contatti Gratuitamente</strong>
+            <p class="text-gray-600 leading-relaxed">Registrati gratis per accedere all'indirizzo esatto e ai recapiti diretti (Telefono, WhatsApp ed Email) dell'Host.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start">
+          <span class="text-2xl">🤝</span>
+          <div>
+            <strong class="text-brand block text-base mb-1">3. Contatta in Autonomia</strong>
+            <p class="text-gray-600 leading-relaxed">Accordati direttamente con il proprietario senza intermediazioni, pagamenti online o commissioni di servizio.</p>
+          </div>
+        </div>
       </div>
+
       <div class="flex justify-end pt-4 border-t border-gray-100">
-        <button onclick="toggleModal('howItWorksModal', false)" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-sm">Ho Capito</button>
+        <button onclick="toggleModal('howItWorksModal', false)" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-sm transition-colors shadow-md">
+          Ho Capito
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- MODALE AGGIUNGI SPAZIO -->
+  <!-- MODALE AGGIUNGI / MODIFICA SPAZIO CON MAPPA TRASCINABILE A 3 STEP -->
   <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
-    <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="toggleModal('addModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
-      <h3 class="text-xl font-extrabold text-gray-900 mb-4">Pubblica il tuo Spazio</h3>
+    <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative h-full sm:h-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
       
-      <form id="addSpaceForm" class="space-y-3">
-        <input id="newName" type="text" required placeholder="Nome Spazio" class="w-full border border-gray-300 rounded-xl p-3 text-xs" />
-        <input id="newCity" type="text" required placeholder="Città" class="w-full border border-gray-300 rounded-xl p-3 text-xs" />
-        <input id="newAddress" type="text" required placeholder="Indirizzo" class="w-full border border-gray-300 rounded-xl p-3 text-xs" />
-        <input id="newPrice" type="number" required placeholder="Prezzo (€/giorno)" class="w-full border border-gray-300 rounded-xl p-3 text-xs" />
-        <button type="submit" class="w-full py-3 bg-brand text-white font-bold rounded-xl text-xs shadow-md">Pubblica Spazio</button>
+      <button onclick="toggleModal('addModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <div class="mb-5 pr-6">
+        <h3 id="modalSpaceTitle" class="text-xl font-extrabold text-gray-900">Pubblica il tuo Spazio</h3>
+        <p class="text-xs text-gray-500">Metti in vetrina la tua struttura e i tuoi recapiti.</p>
+        
+        <div class="flex items-center justify-between mt-4 relative">
+          <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -z-0"></div>
+          <div id="stepDot1" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10">1</div>
+          <div id="stepDot2" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10">2</div>
+          <div id="stepDot3" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10">3</div>
+        </div>
+      </div>
+      
+      <form id="addSpaceForm">
+        <input type="hidden" id="editingSpaceId" />
+
+        <!-- STEP 1: INFO GENERALI & INDIRIZZO -->
+        <div id="stepSection1" class="space-y-3">
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 1: Informazioni Generali & Posizione</h4>
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Nome dello Spazio</label>
+            <input id="newName" type="text" required placeholder="Es. Studio Psicoterapia Toledo" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Descrizione</label>
+            <textarea id="newDescription" rows="2" placeholder="Descrivi brevemente lo spazio..." class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Città</label>
+              <input id="newCity" type="text" required placeholder="Napoli" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo Completo</label>
+              <input id="newAddress" type="text" required placeholder="Via Toledo 10" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Tipologia Spazio</label>
+              <select id="newType" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white">
+                <option value="psicoterapia">Studio Psicoterapia / Counseling</option>
+                <option value="massaggi">Cabina Massaggi / Fisioterapia</option>
+                <option value="barbiere">Barbiere / Parrucchiere</option>
+                <option value="estetica">Centro Estetico / Tatuaggi</option>
+                <option value="fotografia">Studio Fotografico</option>
+                <option value="coworking">Postazione Coworking</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 uppercase font-bold">Telefono / WhatsApp Contatto</label>
+              <input id="newWhatsapp" type="tel" placeholder="3331234567" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            </div>
+          </div>
+          <div class="flex justify-end pt-3">
+            <button type="button" onclick="goToStep(2)" class="w-full sm:w-auto px-6 py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">
+              Avanti: Orari & Prezzi →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: ORARI, PREZZI & SERVIZI -->
+        <div id="stepSection2" class="hidden space-y-4">
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Giorni, Orari & Tariffe Indicative</h4>
+          
+          <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 space-y-3">
+            <label class="text-xs text-gray-700 uppercase font-extrabold block">📅 Giorni di Disponibilità</label>
+            <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5 text-center text-xs">
+              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="1" class="hidden" checked /> Lun</label>
+              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="2" class="hidden" checked /> Mar</label>
+              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="3" class="hidden" checked /> Mer</label>
+              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="4" class="hidden" checked /> Gio</label>
+              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="5" class="hidden" checked /> Ven</label>
+              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="6" class="hidden" checked /> Sab</label>
+              <label class="cursor-pointer border border-gray-300 bg-white p-2 rounded-xl has-[:checked]:bg-brand has-[:checked]:text-white font-bold"><input type="checkbox" value="0" class="hidden" /> Dom</label>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-xs text-gray-500 uppercase font-bold">Prezzo Indicativo (€/giorno)</label>
+            <input id="newPrice" type="number" required placeholder="Es. 50" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+          </div>
+
+          <div class="flex justify-between pt-3">
+            <button type="button" onclick="goToStep(1)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
+            <button type="button" onclick="goToStep(3)" class="px-6 py-2.5 bg-brand text-white font-bold rounded-xl text-xs">Avanti →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: PUBBLICAZIONE -->
+        <div id="stepSection3" class="hidden space-y-4">
+          <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 3: Pubblicazione Vetrina</h4>
+          
+          <div class="bg-emerald-50 p-3.5 rounded-2xl border border-emerald-200 text-xs text-emerald-800">
+            <strong class="block font-bold">💡 Contatto Diretto Inserito:</strong>
+            <p>Gli utenti interessati potranno contattarti direttamente via WhatsApp, telefono ed email.</p>
+          </div>
+
+          <div class="flex justify-between pt-3">
+            <button type="button" onclick="goToStep(2)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
+            <button type="submit" id="saveBtn" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
+              Salva e Pubblica
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   </div>
 
-  <!-- SCRIPT COMPLETO JS -->
+  <!-- MODALE PRIVACY E NOTE LEGALI -->
+  <div id="legalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xl shadow-2xl relative max-h-[85vh] overflow-y-auto text-xs text-gray-600 space-y-3">
+      <button onclick="toggleModal('legalModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <h3 class="text-lg font-extrabold text-gray-900 border-b border-gray-100 pb-2">⚖️ Termini di Servizio & Note Legali</h3>
+      <p>ChairShare è una piattaforma vetrina che permette la messa in contatto tra lavoratori ed Host nel rispetto delle normative vigenti.</p>
+      <div class="flex justify-end pt-3 border-t border-gray-100">
+        <button onclick="toggleModal('legalModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT COMPLETO APPLICAZIONE LOGICA JS -->
   <script>
     function sanitizeHTML(str) {
       if (!str) return '';
       return String(str).replace(/[&<>"']/g, match => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
       }[match]));
     }
 
     let currentUser = null;
     let selectedCategory = '';
+    let currentStep = 1;
     let isMapViewMobile = false;
+
+    let userLocation = { lat: 40.8518, lon: 14.2681 };
+    let activeMarkersMap = {};
 
     let localSpazi = [
       { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488 },
       { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571 }
     ];
 
-    const map = L.map('map', { zoomControl: false }).setView([40.8518, 14.2681], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    // INIZIALIZZAZIONE MAPPA PRINCIPALE
+    const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
     let markersGroup = L.layerGroup().addTo(map);
 
     document.addEventListener('DOMContentLoaded', () => {
       renderizzaRisultati(localSpazi);
 
-      // REGISTRAZIONE UTENTE
+      // GESTIONE REGISTRAZIONE CON SDK UFFICIALE
       const regForm = document.getElementById('form-register');
       if (regForm) {
         regForm.addEventListener('submit', async (e) => {
           e.preventDefault();
+          
           const client = getSupabase();
           if (!client) {
             alert("⚠️ Servizio momentaneamente non disponibile. Ricarica la pagina.");
@@ -569,12 +746,12 @@
             if (error) {
               alert("Errore registrazione: " + error.message);
             } else {
-              alert("🎉 Registrazione completata con successo! Controlla la tua email per la conferma.");
+              alert("🎉 Registrazione completata con successo! Controlla la tua email per confermare l'account.");
               closeModal('register-modal');
               regForm.reset();
             }
           } catch (err) {
-            alert("Errore: " + err.message);
+            alert("Errore imprevisto: " + err.message);
           } finally {
             btn.disabled = false;
             btn.innerText = "Registrati";
@@ -582,7 +759,7 @@
         });
       }
 
-      // LOGIN UTENTE
+      // GESTIONE LOGIN CON SDK UFFICIALE
       const loginForm = document.getElementById('form-login');
       if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -593,41 +770,90 @@
           const email = document.getElementById('login-email').value.trim();
           const password = document.getElementById('login-password').value;
 
-          const { data, error } = await client.auth.signInWithPassword({ email, password });
-          if (error) {
-            alert("Errore login: " + error.message);
-          } else {
-            alert("Login effettuato con successo!");
-            currentUser = data.user;
-            document.getElementById('auth-guest-links').style.display = 'none';
-            document.getElementById('auth-user-links').style.display = 'flex';
-            document.getElementById('user-display-name').innerText = `Ciao, ${email.split('@')[0]}`;
-            closeModal('login-modal');
-            loginForm.reset();
+          try {
+            const { data, error } = await client.auth.signInWithPassword({ email, password });
+            if (error) {
+              alert("Errore login: " + error.message);
+            } else {
+              alert("Login effettuato con successo!");
+              currentUser = data.user;
+              document.getElementById('auth-guest-links').style.display = 'none';
+              document.getElementById('auth-user-links').style.display = 'flex';
+              document.getElementById('user-display-name').innerText = `Ciao, ${email.split('@')[0]}`;
+              closeModal('login-modal');
+              loginForm.reset();
+              renderizzaRisultati(localSpazi);
+            }
+          } catch (err) {
+            alert("Errore di connessione: " + err.message);
           }
+        });
+      }
+
+      // SUBMIT CREAZIONE SPAZIO
+      const addSpaceForm = document.getElementById('addSpaceForm');
+      if (addSpaceForm) {
+        addSpaceForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('newName').value.trim();
+          const city = document.getElementById('newCity').value.trim();
+          const address = document.getElementById('newAddress').value.trim();
+          const price = document.getElementById('newPrice').value;
+          const type = document.getElementById('newType').value;
+
+          const newSpace = {
+            id: 'spz_' + Date.now(),
+            name, city, address, price, type,
+            lat: 40.8518 + (Math.random() - 0.5) * 0.05,
+            lon: 14.2681 + (Math.random() - 0.5) * 0.05
+          };
+
+          localSpazi.unshift(newSpace);
+          renderizzaRisultati(localSpazi);
+          toggleModal('addModal', false);
+          addSpaceForm.reset();
+          goToStep(1);
+          alert("🎉 Spazio pubblicato con successo in vetrina!");
         });
       }
     });
 
     function renderizzaRisultati(spaces) {
       markersGroup.clearLayers();
+      activeMarkersMap = {};
       const listContainer = document.getElementById('spacesList');
       listContainer.innerHTML = '';
       document.getElementById('resultsCount').innerText = spaces.length;
 
+      if (spaces.length === 0) {
+        listContainer.innerHTML = `<div class="col-span-2 text-center py-12 text-gray-400"><p class="text-sm">Nessun risultato trovato.</p></div>`;
+        return;
+      }
+
+      const isLoggedIn = !!currentUser;
+
       spaces.forEach(space => {
-        L.marker([space.lat, space.lon]).addTo(markersGroup);
+        const locationText = isLoggedIn 
+          ? `📍 ${sanitizeHTML(space.address)}, ${sanitizeHTML(space.city)}`
+          : `📍 ${sanitizeHTML(space.city)}`;
+
+        const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
+        activeMarkersMap[space.id] = marker;
+
         const card = document.createElement('div');
-        card.className = 'space-card bg-white rounded-3xl p-4 shadow-sm flex flex-col justify-between';
+        card.id = 'card_' + space.id;
+        card.className = 'space-card cursor-pointer bg-white rounded-3xl p-4 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden relative';
+        card.onclick = () => mostraDettagliSpazio(space.id);
+
         card.innerHTML = `
           <div>
             <h4 class="text-base font-bold text-gray-900">${sanitizeHTML(space.name)}</h4>
-            <p class="text-xs text-gray-500 mt-1">📍 ${sanitizeHTML(space.address)}, ${sanitizeHTML(space.city)}</p>
+            <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
           </div>
-          <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
-            <span class="text-sm font-extrabold">${sanitizeHTML(space.price)} €/giorno</span>
-            <button onclick="mostraDettagliSpazio('${space.id}')" class="bg-brand text-white text-xs font-bold px-3.5 py-2 rounded-xl">
-              Sblocca Contatti
+          <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 bg-gray-50/50">
+            <span class="text-base font-extrabold text-gray-900">${sanitizeHTML(space.price)} €/giorno</span>
+            <button onclick="event.stopPropagation(); mostraDettagliSpazio('${sanitizeHTML(space.id)}')" class="bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl">
+              ${isLoggedIn ? 'Contatta Host' : 'Sblocca Contatti'}
             </button>
           </div>
         `;
@@ -642,7 +868,21 @@
 
     function apriAggiungiSpazio() {
       if (!currentUser) openModal('register-modal');
-      else toggleModal('addModal', true);
+      else {
+        goToStep(1);
+        toggleModal('addModal', true);
+      }
+    }
+
+    function goToStep(step) {
+      currentStep = step;
+      document.getElementById('stepSection1').classList.toggle('hidden', step !== 1);
+      document.getElementById('stepSection2').classList.toggle('hidden', step !== 2);
+      document.getElementById('stepSection3').classList.toggle('hidden', step !== 3);
+      
+      document.getElementById('stepDot1').className = step >= 1 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
+      document.getElementById('stepDot2').className = step >= 2 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
+      document.getElementById('stepDot3').className = step >= 3 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
     }
 
     function toggleCustomPrice(selectId, inputId) {
@@ -702,9 +942,10 @@
     function mostraDettagliSpazio(spaceId) {
       const spz = localSpazi.find(s => s.id === spaceId);
       if (!spz) return;
-      document.getElementById('detailSpaceTitle').innerText = spz.name;
-      document.getElementById('detailSpacePrice').innerText = `${spz.price} € /giorno`;
-      document.getElementById('detailSpaceLocation').innerText = `${spz.city} • ${spz.address}`;
+
+      document.getElementById('detailSpaceTitle').innerText = sanitizeHTML(spz.name);
+      document.getElementById('detailSpacePrice').innerText = `${sanitizeHTML(spz.price)} € /giorno`;
+      document.getElementById('detailSpaceLocation').innerText = `${sanitizeHTML(spz.city)} • ${sanitizeHTML(spz.address)}`;
       toggleModal('detailModal', true);
     }
 
@@ -724,13 +965,19 @@
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
+    function toggleModal(modalId, show) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.toggle('hidden', !show);
+    }
+
     function gestisciLogout() {
       currentUser = null;
       document.getElementById('auth-guest-links').style.display = 'flex';
       document.getElementById('auth-user-links').style.display = 'none';
       mostraPagina('homePage');
+      renderizzaRisultati(localSpazi);
     }
+
     function apriModalFavorites() { toggleModal('favoritesModal', true); }
   </script>
 </body>
