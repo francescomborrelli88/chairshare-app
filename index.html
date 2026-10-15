@@ -27,22 +27,10 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- CDN Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- CREDENZIALI SUPABASE CORRETTE -->
   <script>
     const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable__uD40U9DBYrKiQQ4aJLGYQ_w6pmA';
-
-    var supabaseClient = null;
-    window.addEventListener('DOMContentLoaded', function() {
-      try {
-        if (window.supabase) {
-          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
-      } catch (e) {
-        console.error("Errore init Supabase:", e);
-      }
-    });
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5Z2h0bnh1aHhkeXFzYXlqeWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0Njc3NDgsImV4cCI6MjEwNzA0Mzc0OH0.uzupM1khyMAshMfgmGqjITPBLCr0t72pEirryibTyMY';
   </script>
 
   <style>
@@ -764,15 +752,6 @@
 
   <!-- SCRIPT COMPLETO APPLICAZIONE LOGICA JS -->
   <script>
-    function getSupabase() {
-      if (window.supabaseClient) return window.supabaseClient;
-      if (window.supabase && typeof window.supabase.createClient === 'function') {
-        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        return window.supabaseClient;
-      }
-      return null;
-    }
-
     function sanitizeHTML(str) {
       if (!str) return '';
       return String(str).replace(/[&<>"']/g, match => ({
@@ -826,7 +805,7 @@
     let userLocation = { lat: 40.8518, lon: 14.2681 };
     let activeMarkersMap = {};
 
-    let localSpazi = JSON.parse(localStorage.getItem('cs_spazi')) || [
+    let localSpazi = [
       { id: 'spz_1', name: 'Studio Fotografico Vesuvio Light', city: 'Napoli', area: 'Zona Toledo/Centro', address: 'Via Toledo 12', type: 'fotografia', price: 45, lat: 40.8359, lon: 14.2488, image: null, host_name: 'Marco V.', host_id: 'sample', host_email: 'marco.vesuvio@chairshare.it', whatsapp: '393331234567', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'heating', 'waiting_room', 'led_lights', 'backdrop'], available: true },
       { id: 'spz_2', name: 'Barberia Napoletana Spaccanapoli', city: 'Napoli', area: 'Zona Centro Storico', address: 'Via dei Tribunali 45', type: 'barbiere', price: 35, lat: 40.8502, lon: 14.2571, image: null, host_name: 'Luigi B.', host_id: 'sample', host_email: 'barber.spaccanapoli@chairshare.it', whatsapp: '393409876543', openDays: [1,2,3,4,5,6], openTime: '09:00', closeTime: '19:00', features: ['wifi', 'ac', 'reclining_chair', 'hair_wash', 'towels_included'], available: true }
     ];
@@ -842,297 +821,94 @@
 
     let markersGroup = L.layerGroup().addTo(map);
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      const client = getSupabase();
-      if (client) {
-        try {
-          const { data: { session } } = await client.auth.getSession();
-          aggiornaInterfacciaUtente(session?.user || null);
+    document.addEventListener('DOMContentLoaded', () => {
+      renderizzaRisultati(localSpazi);
 
-          client.auth.onAuthStateChange((_event, session) => {
-            aggiornaInterfacciaUtente(session?.user || null);
-          });
-        } catch (e) {
-          console.error("Errore sessione Auth:", e);
-        }
-      }
-
-      caricaSpazi().then(spaziRecuperati => {
-        aggiornaMappaELista(spaziRecuperati);
-      });
-
-      // REGISTRAZIONE UTENTE
-      const registerForm = document.getElementById('form-register');
-      if (registerForm) {
-        registerForm.addEventListener('submit', async (e) => {
+      // GESTIONE REGISTRAZIONE
+      const regForm = document.getElementById('form-register');
+      if (regForm) {
+        regForm.addEventListener('submit', async (e) => {
           e.preventDefault();
-
-          const client = getSupabase();
-          if (!client) {
-            alert("⚠️ Connessione al database non pronta. Riprova tra un istante.");
-            return;
-          }
-
+          
           const fullName = document.getElementById('reg-fullname').value.trim();
           const email = document.getElementById('reg-email').value.trim();
           const password = document.getElementById('reg-password').value;
-
           const btn = document.getElementById('reg-submit-btn');
-          if (btn) btn.disabled = true;
+
+          btn.disabled = true;
+          btn.innerText = "Registrazione in corso...";
 
           try {
-            const { data: authData, error: authError } = await client.auth.signUp({
-              email: email,
-              password: password,
-              options: {
+            const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                email: email,
+                password: password,
                 data: { full_name: fullName }
-              }
+              })
             });
 
-            if (authError) {
-              alert("Errore registrazione: " + authError.message);
-              if (btn) btn.disabled = false;
-              return;
+            const data = await res.json();
+
+            if (!res.ok) {
+              alert("Errore registrazione: " + (data.msg || data.error_description || data.message || "Errore di configurazione"));
+            } else {
+              alert("🎉 Registrazione completata con successo! Controlla la tua email per confermare l'account.");
+              closeModal('register-modal');
+              regForm.reset();
             }
-
-            if (authData?.user) {
-              const { error: profileError } = await client
-                .from('profiles')
-                .upsert([
-                  {
-                    id: authData.user.id,
-                    full_name: fullName,
-                    updated_at: new Date().toISOString()
-                  }
-                ]);
-
-              if (profileError) {
-                console.error("Errore salvataggio profilo DB:", profileError.message);
-              }
-            }
-
-            alert("Registrazione completata! Controlla la tua email per la conferma dell'account.");
-            closeModal('register-modal');
-            registerForm.reset();
-
           } catch (err) {
-            console.error("Errore registrazione imprevisto:", err);
-            alert("Si è verificato un errore: " + (err.message || err));
+            alert("Errore di connessione: " + err.message);
           } finally {
-            if (btn) btn.disabled = false;
+            btn.disabled = false;
+            btn.innerText = "Registrati";
           }
         });
       }
 
-      // LOGIN UTENTE
+      // GESTIONE LOGIN
       const loginForm = document.getElementById('form-login');
       if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
-          
-          const client = getSupabase();
-          if (!client) {
-            alert("⚠️ Connessione al database non pronta.");
-            return;
-          }
-
           const email = document.getElementById('login-email').value.trim();
           const password = document.getElementById('login-password').value;
 
-          const { data, error } = await client.auth.signInWithPassword({
-            email: email,
-            password: password
-          });
+          try {
+            const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ email, password })
+            });
 
-          if (error) {
-            alert("Errore accesso: " + error.message);
-          } else {
-            alert("Login effettuato con successo!");
-            closeModal('login-modal');
-            loginForm.reset();
+            const data = await res.json();
+
+            if (!res.ok) {
+              alert("Errore login: " + (data.error_description || data.msg || "Credenziali errate"));
+            } else {
+              currentUser = data.user || { email: email };
+              alert("Login effettuato con successo!");
+              document.getElementById('auth-guest-links').style.display = 'none';
+              document.getElementById('auth-user-links').style.display = 'flex';
+              document.getElementById('user-display-name').innerText = `Ciao, ${email.split('@')[0]}`;
+              closeModal('login-modal');
+              loginForm.reset();
+              renderizzaRisultati(localSpazi);
+            }
+          } catch (err) {
+            alert("Errore di connessione: " + err.message);
           }
         });
       }
-    });
-
-    function aggiornaInterfacciaUtente(user) {
-      currentUser = user;
-      const guestNav = document.getElementById('auth-guest-links');
-      const userNav = document.getElementById('auth-user-links');
-      const userNameSpan = document.getElementById('user-display-name');
-
-      if (user) {
-        const name = user.user_metadata?.full_name || user.email;
-        if (userNameSpan) userNameSpan.textContent = `Ciao, ${sanitizeHTML(name)}`;
-        if (guestNav) guestNav.style.display = 'none';
-        if (userNav) userNav.style.display = 'flex';
-      } else {
-        if (guestNav) guestNav.style.display = 'flex';
-        if (userNav) userNav.style.display = 'none';
-      }
-    }
-
-    async function gestisciLogout() {
-      const client = getSupabase();
-      if (client) {
-        await client.auth.signOut();
-      }
-      currentUser = null;
-      aggiornaInterfacciaUtente(null);
-      mostraPagina('homePage');
-    }
-
-    function openModal(id) {
-      const modal = document.getElementById(id);
-      if (modal) modal.style.display = 'flex';
-    }
-
-    function closeModal(id) {
-      const modal = document.getElementById(id);
-      if (modal) modal.style.display = 'none';
-    }
-
-    function toggleModal(modalId, show) {
-      const modal = document.getElementById(modalId);
-      if (modal) modal.classList.toggle('hidden', !show);
-    }
-
-    // MAPPA PICKER MARKER TRASCINABILE
-    let pickerMap = null;
-    let pickerMarker = null;
-
-    function inizializzaPickerMappa(lat, lng) {
-      const mapContainer = document.getElementById('pickerMapContainer');
-      if (!mapContainer) return;
-
-      if (!pickerMap) {
-        pickerMap = L.map('pickerMapContainer', { zoomControl: true }).setView([lat, lng], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap'
-        }).addTo(pickerMap);
-
-        pickerMarker = L.marker([lat, lng], { draggable: true }).addTo(pickerMap);
-        pickerMarker.on('dragend', function () {
-          const pos = pickerMarker.getLatLng();
-          window.coordinateSelezionate = { lat: pos.lat, lng: pos.lng };
-        });
-      } else {
-        pickerMap.setView([lat, lng], 15);
-        pickerMarker.setLatLng([lat, lng]);
-      }
-
-      window.coordinateSelezionate = { lat, lng };
-      setTimeout(() => pickerMap.invalidateSize(), 300);
-    }
-
-    async function geocodeAddress(address, city) {
-      try {
-        const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', ' + city)}`);
-        const geoData = await geoRes.json();
-        if (!geoData || geoData.length === 0) {
-          alert("⚠️ Impossibile geolocalizzare l'indirizzo. Posiziona il marker trascinandolo sulla mappa.");
-          return null;
-        }
-        return { lat: parseFloat(geoData[0].lat), lng: parseFloat(geoData[0].lon) };
-      } catch (err) {
-        return null;
-      }
-    }
-
-    async function aggiornaMappaDaIndirizzoForm() {
-      const address = document.getElementById('newAddress').value;
-      const city = document.getElementById('newCity').value;
-      if (!address || !city) return;
-      const coords = await geocodeAddress(address, city);
-      if (coords) inizializzaPickerMappa(coords.lat, coords.lng);
-    }
-
-    async function caricaSpazi() {
-      const client = getSupabase();
-      if (!client) return localSpazi;
-
-      try {
-        const { data: spazi, error } = await client
-          .from('spazi')
-          .select(`*, profiles(full_name, phone)`)
-          .order('created_at', { ascending: false });
-
-        if (!error && spazi && spazi.length > 0) {
-          localSpazi = spazi.map(s => ({
-            id: s.id,
-            name: s.title || 'Spazio',
-            city: s.city || 'Napoli',
-            address: s.address || '',
-            area: 'Zona ' + (s.city || 'Napoli'),
-            type: s.features?.type || s.type || 'coworking',
-            price: parseFloat(s.price_per_day || 0),
-            lat: parseFloat(s.lat || 40.8518),
-            lon: parseFloat(s.lng || 14.2681),
-            image: (s.images && s.images.length > 0) ? s.images[0] : null,
-            host_name: s.profiles?.full_name || 'Host Registrato',
-            host_id: s.user_id,
-            host_email: 'host@chairshare.it',
-            whatsapp: s.profiles?.phone || s.features?.whatsapp || '393330000000',
-            openDays: s.features?.openDays || [1,2,3,4,5,6],
-            openTime: s.features?.openTime || '09:00',
-            closeTime: s.features?.closeTime || '19:00',
-            features: s.features?.features || [],
-            available: true
-          }));
-        }
-      } catch (e) {
-        console.error("Errore caricamento spazi:", e);
-      }
-      return localSpazi;
-    }
-
-    function aggiornaMappaELista(annunci) {
-      renderizzaRisultati(annunci);
-    }
-
-    document.getElementById('addSpaceForm')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const saveBtn = document.getElementById('saveBtn');
-      saveBtn.disabled = true;
-
-      const address = document.getElementById('newAddress').value;
-      const city = document.getElementById('newCity').value;
-
-      let lat = window.coordinateSelezionate?.lat;
-      let lng = window.coordinateSelezionate?.lng;
-
-      if (!lat || !lng) {
-        const coords = await geocodeAddress(address, city);
-        if (!coords) {
-          saveBtn.disabled = false;
-          return;
-        }
-        lat = coords.lat;
-        lng = coords.lng;
-      }
-
-      const client = getSupabase();
-      if (client && currentUser) {
-        await client.from('spazi').insert([{
-          user_id: currentUser.id,
-          title: document.getElementById('newName').value,
-          description: document.getElementById('newDescription').value,
-          address: address,
-          city: city,
-          lat: lat,
-          lng: lng,
-          price_per_day: parseFloat(document.getElementById('newPrice').value),
-          features: {
-            type: document.getElementById('newType').value,
-            whatsapp: document.getElementById('newWhatsapp').value
-          }
-        }]);
-      }
-
-      const annunci = await caricaSpazi();
-      aggiornaMappaELista(annunci);
-      toggleModal('addModal', false);
-      saveBtn.disabled = false;
     });
 
     function renderizzaRisultati(spaces) {
@@ -1150,7 +926,6 @@
       const isLoggedIn = !!currentUser;
 
       spaces.forEach(space => {
-        let catSvgIcon = CATEGORY_ICONS[space.type] || CATEGORY_ICONS['coworking'];
         const locationText = isLoggedIn 
           ? `📍 ${sanitizeHTML(space.address)}, ${sanitizeHTML(space.city)}`
           : `📍 ${sanitizeHTML(space.city)}`;
@@ -1189,7 +964,6 @@
       else {
         goToStep(1);
         toggleModal('addModal', true);
-        setTimeout(() => inizializzaPickerMappa(userLocation.lat, userLocation.lon), 200);
       }
     }
 
@@ -1277,24 +1051,20 @@
       renderizzaRisultati(res);
     }
 
-    function aggiornaFormServiziPerCategoria() {
-      const type = document.getElementById('newType').value;
-      const boxContainer = document.getElementById('categorySpecificCheckboxes');
-      if (!boxContainer) return;
-      boxContainer.innerHTML = '';
-      Object.keys(SERVICES_MASTER).forEach(key => {
-        if (SERVICES_MASTER[key].category === type) {
-          const lbl = document.createElement('label');
-          lbl.className = 'flex items-center gap-1.5 cursor-pointer';
-          lbl.innerHTML = `<input type="checkbox" value="${sanitizeHTML(key)}" class="service-checkbox accent-brand" /> <span>${sanitizeHTML(SERVICES_MASTER[key].icon)} ${sanitizeHTML(SERVICES_MASTER[key].name)}</span>`;
-          boxContainer.appendChild(lbl);
-        }
-      });
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function toggleModal(modalId, show) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.toggle('hidden', !show);
     }
-
-    function apriModalFavorites() {
-      toggleModal('favoritesModal', true);
+    function gestisciLogout() {
+      currentUser = null;
+      document.getElementById('auth-guest-links').style.display = 'flex';
+      document.getElementById('auth-user-links').style.display = 'none';
+      mostraPagina('homePage');
+      renderizzaRisultati(localSpazi);
     }
+    function apriModalFavorites() { toggleModal('favoritesModal', true); }
   </script>
 </body>
 </html>
