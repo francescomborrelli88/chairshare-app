@@ -2,10 +2,15 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ChairShare - Trova e Contatta Spazi e Postazioni</title>
-  
-  <!-- Tailwind CSS -->
+  <meta name="description" content="Trova o pubblica spazi e postazioni di lavoro per professionisti: studi di psicoterapia, cabine massaggi, postazioni barber, estetica, studi foto e coworking. Contatta direttamente l'host." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ChairShare - Trova e Contatta Spazi e Postazioni" />
+  <meta property="og:description" content="Metti in mostra il tuo spazio o trova la postazione ideale: contatta direttamente l'host senza intermediari." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23FF385C'/%3E%3C/svg%3E" />
+
+  <!-- Tailwind CSS (CDN: ok per prototipo; per produzione conviene fare una build) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -22,7 +27,7 @@
       }
     }
   </script>
-  
+
   <!-- Leaflet CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -32,13 +37,20 @@
 
   <script>
     const SUPABASE_URL = 'https://eyghtnxuhxdyqsayjygi.supabase.co';
+    // Chiave "anon": pubblica per design. La sicurezza è garantita dalle policy RLS su Supabase.
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5Z2h0bnh1aHhkeXFzYXlqeWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0Njc3NDgsImV4cCI6MjEwNzA0Mzc0OH0.uzupM1khyMAshMfgmGqjITPBLCr0t72pEirryibTyMY';
 
+    // DA COMPLETARE prima della pubblicazione: dati del titolare del trattamento (informativa privacy)
+    const TITOLARE = '[Francesco Borrelli]';
+    const EMAIL_PRIVACY = '[francescomborrelli@gmail.com]';
+
+    let _sb = null;
     function getSupabase() {
+      if (_sb) return _sb;
       if (window.supabase && window.supabase.createClient) {
-        return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
-      return null;
+      return _sb;
     }
   </script>
 
@@ -46,19 +58,14 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    .search-pill-shadow {
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    }
-    
+    .search-pill-shadow { box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
+
     .space-card {
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       border: 2px solid rgba(229, 231, 235, 0.9);
       box-sizing: border-box;
     }
-    .space-card:hover {
-      transform: translateY(-3px);
-    }
-
+    .space-card:hover { transform: translateY(-3px); }
     .space-card.selected-card {
       border-color: #FF385C !important;
       box-shadow: 0 0 0 1px #FF385C, 0 10px 25px -5px rgba(255, 56, 92, 0.2) !important;
@@ -83,38 +90,28 @@
       min-width: 230px !important;
       border: 1px solid rgba(229, 231, 235, 0.8);
     }
-    .leaflet-popup-content { 
-      margin: 0 !important; 
-      line-height: 1.3;
-      width: 100% !important;
-    }
+    .leaflet-popup-content { margin: 0 !important; line-height: 1.3; width: 100% !important; }
     .leaflet-container a.leaflet-popup-close-button {
-      top: 8px;
-      right: 8px;
-      padding: 2px;
-      color: #4b5563;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 9999px;
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-      z-index: 10;
+      top: 8px; right: 8px; padding: 2px; color: #4b5563;
+      background: rgba(255, 255, 255, 0.9); border-radius: 9999px;
+      width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12); z-index: 10;
     }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col pb-20 lg:pb-0 selection:bg-brand selection:text-white">
 
-  <!-- HEADER AIRBNB STYLE CON AREA UTENTE DINAMICA E NOME REALE -->
+  <!-- NOTIFICHE -->
+  <div id="toast" class="hidden" role="status" aria-live="polite"></div>
+
+  <!-- HEADER -->
   <header class="bg-white border-b border-gray-200 sticky top-0 z-40 px-4 py-3 md:px-8 shadow-sm navbar">
     <div class="max-w-7xl mx-auto flex justify-between items-center gap-2 md:gap-4">
-      
-      <!-- LOGO CON NOME -->
-      <div onclick="resetToHome()" class="flex items-center gap-2 cursor-pointer shrink-0 logo">
+
+      <!-- LOGO -->
+      <div id="logoHome" class="flex items-center gap-2 cursor-pointer shrink-0 logo">
         <div class="w-9 h-9 rounded-full bg-brand flex items-center justify-center text-white shadow-md shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M19 10h-1V7c0-1.65-1.35-3-3-3H9C7.35 4 6 5.35 6 7v3H5c-1.1 0-2 .9-2 2v5c0 .55.45 1 1 1h1v2c0 .55.45 1 1 1s1-.45 1-1v-2h12v2c0 .55.45 1 1 1s1-.45 1-1v-2h1c.55 0 1-.45 1-1v-5c0-1.1-.9-2-2-2zm-11-3c0-.55.45-1 1-1h6c.55 0 1 .45 1 1v3H8V7zm11 8H5v-3h14v3z"/>
           </svg>
         </div>
@@ -123,9 +120,9 @@
 
       <!-- FORM DI RICERCA DESKTOP -->
       <div class="hidden md:flex items-center gap-2 border border-gray-300 rounded-full px-3 py-1.5 shadow-sm hover:shadow-md bg-white transition-all">
-        <input id="cityInput" type="text" placeholder="Città (es. Napoli)" onkeyup="if(event.key==='Enter') cercaSpazi()" class="text-xs font-semibold text-gray-800 bg-transparent focus:outline-none w-32 px-2" />
+        <input id="cityInput" type="text" placeholder="Città (es. Napoli)" aria-label="Città" class="text-xs font-semibold text-gray-800 bg-transparent focus:outline-none w-32 px-2" />
         <span class="text-gray-300">|</span>
-        <select id="typeSelect" onchange="cercaSpazi()" class="text-xs font-semibold text-gray-600 bg-transparent focus:outline-none cursor-pointer">
+        <select id="typeSelect" aria-label="Tipologia" class="text-xs font-semibold text-gray-600 bg-transparent focus:outline-none cursor-pointer">
           <option value="">Tutti i Tipi</option>
           <option value="psicoterapia">Psicoterapia</option>
           <option value="massaggi">Massaggi</option>
@@ -135,8 +132,8 @@
           <option value="coworking">Coworking</option>
         </select>
         <span class="text-gray-300">|</span>
-        
-        <select id="priceSelect" onchange="toggleCustomPrice('priceSelect', 'priceInput')" class="text-xs font-semibold text-gray-600 bg-transparent focus:outline-none cursor-pointer">
+
+        <select id="priceSelect" aria-label="Prezzo massimo" class="text-xs font-semibold text-gray-600 bg-transparent focus:outline-none cursor-pointer">
           <option value="">Qualsiasi prezzo</option>
           <option value="30">Fino a 30€</option>
           <option value="50">Fino a 50€</option>
@@ -144,39 +141,39 @@
           <option value="100">Fino a 100€</option>
           <option value="custom">Altro...</option>
         </select>
-        <input id="priceInput" type="number" placeholder="Max €" onkeyup="if(event.key==='Enter') cercaSpazi()" class="hidden text-xs font-semibold text-gray-800 bg-gray-100 rounded-full focus:outline-none w-16 px-2 py-1" />
-        
-        <button onclick="cercaSpazi()" class="w-7 h-7 rounded-full bg-brand hover:bg-brand-hover flex items-center justify-center text-white ml-1 shrink-0">
-          <svg class="w-3.5 h-3.5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+        <input id="priceInput" type="number" min="0" placeholder="Max €" aria-label="Prezzo massimo personalizzato" class="hidden text-xs font-semibold text-gray-800 bg-gray-100 rounded-full focus:outline-none w-16 px-2 py-1" />
+
+        <button id="searchBtnDesktop" aria-label="Cerca" class="w-7 h-7 rounded-full bg-brand hover:bg-brand-hover flex items-center justify-center text-white ml-1 shrink-0">
+          <svg class="w-3.5 h-3.5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
         </button>
       </div>
 
-      <!-- AREA UTENTE DINAMICA NAVBAR -->
+      <!-- AREA UTENTE -->
       <div id="user-nav" class="flex items-center gap-2 md:gap-3 shrink-0">
-        <button onclick="toggleModal('howItWorksModal', true)" class="text-xs font-semibold text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-full transition-colors hidden sm:block">
+        <button id="btnHowTop" class="text-xs font-semibold text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-full transition-colors hidden sm:block">
           Come funziona
         </button>
 
-        <!-- SE L'UTENTE NON È LOGGATO -->
+        <!-- UTENTE NON LOGGATO -->
         <div id="auth-guest-links" class="flex items-center gap-2">
-          <button onclick="openModal('login-modal')" class="text-xs font-bold text-gray-800 hover:bg-gray-100 px-3.5 py-2 rounded-full border border-gray-300 transition-colors">
+          <button id="btnOpenLogin" class="text-xs font-bold text-gray-800 hover:bg-gray-100 px-3.5 py-2 rounded-full border border-gray-300 transition-colors">
             Accedi
           </button>
-          <button onclick="openModal('register-modal')" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-3.5 py-2 rounded-full shadow-md transition-all">
+          <button id="btnOpenRegister" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-3.5 py-2 rounded-full shadow-md transition-all">
             Registrati
           </button>
         </div>
 
-        <!-- SE L'UTENTE È LOGGATO -->
+        <!-- UTENTE LOGGATO -->
         <div id="auth-user-links" class="hidden items-center gap-2">
-          <span id="user-display-name" class="text-xs font-bold text-gray-800 bg-gray-100 px-3.5 py-2 rounded-full border border-gray-200 shadow-sm">Ciao!</span>
-          <button onclick="apriAggiungiSpazio()" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-3.5 py-2 rounded-full shadow-md transition-all hidden sm:block">
+          <span id="user-display-name" class="text-xs font-bold text-gray-800 bg-gray-100 px-3.5 py-2 rounded-full border border-gray-200 shadow-sm hidden sm:block">Ciao!</span>
+          <button id="btnPublishTop" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-3.5 py-2 rounded-full shadow-md transition-all hidden sm:block">
             + Pubblica Spazio
           </button>
-          <button onclick="gestisciClickProfilo()" class="flex items-center gap-1.5 border border-gray-300 hover:shadow-md px-3 py-2 rounded-full transition-all">
+          <button id="btnProfile" class="flex items-center gap-1.5 border border-gray-300 hover:shadow-md px-3 py-2 rounded-full transition-all">
             <span class="text-xs font-bold">👤 Profilo</span>
           </button>
-          <button onclick="gestisciLogout()" class="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-2 rounded-full transition-colors">
+          <button id="btnLogoutTop" class="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-2 rounded-full transition-colors">
             Esci
           </button>
         </div>
@@ -184,7 +181,7 @@
     </div>
   </header>
 
-  <!-- SLOGAN PIATTAFORMA VETRINA -->
+  <!-- SLOGAN -->
   <div class="bg-white text-brand py-2.5 px-4 text-center border-b border-gray-200">
     <p class="text-xs md:text-sm italic font-medium tracking-wide">
       “Metti in mostra il tuo spazio o trova la postazione ideale: contatta direttamente l'Host senza intermediari.”
@@ -193,19 +190,19 @@
 
   <!-- HOME PAGE -->
   <div id="homePage" class="flex-1 flex flex-col">
-    
+
     <!-- BARRA RICERCA MOBILE -->
     <div class="md:hidden px-4 pt-3 pb-2 bg-white border-b border-gray-200 sticky top-[57px] z-30 shadow-sm space-y-2">
       <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-full p-2 shadow-sm search-pill-shadow">
-        <svg class="w-4 h-4 text-gray-500 ml-1 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
-        <input id="mobileCityInput" onkeyup="syncMobileToDesktopSearch(event)" type="text" placeholder="Città (es. Napoli)" class="w-full text-xs font-semibold text-gray-900 bg-transparent focus:outline-none" />
-        <button onclick="cercaSpazi()" class="bg-brand text-white text-xs font-bold px-3 py-1.5 rounded-full shrink-0">
+        <svg class="w-4 h-4 text-gray-500 ml-1 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+        <input id="mobileCityInput" type="text" placeholder="Città (es. Napoli)" aria-label="Città" class="w-full text-xs font-semibold text-gray-900 bg-transparent focus:outline-none" />
+        <button id="searchBtnMobile" class="bg-brand text-white text-xs font-bold px-3 py-1.5 rounded-full shrink-0">
           Cerca
         </button>
       </div>
-      
+
       <div class="flex items-center gap-2 justify-between">
-        <select id="mobilePriceSelect" onchange="toggleCustomPrice('mobilePriceSelect', 'mobilePriceInput')" class="text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full px-3 py-1.5 shadow-sm focus:outline-none w-1/2 cursor-pointer">
+        <select id="mobilePriceSelect" aria-label="Prezzo massimo" class="text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-full px-3 py-1.5 shadow-sm focus:outline-none w-1/2 cursor-pointer">
           <option value="">Qualsiasi prezzo</option>
           <option value="30">Fino a 30€</option>
           <option value="50">Fino a 50€</option>
@@ -213,16 +210,16 @@
           <option value="100">Fino a 100€</option>
           <option value="custom">Altro...</option>
         </select>
-        <input id="mobilePriceInput" type="number" placeholder="Es. 85€" onkeyup="if(event.key==='Enter') cercaSpazi()" class="hidden text-xs font-semibold text-gray-900 border border-gray-300 rounded-full px-3 py-1.5 shadow-sm focus:outline-none w-1/2 bg-gray-50" />
+        <input id="mobilePriceInput" type="number" min="0" placeholder="Es. 85€" aria-label="Prezzo massimo personalizzato" class="hidden text-xs font-semibold text-gray-900 border border-gray-300 rounded-full px-3 py-1.5 shadow-sm focus:outline-none w-1/2 bg-gray-50" />
       </div>
     </div>
 
     <!-- CATEGORY BAR -->
     <div class="bg-white border-b border-gray-200 py-3 px-4 shadow-sm sticky top-[150px] md:top-[61px] z-20">
       <div class="max-w-7xl mx-auto flex items-center gap-8 overflow-x-auto no-scrollbar" id="categoryPills">
-        
-        <button onclick="selectCategory('')" data-cat="" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all">
-          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+
+        <button data-cat="" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all">
+          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
             <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
             <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" />
@@ -231,18 +228,18 @@
           <span>Tutti gli Spazi</span>
         </button>
 
-        <button onclick="selectCategory('psicoterapia')" data-cat="psicoterapia" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
-          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/></svg>
+        <button data-cat="psicoterapia" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/></svg>
           <span>Psicoterapia</span>
         </button>
 
-        <button onclick="selectCategory('massaggi')" data-cat="massaggi" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
-          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+        <button data-cat="massaggi" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
           <span>Massaggi</span>
         </button>
 
-        <button onclick="selectCategory('barbiere')" data-cat="barbiere" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
-          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <button data-cat="barbiere" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="7.5" cy="17.5" r="3" />
             <circle cx="16.5" cy="17.5" r="3" />
             <line x1="9.5" y1="15.5" x2="18.5" y2="4.5" />
@@ -252,18 +249,18 @@
           <span>Hair & Barber</span>
         </button>
 
-        <button onclick="selectCategory('estetica')" data-cat="estetica" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
-          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
+        <button data-cat="estetica" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
           <span>Estetica & Nails</span>
         </button>
 
-        <button onclick="selectCategory('fotografia')" data-cat="fotografia" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
-          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
+        <button data-cat="fotografia" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
           <span>Foto & Video</span>
         </button>
 
-        <button onclick="selectCategory('coworking')" data-cat="coworking" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
-          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+        <button data-cat="coworking" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
           <span>Coworking</span>
         </button>
       </div>
@@ -274,13 +271,13 @@
       <!-- LISTA SPAZI -->
       <div id="listSection" class="lg:col-span-7 overflow-y-auto w-full pr-1">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-sm font-bold text-gray-900"><span id="resultsCount" class="text-brand">0</span> spazi trovati</h3>
-          <button onclick="resetFilters()" class="text-xs text-brand font-bold hover:underline">Azzera Filtri</button>
+          <h3 class="text-sm font-bold text-gray-900"><span id="resultsCount" class="text-brand">0</span> <span id="resultsLabel">spazi trovati</span></h3>
+          <button id="btnResetFilters" class="text-xs text-brand font-bold hover:underline">Azzera Filtri</button>
         </div>
         <div id="spacesList" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
       </div>
 
-      <!-- SEZIONE MAPPA PRINCIPALE -->
+      <!-- MAPPA -->
       <div id="mapSection" class="hidden lg:block lg:col-span-5 h-[calc(100vh-160px)] sticky top-[150px] z-0">
         <div class="apple-map-container w-full h-full relative">
           <div id="map" class="w-full h-full"></div>
@@ -290,183 +287,182 @@
 
     <!-- TASTO FLOTTANTE MAPPA MOBILE -->
     <div class="lg:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-[999]">
-      <button onclick="toggleMobileView()" id="mobileSwitchBtn" class="bg-gray-900 hover:bg-black text-white font-bold px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 text-xs tracking-wide">
+      <button id="mobileSwitchBtn" class="bg-gray-900 hover:bg-black text-white font-bold px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 text-xs tracking-wide">
         <span>🗺️ Mostra Mappa</span>
       </button>
     </div>
   </div>
 
-  <!-- AREA PERSONALE PERSONALIZZATA CON NOME COMPLETO -->
+  <!-- AREA PERSONALE -->
   <div id="profilePage" class="hidden flex-1 max-w-5xl mx-auto w-full p-4 md:p-8">
     <div class="space-y-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-gray-200 shadow-sm gap-4">
         <div>
-          <div class="flex items-center gap-2">
-            <h2 id="profileUserFullName" class="text-2xl font-bold text-gray-900">Francesco Borrelli</h2>
-            <span id="userRoleBadge" class="text-xs px-3 py-1 rounded-full font-bold bg-pink-100 text-brand">Utente Registrato</span>
-          </div>
+          <h2 id="profileUserFullName" class="text-2xl font-bold text-gray-900"></h2>
           <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
         </div>
         <div class="flex items-center gap-3">
-          <button onclick="mostraPagina('homePage')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition-colors">
+          <button id="btnBackHome" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition-colors">
             ← Torna alla Mappa
           </button>
-          <button onclick="gestisciLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl text-xs transition-colors border border-red-200">
+          <button id="btnLogoutProfile" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl text-xs transition-colors border border-red-200">
             🚪 Logout
           </button>
         </div>
       </div>
 
-      <!-- SEZIONE SPAZI PUBBLICATI CON FUNZIONE MODIFICA ED ELIMINA -->
       <div id="hostSpacesSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
           <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi in Vetrina</h3>
-          <button onclick="apriAggiungiSpazio()" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Aggiungi Spazio</button>
+          <button id="btnAddSpaceProfile" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Aggiungi Spazio</button>
         </div>
         <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
 
-      <!-- SEZIONE STORICO CONTATTI SBLOCCATI -->
-      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">📞 Spazi Contattati & Sbloccati</h3>
-        <div id="myUnlockedContactsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </div>
-
-      <!-- SEZIONE LE MIE RECENSIONI -->
-      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">⭐ Le mie Recensioni Lasciate</h3>
-        <div id="myUserReviewsList" class="space-y-3"></div>
-      </div>
+      <p class="text-xs text-gray-400 text-center">Per cancellare il tuo account e i tuoi dati scrivi all'indirizzo indicato nell'<button type="button" class="underline" id="btnLegalProfile">Informativa Privacy</button>.</p>
     </div>
   </div>
 
-  <!-- FOOTER DESKTOP -->
-  <footer class="bg-white border-t border-gray-200 py-6 px-4 text-center text-xs text-gray-500 mt-auto hidden lg:block">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div>© 2026 ChairShare Inc. • Tutti i diritti riservati</div>
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-gray-200 py-6 px-4 text-center text-xs text-gray-500 mt-auto">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div>© 2026 ChairShare • Tutti i diritti riservati</div>
       <div class="flex gap-4">
-        <button onclick="toggleModal('howItWorksModal', true)" class="hover:underline">Come funziona</button>
-        <button onclick="toggleModal('legalModal', true)" class="hover:underline">Privacy & Note Legali</button>
+        <button id="btnHowFooter" class="hover:underline">Come funziona</button>
+        <button id="btnLegalFooter" class="hover:underline">Privacy & Note Legali</button>
       </div>
     </div>
   </footer>
 
   <!-- ==================== MODALI ==================== -->
-  
-<!-- MODALE COME FUNZIONA -->
-<div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
-  <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
-    <button onclick="toggleModal('howItWorksModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
-    <h2 class="text-xl font-extrabold text-gray-900 mb-1">Come funziona ChairShare</h2>
-    <p class="text-xs text-gray-500 mb-5">Condividere e trovare postazioni di lavoro professionali non è mai stato così semplice.</p>
+  <!-- COME FUNZIONA -->
+  <div id="howItWorksModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button data-close-modal="howItWorksModal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
-    <div class="space-y-4 text-xs text-gray-700">
-      <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
-        <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">1</span>
-        <div>
-          <h4 class="font-bold text-gray-900 mb-0.5">Trova lo spazio perfetto</h4>
-          <p class="text-gray-500">Cerca per città o categoria: studi di psicoterapia, cabine massaggi, postazioni barber/nails e coworking attrezzati.</p>
+      <h2 class="text-xl font-extrabold text-gray-900 mb-1">Come funziona ChairShare</h2>
+      <p class="text-xs text-gray-500 mb-5">Condividere e trovare postazioni di lavoro professionali non è mai stato così semplice.</p>
+
+      <div class="space-y-4 text-xs text-gray-700">
+        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+          <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">1</span>
+          <div>
+            <h4 class="font-bold text-gray-900 mb-0.5">Trova lo spazio perfetto</h4>
+            <p class="text-gray-500">Cerca per città o categoria: studi di psicoterapia, cabine massaggi, postazioni barber/nails e coworking attrezzati.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+          <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">2</span>
+          <div>
+            <h4 class="font-bold text-gray-900 mb-0.5">Sblocca e contatta direttamente l'Host</h4>
+            <p class="text-gray-500">Accedi o registrati gratuitamente per vedere l'indirizzo esatto e avviare una chat su WhatsApp o chiamare l'host senza commissioni di agenzia.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+          <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">3</span>
+          <div>
+            <h4 class="font-bold text-gray-900 mb-0.5">Hai uno spazio inutilizzato? Pubblicalo</h4>
+            <p class="text-gray-500">Inserisci orari di disponibilità, tariffa giornaliera o oraria e servizi inclusi per metterlo in vetrina a professionisti della tua zona.</p>
+          </div>
         </div>
       </div>
 
-      <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
-        <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">2</span>
-        <div>
-          <h4 class="font-bold text-gray-900 mb-0.5">Sblocca e contatta direttamente l'Host</h4>
-          <p class="text-gray-500">Accedi o registrati gratuitamente per vedere l'indirizzo esatto e avviare una chat su WhatsApp o chiamare l'host senza commissioni di agenzia.</p>
-        </div>
+      <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
+        <button data-close-modal="howItWorksModal" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">
+          Ho capito
+        </button>
       </div>
-
-      <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
-        <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold shrink-0">3</span>
-        <div>
-          <h4 class="font-bold text-gray-900 mb-0.5">Hai uno spazio inutilizzato? Pubblicalo</h4>
-          <p class="text-gray-500">Inserisci orari di disponibilità, tariffa giornaliera o oraria e servizi inclusi per metterlo in vetrina a professionisti della tua zona.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
-      <button onclick="toggleModal('howItWorksModal', false)" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">
-        Ho capito
-      </button>
     </div>
   </div>
-</div>
 
-<!-- MODALE PRIVACY & NOTE LEGALI -->
-<div id="legalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
-  <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
-    <button onclick="toggleModal('legalModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+  <!-- PRIVACY & NOTE LEGALI -->
+  <div id="legalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button data-close-modal="legalModal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
-    <h2 class="text-xl font-extrabold text-gray-900 mb-1">Privacy & Note Legali</h2>
-    <p class="text-xs text-gray-500 mb-4">Termini d'uso della piattaforma ChairShare.</p>
+      <h2 class="text-xl font-extrabold text-gray-900 mb-1">Privacy & Note Legali</h2>
+      <p class="text-xs text-gray-500 mb-4">Informativa ai sensi degli artt. 13-14 del Regolamento (UE) 2016/679 (GDPR).</p>
 
-    <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
-      <p><strong>Piattaforma di contatto:</strong> ChairShare agisce come vetrina di annunci per favorire l'incontro tra proprietari/gestori di spazi e professionisti. I termini economici e le modalità di utilizzo sono concordati autonomamente tra le parti.</p>
-      <p><strong>Tutela dei dati:</strong> Gli indirizzi completi e i recapiti telefonici sono protetti e visibili unicamente agli utenti registrati alla piattaforma.</p>
-    </div>
+      <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
+        <p><strong>Natura del servizio.</strong> ChairShare è una vetrina di annunci che mette in contatto chi ha uno spazio con i professionisti che cercano una postazione. ChairShare non è parte degli accordi tra host e utenti, né gestisce pagamenti o prenotazioni: condizioni economiche e modalità di utilizzo sono concordate autonomamente tra le parti. Chi pubblica un annuncio è responsabile della veridicità dei dati e del diritto di offrire lo spazio.</p>
+        <p><strong>Titolare del trattamento.</strong> <span id="legalTitolare"></span> — contatto privacy: <span id="legalEmail"></span></p>
+        <p><strong>Dati trattati.</strong> Nome e cognome, email e password (conservata in forma cifrata dal servizio di autenticazione); per chi pubblica un annuncio: nome dello spazio, città, zona, indirizzo, numero di telefono/WhatsApp, orari, tariffe e servizi.</p>
+        <p><strong>Finalità e base giuridica.</strong> Creazione e gestione dell'account, pubblicazione degli annunci e messa in contatto tra utenti registrati (esecuzione del servizio richiesto, art. 6.1.b GDPR); sicurezza e prevenzione degli abusi (legittimo interesse, art. 6.1.f).</p>
+        <p><strong>Chi vede cosa.</strong> L'indirizzo esatto e il telefono di un annuncio sono visibili solo agli utenti registrati. Sulla mappa pubblica compare solo una posizione approssimativa. Pubblicando un annuncio l'host accetta che questi dati siano visibili agli utenti registrati.</p>
+        <p><strong>Destinatari.</strong> I dati sono conservati su infrastruttura Supabase (database e autenticazione, regione UE). Per calcolare la posizione sulla mappa l'indirizzo viene inviato al servizio di geocodifica OpenStreetMap/Nominatim; la mappa è fornita da OpenStreetMap e le librerie del sito sono caricate da reti di distribuzione terze, che possono ricevere l'indirizzo IP del visitatore.</p>
+        <p><strong>Cookie e archiviazione locale.</strong> Il sito usa solo l'archiviazione locale del browser strettamente necessaria al mantenimento della sessione di accesso. Non utilizza cookie di profilazione né di analisi.</p>
+        <p><strong>Conservazione.</strong> I dati dell'account sono conservati finché l'account è attivo; i dati di un annuncio finché non viene eliminato dall'host.</p>
+        <p><strong>Diritti.</strong> Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione scrivendo al contatto privacy indicato sopra. Hai inoltre diritto di proporre reclamo al Garante per la protezione dei dati personali (garanteprivacy.it).</p>
+      </div>
 
-    <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
-      <button onclick="toggleModal('legalModal', false)" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold rounded-xl text-xs">
-        Chiudi
-      </button>
+      <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
+        <button data-close-modal="legalModal" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold rounded-xl text-xs">
+          Chiudi
+        </button>
+      </div>
     </div>
   </div>
-</div>
-  <!-- MODALE LOGIN -->
+
+  <!-- LOGIN -->
   <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 modal" style="display:none;">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative modal-content">
-      <button onclick="closeModal('login-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <button data-close-overlay="login-modal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <h2 class="text-xl font-extrabold text-gray-900 mb-1">Accedi a ChairShare</h2>
       <p class="text-xs text-gray-500 mb-4">Sblocca i contatti diretti degli Host o pubblica i tuoi spazi.</p>
 
       <form id="form-login" class="space-y-3">
         <div>
-          <label class="text-xs text-gray-500 uppercase font-bold">Email</label>
-          <input type="email" id="login-email" placeholder="Email" required class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          <label for="login-email" class="text-xs text-gray-500 uppercase font-bold">Email</label>
+          <input type="email" id="login-email" placeholder="Email" required autocomplete="email" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
         </div>
         <div>
-          <label class="text-xs text-gray-500 uppercase font-bold">Password</label>
-          <input type="password" id="login-password" placeholder="Password" required class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          <label for="login-password" class="text-xs text-gray-500 uppercase font-bold">Password</label>
+          <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          <button type="button" id="btnForgot" class="text-xs text-gray-500 hover:underline mt-1.5">Password dimenticata?</button>
         </div>
 
         <div class="flex justify-between items-center pt-3 border-t border-gray-100">
-          <button type="button" onclick="closeModal('login-modal'); openModal('register-modal');" class="text-xs text-brand font-bold hover:underline">
+          <button type="button" id="btnLoginToRegister" class="text-xs text-brand font-bold hover:underline">
             Non hai un account? Registrati
           </button>
-          <button type="submit" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">Accedi</button>
+          <button type="submit" id="login-submit-btn" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">Accedi</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODALE REGISTRAZIONE CON NOME E COGNOME COMPLETO -->
+  <!-- REGISTRAZIONE -->
   <div id="register-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 modal" style="display:none;">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative modal-content">
-      <button onclick="closeModal('register-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <button data-close-overlay="register-modal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <h2 class="text-xl font-extrabold text-gray-900 mb-1">Crea un account</h2>
       <p class="text-xs text-gray-500 mb-4">Registrati gratis su ChairShare.</p>
 
       <form id="form-register" class="space-y-3">
         <div>
-          <label class="text-xs text-gray-500 uppercase font-bold">Nome e Cognome</label>
-          <input type="text" id="reg-fullname" placeholder="Es. Francesco Borrelli" required class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          <label for="reg-fullname" class="text-xs text-gray-500 uppercase font-bold">Nome e Cognome</label>
+          <input type="text" id="reg-fullname" placeholder="Es. Mario Rossi" required autocomplete="name" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
         </div>
         <div>
-          <label class="text-xs text-gray-500 uppercase font-bold">Email</label>
-          <input type="email" id="reg-email" placeholder="Email" required class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          <label for="reg-email" class="text-xs text-gray-500 uppercase font-bold">Email</label>
+          <input type="email" id="reg-email" placeholder="Email" required autocomplete="email" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
         </div>
         <div>
-          <label class="text-xs text-gray-500 uppercase font-bold">Password</label>
-          <input type="password" id="reg-password" placeholder="Password (minimo 6 caratteri)" required minlength="6" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+          <label for="reg-password" class="text-xs text-gray-500 uppercase font-bold">Password</label>
+          <input type="password" id="reg-password" placeholder="Password (minimo 8 caratteri)" required minlength="8" autocomplete="new-password" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
         </div>
+        <label class="flex items-start gap-2 text-xs text-gray-600 cursor-pointer">
+          <input type="checkbox" id="reg-consent" required class="mt-0.5 rounded text-brand focus:ring-brand" />
+          <span>Ho letto l'<button type="button" id="btnLegalFromRegister" class="underline font-bold text-gray-800">Informativa Privacy</button> e accetto il trattamento dei miei dati per l'uso del servizio.</span>
+        </label>
 
         <div class="flex justify-between items-center pt-3 border-t border-gray-100">
-          <button type="button" onclick="closeModal('register-modal'); openModal('login-modal');" class="text-xs text-brand font-bold hover:underline">
+          <button type="button" id="btnRegisterToLogin" class="text-xs text-brand font-bold hover:underline">
             Hai già un account? Accedi
           </button>
           <button type="submit" id="reg-submit-btn" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">Registrati</button>
@@ -475,17 +471,31 @@
     </div>
   </div>
 
-  <!-- MODALE DETTAGLIO SPAZIO -->
+  <!-- NUOVA PASSWORD (dopo il link di reset) -->
+  <div id="newpass-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 modal" style="display:none;">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative modal-content">
+      <button data-close-overlay="newpass-modal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <h2 class="text-xl font-extrabold text-gray-900 mb-1">Imposta una nuova password</h2>
+      <p class="text-xs text-gray-500 mb-4">Scegli la nuova password per il tuo account.</p>
+      <form id="form-newpass" class="space-y-3">
+        <div>
+          <label for="newpass-password" class="text-xs text-gray-500 uppercase font-bold">Nuova password</label>
+          <input type="password" id="newpass-password" placeholder="Minimo 8 caratteri" required minlength="8" autocomplete="new-password" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
+        </div>
+        <div class="flex justify-end pt-3 border-t border-gray-100">
+          <button type="submit" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">Salva password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DETTAGLIO SPAZIO -->
   <div id="detailModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
-      <button onclick="toggleModal('detailModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold z-20">✕</button>
+      <button data-close-modal="detailModal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold z-20">✕</button>
 
       <div class="border-b border-gray-100 pb-3 pr-10">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <h3 id="detailSpaceTitle" class="text-xl font-extrabold text-gray-900">Nome Spazio</h3>
-          <span id="detailRatingBadge" class="text-xs font-bold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200 shrink-0">⭐ 5.0</span>
-        </div>
-        
+        <h3 id="detailSpaceTitle" class="text-xl font-extrabold text-gray-900">Nome Spazio</h3>
         <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-1 font-medium">Città • Zona</p>
         <div id="detailHoursBadge" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 space-y-1"></div>
       </div>
@@ -507,25 +517,21 @@
           <span class="text-xs text-gray-400 uppercase font-bold block">Tariffa Indicativa</span>
           <span id="detailSpacePrice" class="text-lg font-extrabold text-brand">0 € /giorno</span>
         </div>
-        <div id="detailActionButtons" class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
-          <button id="detailBtnAction" onclick="sbloccaOContatta()" class="px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
-            Sblocca Contatti
-          </button>
-        </div>
+        <div id="detailActionButtons" class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end"></div>
       </div>
     </div>
   </div>
 
-  <!-- MODALE CREAZIONE E MODIFICA SPAZIO A 3 STEP -->
+  <!-- CREAZIONE E MODIFICA SPAZIO (3 STEP) -->
   <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-0 sm:p-4 hidden">
     <div class="bg-white rounded-none sm:rounded-3xl p-6 w-full max-w-2xl shadow-2xl relative h-full sm:h-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
-      
-      <button onclick="toggleModal('addModal', false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <button data-close-modal="addModal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
 
       <div class="mb-5 pr-6">
         <h3 id="modalSpaceTitle" class="text-xl font-extrabold text-gray-900">Pubblica il tuo Spazio</h3>
         <p class="text-xs text-gray-500">Metti in vetrina la tua struttura e i tuoi recapiti.</p>
-        
+
         <div class="flex items-center justify-between mt-4 relative">
           <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -z-0"></div>
           <div id="stepDot1" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10">1</div>
@@ -533,7 +539,7 @@
           <div id="stepDot3" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10">3</div>
         </div>
       </div>
-      
+
       <form id="addSpaceForm">
         <input type="hidden" id="editingSpaceId" value="" />
 
@@ -541,29 +547,29 @@
         <div id="stepSection1" class="space-y-3">
           <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 1: Posizione & Tipologia</h4>
           <div>
-            <label class="text-xs text-gray-500 uppercase font-bold">Nome dello Spazio</label>
-            <input id="newName" type="text" required placeholder="Es. Studio Falco" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            <label for="newName" class="text-xs text-gray-500 uppercase font-bold">Nome dello Spazio</label>
+            <input id="newName" type="text" required maxlength="80" placeholder="Es. Studio Falco" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Città</label>
-              <input id="newCity" type="text" required placeholder="Napoli" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <label for="newCity" class="text-xs text-gray-500 uppercase font-bold">Città</label>
+              <input id="newCity" type="text" required maxlength="60" placeholder="Napoli" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Quartiere / Zona</label>
-              <input id="newZone" type="text" required placeholder="Es. Chiaiano" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <label for="newZone" class="text-xs text-gray-500 uppercase font-bold">Quartiere / Zona</label>
+              <input id="newZone" type="text" required maxlength="60" placeholder="Es. Chiaiano" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Indirizzo Riservato</label>
-              <input id="newAddress" type="text" required placeholder="Via Cupa Spinelli 158" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <label for="newAddress" class="text-xs text-gray-500 uppercase font-bold">Indirizzo Riservato</label>
+              <input id="newAddress" type="text" required maxlength="120" placeholder="Es. Via Roma 10" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Tipologia Spazio</label>
-              <select id="newType" onchange="aggiornaServiziInclusiForm()" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white font-bold">
+              <label for="newType" class="text-xs text-gray-500 uppercase font-bold">Tipologia Spazio</label>
+              <select id="newType" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white font-bold">
                 <option value="psicoterapia">Studio Psicoterapia / Counseling</option>
                 <option value="massaggi">Cabina Massaggi / Fisioterapia</option>
                 <option value="barbiere">Barbiere / Parrucchiere</option>
@@ -573,12 +579,12 @@
               </select>
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Telefono / WhatsApp Contatto</label>
-              <input id="newWhatsapp" type="tel" required placeholder="Es. 3331234567" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <label for="newWhatsapp" class="text-xs text-gray-500 uppercase font-bold">Telefono / WhatsApp Contatto</label>
+              <input id="newWhatsapp" type="tel" required placeholder="Es. 3331234567 o +34 612345678" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
           <div class="flex justify-end pt-3">
-            <button type="button" onclick="goToStep(2)" class="w-full sm:w-auto px-6 py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">
+            <button type="button" data-goto-step="2" class="w-full sm:w-auto px-6 py-3 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs">
               Avanti: Orari & Servizi Inclusi →
             </button>
           </div>
@@ -587,49 +593,54 @@
         <!-- STEP 2 -->
         <div id="stepSection2" class="hidden space-y-4">
           <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 2: Orari Giorno per Giorno & Servizi Inclusi</h4>
-          
+
           <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
-            <label class="text-xs text-gray-700 uppercase font-extrabold block">📅 Orari di Apertura per Singolo Giorno</label>
+            <span class="text-xs text-gray-700 uppercase font-extrabold block">📅 Orari di Apertura per Singolo Giorno</span>
             <div id="dailyHoursContainer" class="space-y-1.5 text-xs"></div>
           </div>
 
           <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
-            <label class="text-xs text-gray-700 uppercase font-extrabold block">🛠️ Cosa è incluso nel prezzo</label>
+            <span class="text-xs text-gray-700 uppercase font-extrabold block">🛠️ Cosa è incluso nel prezzo</span>
             <div id="categoryServicesCheckboxes" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Modalità Affitto</label>
+              <label for="newPriceUnit" class="text-xs text-gray-500 uppercase font-bold">Modalità Affitto</label>
               <select id="newPriceUnit" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white font-bold">
                 <option value="giorno">€ / Giorno</option>
                 <option value="ora">€ / Ora</option>
               </select>
             </div>
             <div>
-              <label class="text-xs text-gray-500 uppercase font-bold">Prezzo (€)</label>
-              <input id="newPrice" type="number" required placeholder="Es. 35" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <label for="newPrice" class="text-xs text-gray-500 uppercase font-bold">Prezzo (€)</label>
+              <input id="newPrice" type="number" min="1" step="0.5" required placeholder="Es. 35" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
           </div>
 
           <div class="flex justify-between pt-3">
-            <button type="button" onclick="goToStep(1)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
-            <button type="button" onclick="goToStep(3)" class="px-6 py-2.5 bg-brand text-white font-bold rounded-xl text-xs">Avanti →</button>
+            <button type="button" data-goto-step="1" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
+            <button type="button" data-goto-step="3" class="px-6 py-2.5 bg-brand text-white font-bold rounded-xl text-xs">Avanti →</button>
           </div>
         </div>
 
         <!-- STEP 3 -->
         <div id="stepSection3" class="hidden space-y-4">
           <h4 class="text-xs uppercase font-bold text-brand tracking-wider">Step 3: Pubblicazione Vetrina</h4>
-          
+
           <div class="bg-emerald-50 p-3.5 rounded-2xl border border-emerald-200 text-xs text-emerald-800">
             <strong class="block font-bold">💡 Protezione Indirizzo Attiva:</strong>
-            <p>L'indirizzo esatto sarà protetto e visibile solo agli utenti registrati.</p>
+            <p>L'indirizzo esatto e il telefono saranno visibili solo agli utenti registrati. Sulla mappa pubblica comparirà una posizione approssimativa (entro qualche centinaio di metri).</p>
           </div>
 
+          <label class="flex items-start gap-2 text-xs text-gray-600 cursor-pointer">
+            <input type="checkbox" id="publishConsent" class="mt-0.5 rounded text-brand focus:ring-brand" />
+            <span>Confermo che le informazioni sono veritiere, che ho il diritto di offrire questo spazio e che indirizzo e telefono possono essere mostrati agli utenti registrati (<button type="button" id="btnLegalFromPublish" class="underline font-bold text-gray-800">Informativa Privacy</button>).</span>
+          </label>
+
           <div class="flex justify-between pt-3">
-            <button type="button" onclick="goToStep(2)" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
-            <button type="button" id="saveBtn" onclick="pubblicaNuovoSpazio()" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
+            <button type="button" data-goto-step="2" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
+            <button type="button" id="saveBtn" class="px-6 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md">
               Salva e Pubblica
             </button>
           </div>
@@ -640,498 +651,712 @@
 
   <!-- SCRIPT -->
   <script>
-    function sanitizeHTML(str) {
-      if (!str) return '';
-      return String(str).replace(/[&<>"']/g, match => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      }[match]));
+    // ---------- Utilità ----------
+    function esc(str) {
+      if (str === null || str === undefined) return '';
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+    const $ = id => document.getElementById(id);
+
+    let toastTimer;
+    function mostraMessaggio(msg, tipo) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-[99999999] max-w-sm w-[90%] text-center text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl ' +
+        (tipo === 'err' ? 'bg-red-600 text-white' : 'bg-gray-900 text-white');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.add('hidden'), 6000);
     }
 
+    // ---------- Stato ----------
     let currentUser = null;
     let selectedCategory = '';
     let currentStep = 1;
     let isMapViewMobile = false;
-
-    let userLocation = { lat: 40.8518, lon: 14.2681 };
-    let activeMarkersMap = {};
+    let spazi = [];           // dati pubblici (tabella spaces)
+    let contatti = {};        // space_id -> { address, phone } (solo utenti registrati)
+    let loadError = false;
     let activeSelectedSpace = null;
+    let activeMarkersMap = {};
+
+    // Pulizia di una vecchia cache locale che conteneva anche indirizzi e telefoni
+    try { localStorage.removeItem('chairshare_spaces'); } catch (e) {}
 
     const SERVIZI_PER_CATEGORIA = {
       psicoterapia: ["Insonorizzazione acustica", "Poltrone ergonomiche", "Sala d'attesa clienti", "Wi-Fi ad alta velocità", "Aria condizionata"],
       massaggi: ["Lettino professionale", "Scaldawater / Oli", "Cassa Bluetooth", "Lavatesta / Doccia", "Aria condizionata"],
       barbiere: ["Poltrona da barbiere idraulica", "Lavatesta professionale", "Sterilizzatore strumenti", "Specchio con luce LED", "Aria condizionata"],
       estetica: ["Lettino estetica elettrico", "Lampada d'ingrandimento", "Autoclave / Sterilizzatore", "Postazione Nails", "Aria condizionata"],
-      fotografia: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Softbox & Modificatori", "Camerino con truccatricì", "Wi-Fi per Tethering"],
+      fotografia: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Softbox & Modificatori", "Camerino / area trucco", "Wi-Fi per Tethering"],
       coworking: ["Scrivania dedicata", "Seduta ergonomica", "Prese di corrente dedicate", "Wi-Fi Fibra 1Gbps", "Servizio Stampa / Scanner"]
     };
-
+    const TIPI = {
+      psicoterapia: 'Psicoterapia', massaggi: 'Massaggi', barbiere: 'Hair & Barber',
+      estetica: 'Estetica & Nails', fotografia: 'Foto & Video', coworking: 'Coworking'
+    };
     const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 
-    // NESSUN DATO DEMO: Lista pulita
-    let localSpazi = JSON.parse(localStorage.getItem('chairshare_spaces') || '[]');
+    function unita(s) { return s.priceUnit === 'ora' ? '€/ora' : '€/giorno'; }
 
-    // Rimuovi eventuali tracce dei vecchi dati fittizi
-    if (localSpazi.some(s => s.id === 'spz_1' || s.id === 'spz_2')) {
-      localSpazi = localSpazi.filter(s => s.id !== 'spz_1' && s.id !== 'spz_2');
-      localStorage.setItem('chairshare_spaces', JSON.stringify(localSpazi));
+    function mappaSpazio(i) {
+      return {
+        id: i.id, name: i.name, city: i.city, zone: i.zone, price: i.price,
+        priceUnit: i.price_unit || 'giorno', type: i.type,
+        dailySchedule: i.daily_schedule || {}, services: i.services || [],
+        lat: i.lat, lon: i.lon, userId: i.user_id
+      };
     }
 
-    function salvaSpaziLocali() {
-      localStorage.setItem('chairshare_spaces', JSON.stringify(localSpazi));
-    }
-
-    const map = L.map('map', { zoomControl: false }).setView([userLocation.lat, userLocation.lon], 12);
+    // ---------- Mappa ----------
+    const map = L.map('map', { zoomControl: false }).setView([42.5, 12.5], 6);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap'
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
+    const markersGroup = L.layerGroup().addTo(map);
 
-    let markersGroup = L.layerGroup().addTo(map);
+    function adattaMappa() {
+      const size = map.getSize();
+      if (!size.x || !size.y) return;
+      map.invalidateSize();
+      const pts = Object.values(activeMarkersMap).map(m => m.getLatLng());
+      if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: 14 });
+    }
 
-    // CARICA SPAZI DA SUPABASE
-    async function caricaSpaziDaSupabase() {
+    function creaPopup(space) {
+      const div = document.createElement('div');
+      div.className = 'p-4';
+      div.innerHTML = `
+        <h4 class="font-bold text-sm text-gray-900 pr-6">${esc(space.name)}</h4>
+        <p class="text-[11px] text-gray-500 mt-0.5">${esc(space.city)} • Zona ${esc(space.zone)}</p>
+        <p class="text-sm font-extrabold text-brand mt-2">${esc(space.price)} ${unita(space)}</p>
+        <button type="button" class="mt-3 w-full bg-brand text-white text-xs font-bold py-2 rounded-xl">Vedi dettagli</button>
+        <p class="text-[10px] text-gray-400 mt-2">Posizione approssimativa</p>`;
+      div.querySelector('button').addEventListener('click', () => mostraDettagliSpazio(space.id));
+      return div;
+    }
+
+    function evidenziaCard(id) {
+      document.querySelectorAll('.space-card.selected-card').forEach(c => c.classList.remove('selected-card'));
+      const card = $('card_' + id);
+      if (card) {
+        card.classList.add('selected-card');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function vaiSulMarker(id) {
+      const m = activeMarkersMap[id];
+      if (!m) return;
+      if (window.innerWidth < 1024 && !isMapViewMobile) toggleMobileView();
+      setTimeout(() => {
+        map.invalidateSize();
+        map.setView(m.getLatLng(), Math.max(map.getZoom(), 14));
+        m.openPopup();
+      }, 200);
+      evidenziaCard(id);
+    }
+
+    // ---------- Geocodifica ----------
+    async function geocodifica(address, city) {
+      const q = `${address}, ${city}, Italia`;
+      const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=it&q=' + encodeURIComponent(q);
+      let res;
+      try {
+        res = await fetch(url, { headers: { 'Accept-Language': 'it' } });
+      } catch (e) {
+        throw new Error('GEOCODING_RETE');
+      }
+      if (!res.ok) throw new Error('GEOCODING_RETE');
+      const data = await res.json();
+      if (!data.length) return null;
+      return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+    }
+
+    // La posizione pubblica viene spostata a caso di ~400 m: l'indirizzo esatto resta riservato.
+    function offuscaCoordinate(g) {
+      const d = 0.004;
+      const r = () => (Math.random() - 0.5) * 2 * d;
+      return {
+        lat: +(g.lat + r()).toFixed(4),
+        lon: +(g.lon + r() / Math.cos(g.lat * Math.PI / 180)).toFixed(4)
+      };
+    }
+
+    // ---------- Telefono ----------
+    // Restituisce solo cifre in formato internazionale (es. 393331234567) oppure null se non valido
+    function normalizzaTelefono(raw) {
+      const s = String(raw || '').trim();
+      const plus = s.startsWith('+');
+      let d = s.replace(/\D/g, '');
+      if (!d) return null;
+      if (plus) {
+        // già internazionale
+      } else if (d.startsWith('00')) {
+        d = d.slice(2);
+      } else if (d.startsWith('39') && d.length >= 11) {
+        // già con prefisso italiano
+      } else {
+        d = '39' + d;
+      }
+      return (d.length >= 9 && d.length <= 15) ? d : null;
+    }
+
+    // ---------- Caricamento dati ----------
+    async function caricaSpazi() {
       const client = getSupabase();
       if (!client) {
-        renderizzaRisultati(localSpazi);
-        renderizzaSpaziUtente();
-        return;
-      }
-
-      try {
-        const { data, error } = await client
-          .from('spaces')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (!error && data) {
-          localSpazi = data.map(item => ({
-            id: item.id,
-            name: item.name,
-            city: item.city,
-            zone: item.zone,
-            address: item.address,
-            price: item.price,
-            priceUnit: item.price_unit || 'giorno',
-            type: item.type,
-            phone: item.phone,
-            dailySchedule: item.daily_schedule || {},
-            services: item.services || [],
-            lat: item.lat || 40.8518,
-            lon: item.lon || 14.2681,
-            hostEmail: (item.host_email || '').toLowerCase().trim()
-          }));
-          salvaSpaziLocali();
+        loadError = true;
+      } else {
+        const { data, error } = await client.from('spaces').select('*').order('created_at', { ascending: false });
+        if (error) {
+          console.warn('Errore caricamento spazi:', error);
+          loadError = true;
+          spazi = [];
+        } else {
+          loadError = false;
+          spazi = data.map(mappaSpazio);
         }
-      } catch (err) {
-        console.warn("Impossibile caricare gli spazi da Supabase, uso memoria locale:", err);
+        await caricaContatti();
       }
-
-      renderizzaRisultati(localSpazi);
+      cercaSpazi();
       renderizzaSpaziUtente();
     }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      generaCampiOrariGiornalieri();
-      aggiornaServiziInclusiForm();
-
+    async function caricaContatti() {
+      contatti = {};
       const client = getSupabase();
-      if (client) {
-        try {
-          const { data: { session } } = await client.auth.getSession();
-          if (session && session.user) {
-            currentUser = session.user;
-          }
+      if (!client || !currentUser) return;
+      const { data, error } = await client.from('space_contacts').select('space_id,address,phone');
+      if (error) { console.warn('Errore caricamento contatti:', error); return; }
+      data.forEach(c => { contatti[c.space_id] = { address: c.address, phone: c.phone }; });
+    }
 
-          client.auth.onAuthStateChange((_event, session) => {
-            currentUser = session?.user || null;
-            aggiornaStatoAuth();
-          });
-        } catch (e) {
-          console.warn("Errore sessione:", e);
-        }
-      }
-
-      aggiornaStatoAuth();
-      await caricaSpaziDaSupabase();
-
-      const regForm = document.getElementById('form-register');
-      if (regForm) {
-        regForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const supabaseClient = getSupabase();
-          if (!supabaseClient) return;
-
-          const fullName = document.getElementById('reg-fullname').value.trim();
-          const email = document.getElementById('reg-email').value.trim();
-          const password = document.getElementById('reg-password').value;
-
-          try {
-            const { data, error } = await supabaseClient.auth.signUp({ 
-              email, 
-              password, 
-              options: { data: { full_name: fullName } } 
-            });
-            if (error) {
-              alert("Errore registrazione: " + error.message);
-              return;
-            }
-            currentUser = data.user || { email: email.toLowerCase().trim(), user_metadata: { full_name: fullName } };
-            if (!currentUser.user_metadata) currentUser.user_metadata = { full_name: fullName };
-            aggiornaStatoAuth();
-            closeModal('register-modal');
-            await caricaSpaziDaSupabase();
-          } catch (err) {
-            alert("Errore registrazione: " + err.message);
-          }
-        });
-      }
-
-      const loginForm = document.getElementById('form-login');
-      if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const supabaseClient = getSupabase();
-          if (!supabaseClient) return;
-
-          const email = document.getElementById('login-email').value.trim();
-          const password = document.getElementById('login-password').value;
-
-          try {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) {
-              alert("Errore accesso: " + error.message);
-              return;
-            }
-            currentUser = data.user;
-            aggiornaStatoAuth();
-            closeModal('login-modal');
-            await caricaSpaziDaSupabase();
-          } catch (err) {
-            alert("Errore accesso: " + err.message);
-          }
-        });
-      }
-    });
+    // ---------- Autenticazione ----------
+    function nomeUtente() {
+      if (!currentUser) return '';
+      const md = currentUser.user_metadata || {};
+      return md.full_name || md.name || (currentUser.email || '').split('@')[0];
+    }
 
     function aggiornaStatoAuth() {
       if (currentUser) {
-        let nomeCompleto = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0];
-        
-        document.getElementById('auth-guest-links').style.display = 'none';
-        document.getElementById('auth-user-links').style.display = 'flex';
-        document.getElementById('user-display-name').innerText = `Ciao, ${nomeCompleto}`;
-        document.getElementById('profileUserFullName').innerText = nomeCompleto;
-        document.getElementById('profileUserEmail').innerText = currentUser.email;
+        const nome = nomeUtente();
+        $('auth-guest-links').style.display = 'none';
+        $('auth-user-links').style.display = 'flex';
+        $('user-display-name').textContent = `Ciao, ${nome}`;
+        $('profileUserFullName').textContent = nome;
+        $('profileUserEmail').textContent = currentUser.email || '';
       } else {
-        document.getElementById('auth-guest-links').style.display = 'flex';
-        document.getElementById('auth-user-links').style.display = 'none';
+        $('auth-guest-links').style.display = 'flex';
+        $('auth-user-links').style.display = 'none';
+        if (!$('profilePage').classList.contains('hidden')) mostraPagina('homePage');
       }
-      renderizzaRisultati(localSpazi);
+    }
+
+    async function sessioneCambiata(user) {
+      currentUser = user;
+      aggiornaStatoAuth();
+      await caricaContatti();
+      cercaSpazi();
       renderizzaSpaziUtente();
     }
 
-    function renderizzaRisultati(spaces) {
+    function traduciErroreAuth(err) {
+      const m = ((err && err.message) || '').toLowerCase();
+      if (m.includes('invalid login')) return "Email o password non corretti.";
+      if (m.includes('email not confirmed')) return "Devi prima confermare la tua email: controlla la posta.";
+      if (m.includes('already registered')) return "Questa email è già registrata.";
+      if (m.includes('rate limit') || m.includes('too many')) return "Troppi tentativi. Riprova tra qualche minuto.";
+      if (m.includes('pwned') || m.includes('compromised') || m.includes('weak')) return "Questa password è troppo debole o compromessa: scegline un'altra.";
+      if (m.includes('password') && m.includes('least')) return "La password è troppo corta.";
+      return "Operazione non riuscita: " + ((err && err.message) || 'errore sconosciuto');
+    }
+
+    async function gestisciLogout() {
+      const client = getSupabase();
+      if (client) {
+        try { await client.auth.signOut(); } catch (e) {}
+      }
+      await sessioneCambiata(null);
+      mostraPagina('homePage');
+    }
+
+    async function richiediResetPassword() {
+      const client = getSupabase();
+      const email = $('login-email').value.trim();
+      if (!client) return;
+      if (!email) { mostraMessaggio("Inserisci prima la tua email nel campo qui sopra.", 'err'); return; }
+      const { error } = await client.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+      if (error) { mostraMessaggio(traduciErroreAuth(error), 'err'); return; }
+      mostraMessaggio("Se l'email è registrata, riceverai un link per reimpostare la password.");
+    }
+
+    // ---------- Rendering lista e mappa ----------
+    function renderizza(spaces) {
       markersGroup.clearLayers();
       activeMarkersMap = {};
-      const listContainer = document.getElementById('spacesList');
+      const listContainer = $('spacesList');
       listContainer.innerHTML = '';
-      document.getElementById('resultsCount').innerText = spaces.length;
+      $('resultsCount').textContent = spaces.length;
+      $('resultsLabel').textContent = spaces.length === 1 ? 'spazio trovato' : 'spazi trovati';
+
+      if (loadError) {
+        $('resultsCount').textContent = '0';
+        listContainer.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-gray-200 p-6">
+            <p class="text-3xl mb-2">⚠️</p>
+            <h4 class="text-base font-bold text-gray-800">Impossibile caricare gli spazi</h4>
+            <p class="text-xs text-gray-500 mt-1">Controlla la connessione e riprova.</p>
+            <button type="button" data-action="retry" class="mt-4 bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl shadow">Riprova</button>
+          </div>`;
+        listContainer.querySelector('[data-action="retry"]').addEventListener('click', caricaSpazi);
+        return;
+      }
 
       if (spaces.length === 0) {
+        const nessunDato = spazi.length === 0;
         listContainer.innerHTML = `
-          <div class="col-span-1 sm:col-span-2 text-center py-12 bg-white rounded-3xl border border-gray-200 p-6">
+          <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-gray-200 p-6">
             <p class="text-3xl mb-2">📍</p>
-            <h4 class="text-base font-bold text-gray-800">Nessuno spazio disponibile al momento</h4>
-            <p class="text-xs text-gray-500 mt-1">Sii il primo a pubblicare una postazione o uno studio in vetrina!</p>
-            <button onclick="apriAggiungiSpazio()" class="mt-4 bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl shadow">
-              + Pubblica uno Spazio
-            </button>
-          </div>
-        `;
+            <h4 class="text-base font-bold text-gray-800">${nessunDato ? 'Nessuno spazio disponibile al momento' : 'Nessun risultato con questi filtri'}</h4>
+            <p class="text-xs text-gray-500 mt-1">${nessunDato ? 'Sii il primo a pubblicare una postazione o uno studio in vetrina!' : 'Prova a cambiare città, categoria o prezzo.'}</p>
+            <button type="button" data-action="add" class="mt-4 bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl shadow">+ Pubblica uno Spazio</button>
+          </div>`;
+        listContainer.querySelector('[data-action="add"]').addEventListener('click', apriAggiungiSpazio);
         return;
       }
 
       const isLoggedIn = !!currentUser;
 
       spaces.forEach(space => {
-        const locationText = isLoggedIn 
-          ? `📍 ${sanitizeHTML(space.address)}, ${sanitizeHTML(space.city)}`
-          : `📍 ${sanitizeHTML(space.city)} • Zona ${sanitizeHTML(space.zone || 'Riservata')}`;
+        const c = contatti[space.id];
+        const locationText = (isLoggedIn && c)
+          ? `📍 ${esc(c.address)}, ${esc(space.city)}`
+          : `📍 ${esc(space.city)} • Zona ${esc(space.zone || 'Riservata')}`;
 
-        const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
-        activeMarkersMap[space.id] = marker;
+        if (isFinite(space.lat) && isFinite(space.lon) && space.lat !== null && space.lon !== null) {
+          const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
+          marker.bindPopup(creaPopup(space));
+          marker.on('click', () => evidenziaCard(space.id));
+          activeMarkersMap[space.id] = marker;
+        }
 
         const card = document.createElement('div');
         card.id = 'card_' + space.id;
         card.className = 'space-card cursor-pointer bg-white rounded-3xl p-4 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden relative';
-        card.onclick = () => mostraDettagliSpazio(space.id);
-
-        const unitText = space.priceUnit === 'ora' ? '€/ora' : '€/giorno';
-
         card.innerHTML = `
           <div>
-            <h4 class="text-base font-bold text-gray-900">${sanitizeHTML(space.name)}</h4>
+            <span class="inline-block text-[10px] font-bold uppercase tracking-wide text-brand bg-pink-50 border border-pink-100 rounded-full px-2 py-0.5 mb-1.5">${esc(TIPI[space.type] || space.type)}</span>
+            <h4 class="text-base font-bold text-gray-900">${esc(space.name)}</h4>
             <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
+            ${activeMarkersMap[space.id] ? '<button type="button" data-action="mappa" class="text-[11px] text-gray-500 hover:text-brand underline mt-1">Vedi sulla mappa</button>' : ''}
           </div>
           <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 bg-gray-50/50">
-            <span class="text-base font-extrabold text-gray-900">${sanitizeHTML(space.price)} ${unitText}</span>
-            <button onclick="event.stopPropagation(); mostraDettagliSpazio('${sanitizeHTML(space.id)}')" class="bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl">
+            <span class="text-base font-extrabold text-gray-900">${esc(space.price)} ${unita(space)}</span>
+            <button type="button" data-action="dettagli" class="bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl">
               ${isLoggedIn ? 'Dettagli & Contatti' : 'Sblocca Contatti'}
             </button>
-          </div>
-        `;
+          </div>`;
+        card.addEventListener('click', () => mostraDettagliSpazio(space.id));
+        card.querySelector('[data-action="dettagli"]').addEventListener('click', e => { e.stopPropagation(); mostraDettagliSpazio(space.id); });
+        const bm = card.querySelector('[data-action="mappa"]');
+        if (bm) bm.addEventListener('click', e => { e.stopPropagation(); vaiSulMarker(space.id); });
         listContainer.appendChild(card);
       });
+
+      adattaMappa();
     }
 
-    function apriAggiungiSpazio() {
-      if (!currentUser) openModal('register-modal');
-      else {
-        document.getElementById('editingSpaceId').value = '';
-        document.getElementById('modalSpaceTitle').innerText = 'Pubblica il tuo Spazio';
-        document.getElementById('saveBtn').innerText = 'Salva e Pubblica';
-        document.getElementById('addSpaceForm').reset();
-        generaCampiOrariGiornalieri();
-        aggiornaServiziInclusiForm();
-        goToStep(1);
-        toggleModal('addModal', true);
+    // ---------- Filtri ----------
+    function prezzoMassimo() {
+      const desk = window.matchMedia('(min-width: 768px)').matches;
+      const v = $(desk ? 'priceSelect' : 'mobilePriceSelect').value;
+      if (v === '') return null;
+      const n = v === 'custom' ? parseFloat($(desk ? 'priceInput' : 'mobilePriceInput').value) : parseFloat(v);
+      return isNaN(n) ? null : n;
+    }
+
+    function cercaSpazi() {
+      const q = ($('cityInput').value || '').trim().toLowerCase();
+      const max = prezzoMassimo();
+      const res = spazi.filter(s => {
+        if (q && !((s.city || '').toLowerCase().includes(q) || (s.zone || '').toLowerCase().includes(q))) return false;
+        if (selectedCategory && s.type !== selectedCategory) return false;
+        if (max !== null && Number(s.price) > max) return false;
+        return true;
+      });
+      renderizza(res);
+    }
+
+    function toggleCustomPrice(selectId, inputId) {
+      const sel = $(selectId), inp = $(inputId);
+      if (sel.value === 'custom') {
+        inp.classList.remove('hidden');
+      } else {
+        inp.classList.add('hidden');
+        cercaSpazi();
       }
+    }
+
+    function selectCategory(cat) {
+      selectedCategory = cat || '';
+      document.querySelectorAll('#categoryPills .cat-pill').forEach(pill => {
+        if (pill.getAttribute('data-cat') === selectedCategory) {
+          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all";
+        } else {
+          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all";
+        }
+      });
+      $('typeSelect').value = selectedCategory;
+      cercaSpazi();
+    }
+
+    function resetFilters() {
+      ['cityInput', 'mobileCityInput', 'priceInput', 'mobilePriceInput'].forEach(id => { $(id).value = ''; });
+      ['priceSelect', 'mobilePriceSelect'].forEach(id => { $(id).value = ''; });
+      ['priceInput', 'mobilePriceInput'].forEach(id => $(id).classList.add('hidden'));
+      selectCategory('');
+    }
+
+    function mostraPagina(pageId) {
+      $('homePage').classList.toggle('hidden', pageId !== 'homePage');
+      $('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
+      if (pageId === 'profilePage') renderizzaSpaziUtente();
+      if (pageId === 'homePage') setTimeout(adattaMappa, 50);
+    }
+
+    function resetToHome() {
+      resetFilters();
+      mostraPagina('homePage');
+    }
+
+    function toggleMobileView() {
+      isMapViewMobile = !isMapViewMobile;
+      const listSec = $('listSection');
+      const mapSec = $('mapSection');
+      if (isMapViewMobile) {
+        listSec.classList.add('hidden');
+        mapSec.classList.remove('hidden');
+        setTimeout(adattaMappa, 100);
+      } else {
+        listSec.classList.remove('hidden');
+        mapSec.classList.add('hidden');
+      }
+      $('mobileSwitchBtn').firstElementChild.textContent = isMapViewMobile ? '📋 Mostra Lista' : '🗺️ Mostra Mappa';
+    }
+
+    // ---------- Dettaglio spazio ----------
+    function mostraDettagliSpazio(spaceId) {
+      const s = spazi.find(x => x.id === spaceId);
+      if (!s) return;
+      activeSelectedSpace = s;
+
+      const isLoggedIn = !!currentUser;
+      const c = contatti[s.id];
+
+      $('detailSpaceTitle').textContent = s.name;
+      $('detailSpacePrice').textContent = `${s.price} ${unita(s)}`;
+      $('detailSpaceLocation').textContent = (isLoggedIn && c)
+        ? `${s.city} • ${c.address}`
+        : `${s.city} • Zona ${s.zone || 'Riservata'}`;
+
+      const hoursContainer = $('detailHoursBadge');
+      hoursContainer.replaceChildren();
+      const hTitle = document.createElement('strong');
+      hTitle.className = 'block font-bold mb-1';
+      hTitle.textContent = '⏰ Orari di Apertura:';
+      hoursContainer.appendChild(hTitle);
+      const entries = Object.entries(s.dailySchedule || {});
+      if (entries.length === 0) {
+        const p = document.createElement('div');
+        p.className = 'text-[11px]';
+        p.textContent = 'Orari non specificati';
+        hoursContainer.appendChild(p);
+      }
+      entries.forEach(([giorno, orari]) => {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between text-[11px]';
+        const a = document.createElement('span'); a.textContent = giorno + ':';
+        const b = document.createElement('span'); b.className = 'font-bold'; b.textContent = orari;
+        row.append(a, b);
+        hoursContainer.appendChild(row);
+      });
+
+      const servicesGrid = $('detailServicesGrid');
+      servicesGrid.replaceChildren();
+      if (s.services && s.services.length > 0) {
+        s.services.forEach(srv => {
+          const d = document.createElement('div');
+          d.className = 'p-2 bg-gray-50 rounded-xl border border-gray-200';
+          d.textContent = '✅ ' + srv;
+          servicesGrid.appendChild(d);
+        });
+      } else {
+        servicesGrid.innerHTML = '<div class="text-gray-400">Nessun servizio specificato</div>';
+      }
+
+      const actions = $('detailActionButtons');
+      actions.replaceChildren();
+      const phoneText = $('detailPhoneText');
+
+      if (!isLoggedIn) {
+        phoneText.textContent = "Accedi gratuitamente per sbloccare l'indirizzo esatto, il telefono e WhatsApp dell'Host.";
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md';
+        b.textContent = 'Accedi per Sbloccare';
+        b.addEventListener('click', () => { toggleModal('detailModal', false); openModal('login-modal'); });
+        actions.appendChild(b);
+      } else {
+        const wa = c ? normalizzaTelefono(c.phone) : null;
+        phoneText.replaceChildren();
+        if (c && wa) {
+          phoneText.append('📞 Telefono / WhatsApp Host: ');
+          const st = document.createElement('strong');
+          st.className = 'text-brand font-bold text-sm select-all';
+          st.textContent = c.phone;
+          phoneText.appendChild(st);
+
+          const waLink = document.createElement('a');
+          waLink.href = `https://wa.me/${wa}`;
+          waLink.target = '_blank';
+          waLink.rel = 'noopener noreferrer';
+          waLink.className = 'px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md';
+          waLink.textContent = 'WhatsApp';
+          const tel = document.createElement('a');
+          tel.href = `tel:+${wa}`;
+          tel.className = 'px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md';
+          tel.textContent = 'Chiama';
+          actions.append(waLink, tel);
+        } else {
+          phoneText.textContent = 'Recapiti non disponibili per questo spazio.';
+        }
+      }
+
+      toggleModal('detailModal', true);
+    }
+
+    // ---------- Pubblicazione / modifica / eliminazione ----------
+    function apriAggiungiSpazio() {
+      if (!currentUser) { openModal('register-modal'); return; }
+      $('editingSpaceId').value = '';
+      $('modalSpaceTitle').textContent = 'Pubblica il tuo Spazio';
+      $('saveBtn').textContent = 'Salva e Pubblica';
+      $('addSpaceForm').reset();
+      generaCampiOrariGiornalieri();
+      aggiornaServiziInclusiForm();
+      goToStep(1);
+      toggleModal('addModal', true);
     }
 
     function apriModificaSpazio(spaceId) {
-      const s = localSpazi.find(item => item.id === spaceId);
+      const s = spazi.find(item => item.id === spaceId);
       if (!s) return;
+      const c = contatti[s.id] || {};
 
-      document.getElementById('editingSpaceId').value = s.id;
-      document.getElementById('modalSpaceTitle').innerText = 'Modifica il tuo Spazio';
-      document.getElementById('saveBtn').innerText = 'Salva Modifiche';
+      $('addSpaceForm').reset();
+      $('editingSpaceId').value = s.id;
+      $('modalSpaceTitle').textContent = 'Modifica il tuo Spazio';
+      $('saveBtn').textContent = 'Salva Modifiche';
 
-      document.getElementById('newName').value = s.name || '';
-      document.getElementById('newCity').value = s.city || '';
-      document.getElementById('newZone').value = s.zone || '';
-      document.getElementById('newAddress').value = s.address || '';
-      document.getElementById('newType').value = s.type || 'psicoterapia';
-      document.getElementById('newWhatsapp').value = s.phone || '';
-      document.getElementById('newPriceUnit').value = s.priceUnit || 'giorno';
-      document.getElementById('newPrice').value = s.price || '';
+      $('newName').value = s.name || '';
+      $('newCity').value = s.city || '';
+      $('newZone').value = s.zone || '';
+      $('newAddress').value = c.address || '';
+      $('newType').value = s.type || 'psicoterapia';
+      $('newWhatsapp').value = c.phone || '';
+      $('newPriceUnit').value = s.priceUnit || 'giorno';
+      $('newPrice').value = s.price || '';
 
       aggiornaServiziInclusiForm();
+      document.querySelectorAll('.service-checkbox').forEach(cb => {
+        cb.checked = (s.services || []).includes(cb.value);
+      });
 
-      if (s.services) {
-        document.querySelectorAll('.service-checkbox').forEach(cb => {
-          cb.checked = s.services.includes(cb.value);
-        });
-      }
-
-      if (s.dailySchedule) {
-        GIORNI_SETTIMANA.forEach(giorno => {
-          const chk = document.getElementById(`check_${giorno}`);
-          if (s.dailySchedule[giorno]) {
-            chk.checked = true;
-            const parts = s.dailySchedule[giorno].split(' - ');
-            if (parts.length === 2) {
-              document.getElementById(`open_${giorno}`).value = parts[0];
-              document.getElementById(`close_${giorno}`).value = parts[1];
-            }
-          } else if (chk) {
-            chk.checked = false;
+      generaCampiOrariGiornalieri();
+      GIORNI_SETTIMANA.forEach(giorno => {
+        const chk = $(`check_${giorno}`);
+        if (!chk) return;
+        const orario = (s.dailySchedule || {})[giorno];
+        chk.checked = !!orario;
+        if (orario) {
+          const parts = orario.split(' - ');
+          if (parts.length === 2) {
+            $(`open_${giorno}`).value = parts[0];
+            $(`close_${giorno}`).value = parts[1];
           }
-          toggleDayTimeRow(giorno);
-        });
-      }
+        }
+        toggleDayTimeRow(giorno);
+      });
 
       goToStep(1);
       toggleModal('addModal', true);
     }
 
     async function pubblicaNuovoSpazio() {
-      const editId = document.getElementById('editingSpaceId').value;
-      const name = document.getElementById('newName').value.trim();
-      const city = document.getElementById('newCity').value.trim();
-      const zone = document.getElementById('newZone').value.trim();
-      const address = document.getElementById('newAddress').value.trim();
-      const price = parseFloat(document.getElementById('newPrice').value);
-      const priceUnit = document.getElementById('newPriceUnit').value;
-      const type = document.getElementById('newType').value;
-      const phone = document.getElementById('newWhatsapp').value.trim();
+      if (!currentUser) { toggleModal('addModal', false); openModal('login-modal'); return; }
+      const client = getSupabase();
+      if (!client) { mostraMessaggio("Servizio non raggiungibile, riprova tra poco.", 'err'); return; }
 
-      if (!name || !city || !zone || !address || isNaN(price) || !phone) {
-        alert("⚠️ Compila tutti i campi obbligatori!");
+      const editId = $('editingSpaceId').value;
+      const name = $('newName').value.trim();
+      const city = $('newCity').value.trim();
+      const zone = $('newZone').value.trim();
+      const address = $('newAddress').value.trim();
+      const price = parseFloat($('newPrice').value);
+      const priceUnit = $('newPriceUnit').value;
+      const type = $('newType').value;
+      const waDigits = normalizzaTelefono($('newWhatsapp').value);
+
+      if (!name || !city || !zone || !address || isNaN(price) || price <= 0) {
+        goToStep(1);
+        mostraMessaggio("Compila tutti i campi obbligatori (nome, città, zona, indirizzo, prezzo).", 'err');
         return;
       }
+      if (!waDigits) {
+        goToStep(1);
+        mostraMessaggio("Il numero di telefono non sembra valido.", 'err');
+        return;
+      }
+      if (!$('publishConsent').checked) {
+        mostraMessaggio("Per pubblicare devi confermare la dichiarazione finale.", 'err');
+        return;
+      }
+      const phone = '+' + waDigits;
 
-      const saveBtn = document.getElementById('saveBtn');
-      saveBtn.disabled = true;
-      saveBtn.innerText = "Salvataggio...";
-
-      let dailySchedule = {};
+      const dailySchedule = {};
       GIORNI_SETTIMANA.forEach(giorno => {
-        if (document.getElementById(`check_${giorno}`)?.checked) {
-          const open = document.getElementById(`open_${giorno}`).value;
-          const close = document.getElementById(`close_${giorno}`).value;
-          dailySchedule[giorno] = `${open} - ${close}`;
+        if ($(`check_${giorno}`)?.checked) {
+          dailySchedule[giorno] = `${$(`open_${giorno}`).value} - ${$(`close_${giorno}`).value}`;
         }
       });
-
       const selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map(cb => cb.value);
-      const hostEmailNormalized = (currentUser && currentUser.email) ? currentUser.email.toLowerCase().trim() : '';
 
-      const client = getSupabase();
+      const saveBtn = $('saveBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Salvataggio...';
 
-      if (editId) {
-        // MODIFICA SU SUPABASE
-        if (client) {
-          try {
-            await client
-              .from('spaces')
-              .update({
-                name, city, zone, address, price,
-                price_unit: priceUnit,
-                type, phone,
-                daily_schedule: dailySchedule,
-                services: selectedServices
-              })
-              .eq('id', editId);
-          } catch (e) {
-            console.warn("Errore aggiornamento su Supabase:", e);
+      try {
+        if (editId) {
+          const esistente = spazi.find(s => s.id === editId);
+          const c = contatti[editId] || {};
+          let lat = esistente ? esistente.lat : null;
+          let lon = esistente ? esistente.lon : null;
+          const posizioneCambiata = !esistente || c.address !== address || esistente.city !== city || lat === null || lon === null;
+          if (posizioneCambiata) {
+            const geo = await geocodifica(address, city);
+            if (!geo) throw new Error('INDIRIZZO');
+            ({ lat, lon } = offuscaCoordinate(geo));
           }
-        }
 
-        const index = localSpazi.findIndex(s => s.id === editId);
-        if (index !== -1) {
-          localSpazi[index] = {
-            ...localSpazi[index],
-            name, city, zone, address, price, priceUnit, type, phone,
-            dailySchedule, services: selectedServices
-          };
-        }
-        alert("🎉 Spazio modificato con successo!");
-      } else {
-        // INSERIMENTO SU SUPABASE
-        const lat = 40.8518 + (Math.random() - 0.5) * 0.05;
-        const lon = 14.2681 + (Math.random() - 0.5) * 0.05;
-        let nuovoId = 'spz_' + Date.now();
+          const { data, error } = await client.from('spaces').update({
+            name, city, zone, price, price_unit: priceUnit, type,
+            daily_schedule: dailySchedule, services: selectedServices, lat, lon
+          }).eq('id', editId).select();
+          if (error) throw error;
+          if (!data || !data.length) throw new Error('NON_AUTORIZZATO');
 
-        if (client) {
-          try {
-            const { data, error } = await client
-              .from('spaces')
-              .insert([{
-                name, city, zone, address, price,
-                price_unit: priceUnit,
-                type, phone,
-                daily_schedule: dailySchedule,
-                services: selectedServices,
-                lat, lon,
-                host_email: hostEmailNormalized
-              }])
-              .select();
+          const { error: e2 } = await client.from('space_contacts').upsert({ space_id: editId, address, phone });
+          if (e2) throw e2;
+          mostraMessaggio("Spazio modificato con successo.");
+        } else {
+          const geo = await geocodifica(address, city);
+          if (!geo) throw new Error('INDIRIZZO');
+          const { lat, lon } = offuscaCoordinate(geo);
 
-            if (!error && data && data[0]) {
-              nuovoId = data[0].id;
-            }
-          } catch (e) {
-            console.warn("Errore inserimento su Supabase:", e);
+          const { data, error } = await client.from('spaces').insert([{
+            user_id: currentUser.id,
+            name, city, zone, price, price_unit: priceUnit, type,
+            daily_schedule: dailySchedule, services: selectedServices, lat, lon
+          }]).select().single();
+          if (error) throw error;
+
+          const { error: e2 } = await client.from('space_contacts').insert([{ space_id: data.id, address, phone }]);
+          if (e2) {
+            // annulla l'annuncio per non lasciarlo senza contatti
+            await client.from('spaces').delete().eq('id', data.id);
+            throw e2;
           }
+          mostraMessaggio("Spazio pubblicato con successo in vetrina.");
         }
 
-        const newSpace = {
-          id: nuovoId,
-          name, city, zone, address, price, priceUnit, type, phone,
-          dailySchedule, services: selectedServices,
-          lat, lon,
-          hostEmail: hostEmailNormalized
-        };
-        localSpazi.unshift(newSpace);
-        alert("🎉 Spazio pubblicato con successo in vetrina!");
+        await caricaSpazi();
+        toggleModal('addModal', false);
+        $('addSpaceForm').reset();
+        goToStep(1);
+      } catch (e) {
+        console.warn('Errore salvataggio:', e);
+        if (e && e.message === 'INDIRIZZO') {
+          goToStep(1);
+          mostraMessaggio("Non riesco a trovare questo indirizzo sulla mappa. Controlla via, numero civico e città.", 'err');
+        } else if (e && e.message === 'GEOCODING_RETE') {
+          mostraMessaggio("Il servizio di localizzazione non è raggiungibile. Riprova tra poco.", 'err');
+        } else if (e && e.message === 'NON_AUTORIZZATO') {
+          mostraMessaggio("Non hai i permessi per modificare questo spazio.", 'err');
+        } else {
+          mostraMessaggio("Salvataggio non riuscito: " + ((e && e.message) || 'errore sconosciuto'), 'err');
+        }
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = editId ? 'Salva Modifiche' : 'Salva e Pubblica';
       }
-
-      saveBtn.disabled = false;
-      saveBtn.innerText = editId ? "Salva Modifiche" : "Salva e Pubblica";
-
-      salvaSpaziLocali();
-      renderizzaRisultati(localSpazi);
-      renderizzaSpaziUtente();
-
-      toggleModal('addModal', false);
-      document.getElementById('addSpaceForm').reset();
-      goToStep(1);
     }
 
     function renderizzaSpaziUtente() {
-      const container = document.getElementById('myHostSpacesGrid');
-      if (!container || !currentUser || !currentUser.email) return;
+      const container = $('myHostSpacesGrid');
+      if (!container) return;
       container.innerHTML = '';
+      if (!currentUser) return;
 
-      const userMail = currentUser.email.toLowerCase().trim();
-      const mySpaces = localSpazi.filter(s => (s.hostEmail || '').toLowerCase().trim() === userMail);
-
+      const mySpaces = spazi.filter(s => s.userId === currentUser.id);
       if (mySpaces.length === 0) {
-        container.innerHTML = `<p class="text-xs text-gray-400 col-span-3 py-4">Non hai ancora pubblicato alcuno spazio.</p>`;
+        container.innerHTML = '<p class="text-xs text-gray-400 col-span-3 py-4">Non hai ancora pubblicato alcuno spazio.</p>';
         return;
       }
 
       mySpaces.forEach(s => {
+        const c = contatti[s.id];
         const div = document.createElement('div');
         div.className = 'border border-gray-200 rounded-2xl p-4 bg-gray-50 flex flex-col justify-between shadow-sm';
         div.innerHTML = `
           <div>
-            <h4 class="font-bold text-sm text-gray-900">${sanitizeHTML(s.name)}</h4>
-            <p class="text-xs text-gray-500 mt-0.5">📍 ${sanitizeHTML(s.address)}, ${sanitizeHTML(s.city)}</p>
-            <p class="text-xs font-bold text-brand mt-1">${s.price} € / ${s.priceUnit}</p>
+            <h4 class="font-bold text-sm text-gray-900">${esc(s.name)}</h4>
+            <p class="text-xs text-gray-500 mt-0.5">📍 ${c ? esc(c.address) + ', ' : ''}${esc(s.city)}</p>
+            <p class="text-xs font-bold text-brand mt-1">${esc(s.price)} € / ${esc(s.priceUnit)}</p>
           </div>
           <div class="flex items-center gap-3 mt-4 pt-2 border-t border-gray-200">
-            <button onclick="apriModificaSpazio('${s.id}')" class="text-xs text-blue-600 font-bold hover:underline">✏️ Modifica</button>
-            <button onclick="eliminaSpazio('${s.id}')" class="text-xs text-red-600 font-bold hover:underline">🗑️ Elimina</button>
-          </div>
-        `;
+            <button type="button" data-action="edit" class="text-xs text-blue-600 font-bold hover:underline">✏️ Modifica</button>
+            <button type="button" data-action="delete" class="text-xs text-red-600 font-bold hover:underline">🗑️ Elimina</button>
+          </div>`;
+        div.querySelector('[data-action="edit"]').addEventListener('click', () => apriModificaSpazio(s.id));
+        div.querySelector('[data-action="delete"]').addEventListener('click', () => eliminaSpazio(s.id));
         container.appendChild(div);
       });
     }
 
     async function eliminaSpazio(id) {
-      if (confirm("Rimuovere lo spazio dalla vetrina?")) {
-        const client = getSupabase();
-        if (client) {
-          try {
-            await client.from('spaces').delete().eq('id', id);
-          } catch (e) {
-            console.warn("Errore eliminazione su Supabase:", e);
-          }
-        }
-        localSpazi = localSpazi.filter(s => s.id !== id);
-        salvaSpaziLocali();
-        renderizzaRisultati(localSpazi);
-        renderizzaSpaziUtente();
+      if (!confirm("Rimuovere lo spazio dalla vetrina?")) return;
+      const client = getSupabase();
+      if (!client) { mostraMessaggio("Servizio non raggiungibile, riprova tra poco.", 'err'); return; }
+      const { data, error } = await client.from('spaces').delete().eq('id', id).select();
+      if (error || !data || !data.length) {
+        console.warn('Errore eliminazione:', error);
+        mostraMessaggio("Non è stato possibile eliminare lo spazio.", 'err');
+        return;
       }
+      await caricaSpazi();
+      mostraMessaggio("Spazio rimosso dalla vetrina.");
     }
 
-    function selectCategory(cat) {
-      selectedCategory = cat;
-
-      const pills = document.querySelectorAll('#categoryPills .cat-pill');
-      pills.forEach(pill => {
-        const pCat = pill.getAttribute('data-cat');
-        if (pCat === cat) {
-          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all";
-        } else {
-          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all";
-        }
-      });
-
-      const selectElem = document.getElementById('typeSelect');
-      if (selectElem) selectElem.value = cat;
-      cercaSpazi();
-    }
-
+    // ---------- Form multi-step ----------
     function generaCampiOrariGiornalieri() {
-      const container = document.getElementById('dailyHoursContainer');
+      const container = $('dailyHoursContainer');
       if (!container) return;
       container.innerHTML = '';
 
@@ -1141,94 +1366,78 @@
         div.className = "flex items-center justify-between gap-2 p-1.5 bg-white border border-gray-200 rounded-xl";
         div.innerHTML = `
           <label class="flex items-center gap-2 cursor-pointer font-bold w-28">
-            <input type="checkbox" id="check_${giorno}" ${isChecked ? 'checked' : ''} onchange="toggleDayTimeRow('${giorno}')" class="rounded text-brand focus:ring-brand" />
+            <input type="checkbox" id="check_${giorno}" ${isChecked ? 'checked' : ''} class="rounded text-brand focus:ring-brand" />
             <span>${giorno}</span>
           </label>
           <div id="times_${giorno}" class="flex items-center gap-1 ${isChecked ? '' : 'opacity-30 pointer-events-none'}">
-            <input type="time" id="open_${giorno}" value="09:00" class="border rounded p-1 text-[11px]" />
+            <input type="time" id="open_${giorno}" value="09:00" aria-label="Apertura ${giorno}" class="border rounded p-1 text-[11px]" />
             <span>-</span>
-            <input type="time" id="close_${giorno}" value="18:00" class="border rounded p-1 text-[11px]" />
-          </div>
-        `;
+            <input type="time" id="close_${giorno}" value="18:00" aria-label="Chiusura ${giorno}" class="border rounded p-1 text-[11px]" />
+          </div>`;
+        div.querySelector('input[type="checkbox"]').addEventListener('change', () => toggleDayTimeRow(giorno));
         container.appendChild(div);
       });
     }
 
     function toggleDayTimeRow(giorno) {
-      const chk = document.getElementById(`check_${giorno}`)?.checked;
-      const box = document.getElementById(`times_${giorno}`);
+      const chk = $(`check_${giorno}`)?.checked;
+      const box = $(`times_${giorno}`);
       if (!box) return;
-      if (chk) {
-        box.classList.remove('opacity-30', 'pointer-events-none');
-      } else {
-        box.classList.add('opacity-30', 'pointer-events-none');
-      }
+      box.classList.toggle('opacity-30', !chk);
+      box.classList.toggle('pointer-events-none', !chk);
     }
 
     function aggiornaServiziInclusiForm() {
-      const cat = document.getElementById('newType').value;
-      const container = document.getElementById('categoryServicesCheckboxes');
+      const cat = $('newType').value;
+      const container = $('categoryServicesCheckboxes');
       if (!container) return;
       container.innerHTML = '';
-
-      const servizi = SERVIZI_PER_CATEGORIA[cat] || [];
-      servizi.forEach((srv) => {
+      (SERVIZI_PER_CATEGORIA[cat] || []).forEach(srv => {
         const label = document.createElement('label');
         label.className = "flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand";
-        label.innerHTML = `<input type="checkbox" value="${srv}" class="service-checkbox rounded text-brand focus:ring-brand" checked /> <span>${srv}</span>`;
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = srv;
+        cb.checked = true;
+        cb.className = 'service-checkbox rounded text-brand focus:ring-brand';
+        const sp = document.createElement('span');
+        sp.textContent = srv;
+        label.append(cb, sp);
         container.appendChild(label);
       });
     }
 
-    function mostraDettagliSpazio(spaceId) {
-      activeSelectedSpace = localSpazi.find(s => s.id === spaceId);
-      if (!activeSelectedSpace) return;
-
-      const isLoggedIn = !!currentUser;
-
-      document.getElementById('detailSpaceTitle').innerText = sanitizeHTML(activeSelectedSpace.name);
-      document.getElementById('detailSpacePrice').innerText = `${sanitizeHTML(activeSelectedSpace.price)} € / ${activeSelectedSpace.priceUnit}`;
-      
-      document.getElementById('detailSpaceLocation').innerText = isLoggedIn
-        ? `${sanitizeHTML(activeSelectedSpace.city)} • ${sanitizeHTML(activeSelectedSpace.address)}`
-        : `${sanitizeHTML(activeSelectedSpace.city)} • Zona ${sanitizeHTML(activeSelectedSpace.zone || 'Riservata')}`;
-
-      const hoursContainer = document.getElementById('detailHoursBadge');
-      hoursContainer.innerHTML = '<strong class="block font-bold mb-1">⏰ Orari di Apertura:</strong>';
-      if (activeSelectedSpace.dailySchedule) {
-        Object.entries(activeSelectedSpace.dailySchedule).forEach(([giorno, orari]) => {
-          hoursContainer.innerHTML += `<div class="flex justify-between text-[11px]"><span>${giorno}:</span> <span class="font-bold">${orari}</span></div>`;
-        });
-      }
-
-      const servicesGrid = document.getElementById('detailServicesGrid');
-      servicesGrid.innerHTML = '';
-      if (activeSelectedSpace.services && activeSelectedSpace.services.length > 0) {
-        activeSelectedSpace.services.forEach(srv => {
-          servicesGrid.innerHTML += `<div class="p-2 bg-gray-50 rounded-xl border border-gray-200">✅ ${sanitizeHTML(srv)}</div>`;
-        });
-      } else {
-        servicesGrid.innerHTML = '<div class="text-gray-400">Nessun servizio specificato</div>';
-      }
-
-      if (isLoggedIn) {
-        document.getElementById('detailPhoneText').innerHTML = `📞 Telefono / WhatsApp Host: <strong class="text-brand font-bold text-sm select-all">${sanitizeHTML(activeSelectedSpace.phone || 'Non specificato')}</strong>`;
-        document.getElementById('detailBtnAction').innerText = "Chiama / Messaggia Host";
-      } else {
-        document.getElementById('detailPhoneText').innerText = "Accedi gratuitamente per sbloccare l'indirizzo esatto, il telefono e WhatsApp dell Host.";
-        document.getElementById('detailBtnAction').innerText = "Accedi per Sbloccare";
-      }
-
-      toggleModal('detailModal', true);
+    function goToStep(step) {
+      currentStep = step;
+      [1, 2, 3].forEach(n => {
+        $('stepSection' + n).classList.toggle('hidden', step !== n);
+        $('stepDot' + n).className = (step >= n
+          ? "w-8 h-8 rounded-full bg-brand text-white"
+          : "w-8 h-8 rounded-full bg-gray-200 text-gray-500") + " flex items-center justify-center font-bold text-xs z-10";
+      });
     }
 
-    function sbloccaOContatta() {
-      if (!currentUser) {
-        toggleModal('detailModal', false);
-        openModal('login-modal');
-      } else if (activeSelectedSpace && activeSelectedSpace.phone) {
-        window.open(`https://wa.me/39${activeSelectedSpace.phone.replace(/\D/g,'')}`, '_blank');
+    function validaStep1() {
+      const form = $('addSpaceForm');
+      const campi = ['newName', 'newCity', 'newZone', 'newAddress', 'newWhatsapp'];
+      for (const id of campi) {
+        const el = $(id);
+        if (!el.value.trim()) { el.focus(); mostraMessaggio("Compila tutti i campi obbligatori.", 'err'); return false; }
       }
+      if (!normalizzaTelefono($('newWhatsapp').value)) {
+        $('newWhatsapp').focus();
+        mostraMessaggio("Il numero di telefono non sembra valido.", 'err');
+        return false;
+      }
+      return true;
+    }
+
+    // ---------- Modali ----------
+    function openModal(id) { $(id).style.display = 'flex'; }
+    function closeModal(id) { $(id).style.display = 'none'; }
+    function toggleModal(modalId, show) {
+      const modal = $(modalId);
+      if (modal) modal.classList.toggle('hidden', !show);
     }
 
     function gestisciClickProfilo() {
@@ -1236,96 +1445,158 @@
       else mostraPagina('profilePage');
     }
 
-    function goToStep(step) {
-      currentStep = step;
-      document.getElementById('stepSection1').classList.toggle('hidden', step !== 1);
-      document.getElementById('stepSection2').classList.toggle('hidden', step !== 2);
-      document.getElementById('stepSection3').classList.toggle('hidden', step !== 3);
-      
-      document.getElementById('stepDot1').className = step >= 1 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
-      document.getElementById('stepDot2').className = step >= 2 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
-      document.getElementById('stepDot3').className = step >= 3 ? "w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs z-10" : "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs z-10";
-    }
+    // ---------- Avvio ----------
+    document.addEventListener('DOMContentLoaded', async () => {
+      $('legalTitolare').textContent = TITOLARE;
+      $('legalEmail').textContent = EMAIL_PRIVACY;
 
-    function toggleCustomPrice(selectId, inputId) {
-      const selectElem = document.getElementById(selectId);
-      const inputElem = document.getElementById(inputId);
-      if (selectElem.value === 'custom') {
-        inputElem.classList.remove('hidden');
-      } else {
-        inputElem.classList.add('hidden');
-        cercaSpazi();
-      }
-    }
+      generaCampiOrariGiornalieri();
+      aggiornaServiziInclusiForm();
 
-    function syncMobileToDesktopSearch(e) {
-      const val = e.target.value;
-      const deskInput = document.getElementById('cityInput');
-      if (deskInput) deskInput.value = val;
-      if (e.key === 'Enter') cercaSpazi();
-    }
+      // Header
+      $('logoHome').addEventListener('click', resetToHome);
+      $('btnHowTop').addEventListener('click', () => toggleModal('howItWorksModal', true));
+      $('btnHowFooter').addEventListener('click', () => toggleModal('howItWorksModal', true));
+      $('btnLegalFooter').addEventListener('click', () => toggleModal('legalModal', true));
+      $('btnLegalProfile').addEventListener('click', () => toggleModal('legalModal', true));
+      $('btnLegalFromRegister').addEventListener('click', () => toggleModal('legalModal', true));
+      $('btnLegalFromPublish').addEventListener('click', () => toggleModal('legalModal', true));
+      $('btnOpenLogin').addEventListener('click', () => openModal('login-modal'));
+      $('btnOpenRegister').addEventListener('click', () => openModal('register-modal'));
+      $('btnPublishTop').addEventListener('click', apriAggiungiSpazio);
+      $('btnProfile').addEventListener('click', gestisciClickProfilo);
+      $('btnLogoutTop').addEventListener('click', gestisciLogout);
+      $('btnLogoutProfile').addEventListener('click', gestisciLogout);
+      $('btnBackHome').addEventListener('click', () => mostraPagina('homePage'));
+      $('btnAddSpaceProfile').addEventListener('click', apriAggiungiSpazio);
 
-    function toggleMobileView() {
-      isMapViewMobile = !isMapViewMobile;
-      const listSec = document.getElementById('listSection');
-      const mapSec = document.getElementById('mapSection');
-      if (isMapViewMobile) {
-        listSec.classList.add('hidden');
-        mapSec.classList.remove('hidden');
-      } else {
-        listSec.classList.remove('hidden');
-        mapSec.classList.add('hidden', 'lg:block');
-      }
-    }
-
-    function resetFilters() {
-      selectCategory('');
-      if(document.getElementById('cityInput')) document.getElementById('cityInput').value = '';
-      cercaSpazi();
-    }
-
-    function mostraPagina(pageId) {
-      document.getElementById('homePage').classList.toggle('hidden', pageId !== 'homePage');
-      document.getElementById('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
-    }
-
-    function resetToHome() {
-      resetFilters();
-      mostraPagina('homePage');
-    }
-
-    function cercaSpazi() {
-      const city = document.getElementById('cityInput')?.value.trim().toLowerCase() || '';
-      const type = document.getElementById('typeSelect')?.value || selectedCategory;
-
-      let res = localSpazi.filter(s => {
-        let match = true;
-        if (city && !s.city.toLowerCase().includes(city)) match = false;
-        if (type && s.type !== type) match = false;
-        return match;
+      // Ricerca e filtri
+      $('searchBtnDesktop').addEventListener('click', cercaSpazi);
+      $('searchBtnMobile').addEventListener('click', cercaSpazi);
+      $('btnResetFilters').addEventListener('click', resetFilters);
+      $('typeSelect').addEventListener('change', e => selectCategory(e.target.value));
+      $('priceSelect').addEventListener('change', () => toggleCustomPrice('priceSelect', 'priceInput'));
+      $('mobilePriceSelect').addEventListener('change', () => toggleCustomPrice('mobilePriceSelect', 'mobilePriceInput'));
+      $('priceInput').addEventListener('keyup', e => { if (e.key === 'Enter') cercaSpazi(); });
+      $('mobilePriceInput').addEventListener('keyup', e => { if (e.key === 'Enter') cercaSpazi(); });
+      $('cityInput').addEventListener('input', () => { $('mobileCityInput').value = $('cityInput').value; });
+      $('mobileCityInput').addEventListener('input', () => { $('cityInput').value = $('mobileCityInput').value; });
+      $('cityInput').addEventListener('keyup', e => { if (e.key === 'Enter') cercaSpazi(); });
+      $('mobileCityInput').addEventListener('keyup', e => { if (e.key === 'Enter') cercaSpazi(); });
+      document.querySelectorAll('#categoryPills .cat-pill').forEach(p => {
+        p.addEventListener('click', () => selectCategory(p.getAttribute('data-cat')));
       });
+      $('mobileSwitchBtn').addEventListener('click', toggleMobileView);
 
-      renderizzaRisultati(res);
-    }
+      // Modali: chiusura e navigazione
+      document.querySelectorAll('[data-close-modal]').forEach(b => b.addEventListener('click', () => toggleModal(b.getAttribute('data-close-modal'), false)));
+      document.querySelectorAll('[data-close-overlay]').forEach(b => b.addEventListener('click', () => closeModal(b.getAttribute('data-close-overlay'))));
+      document.querySelectorAll('[data-goto-step]').forEach(b => b.addEventListener('click', () => {
+        const step = parseInt(b.getAttribute('data-goto-step'), 10);
+        if (step > 1 && currentStep === 1 && !validaStep1()) return;
+        goToStep(step);
+      }));
+      $('newType').addEventListener('change', aggiornaServiziInclusiForm);
+      $('saveBtn').addEventListener('click', pubblicaNuovoSpazio);
+      $('btnLoginToRegister').addEventListener('click', () => { closeModal('login-modal'); openModal('register-modal'); });
+      $('btnRegisterToLogin').addEventListener('click', () => { closeModal('register-modal'); openModal('login-modal'); });
+      $('btnForgot').addEventListener('click', richiediResetPassword);
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function toggleModal(modalId, show) {
-      const modal = document.getElementById(modalId);
-      if (modal) modal.classList.toggle('hidden', !show);
-    }
-
-    async function gestisciLogout() {
+      // Sessione
       const client = getSupabase();
       if (client) {
         try {
-          await client.auth.signOut();
-        } catch (e) {}
+          const { data: { session } } = await client.auth.getSession();
+          currentUser = session?.user || null;
+        } catch (e) {
+          console.warn('Errore sessione:', e);
+        }
+
+        client.auth.onAuthStateChange((event, session) => {
+          // evitiamo chiamate a Supabase direttamente dentro la callback
+          setTimeout(() => {
+            const nuovo = session?.user || null;
+            if (event === 'PASSWORD_RECOVERY') {
+              currentUser = nuovo;
+              aggiornaStatoAuth();
+              openModal('newpass-modal');
+              return;
+            }
+            if ((currentUser?.id || null) !== (nuovo?.id || null)) sessioneCambiata(nuovo);
+          }, 0);
+        });
       }
-      currentUser = null;
+
       aggiornaStatoAuth();
-      mostraPagina('homePage');
-    }
+      await caricaSpazi();
+
+      // Registrazione
+      $('form-register').addEventListener('submit', async e => {
+        e.preventDefault();
+        const c = getSupabase();
+        if (!c) { mostraMessaggio("Servizio non raggiungibile, riprova tra poco.", 'err'); return; }
+        const btn = $('reg-submit-btn');
+        btn.disabled = true;
+        try {
+          const fullName = $('reg-fullname').value.trim();
+          const email = $('reg-email').value.trim();
+          const password = $('reg-password').value;
+          const { data, error } = await c.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
+          if (error) { mostraMessaggio(traduciErroreAuth(error), 'err'); return; }
+          if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+            mostraMessaggio("Questa email è già registrata: prova ad accedere.", 'err');
+            return;
+          }
+          closeModal('register-modal');
+          $('form-register').reset();
+          if (data.session) {
+            await sessioneCambiata(data.user);
+            mostraMessaggio("Benvenuto su ChairShare!");
+          } else {
+            mostraMessaggio("Registrazione quasi completata: controlla la tua email e conferma l'account, poi accedi.");
+          }
+        } catch (err) {
+          mostraMessaggio(traduciErroreAuth(err), 'err');
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      // Login
+      $('form-login').addEventListener('submit', async e => {
+        e.preventDefault();
+        const c = getSupabase();
+        if (!c) { mostraMessaggio("Servizio non raggiungibile, riprova tra poco.", 'err'); return; }
+        const btn = $('login-submit-btn');
+        btn.disabled = true;
+        try {
+          const { data, error } = await c.auth.signInWithPassword({
+            email: $('login-email').value.trim(),
+            password: $('login-password').value
+          });
+          if (error) { mostraMessaggio(traduciErroreAuth(error), 'err'); return; }
+          closeModal('login-modal');
+          $('form-login').reset();
+          await sessioneCambiata(data.user);
+        } catch (err) {
+          mostraMessaggio(traduciErroreAuth(err), 'err');
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      // Nuova password
+      $('form-newpass').addEventListener('submit', async e => {
+        e.preventDefault();
+        const c = getSupabase();
+        if (!c) return;
+        const { error } = await c.auth.updateUser({ password: $('newpass-password').value });
+        if (error) { mostraMessaggio(traduciErroreAuth(error), 'err'); return; }
+        closeModal('newpass-modal');
+        $('form-newpass').reset();
+        mostraMessaggio("Password aggiornata.");
+      });
+    });
   </script>
 </body>
 </html>
