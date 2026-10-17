@@ -350,6 +350,23 @@
         <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
 
+      <div id="reviewsSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
+        <h3 class="text-lg font-bold text-gray-900">⭐ Recensioni</h3>
+        <div>
+          <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-1">Da recensire</h4>
+          <p class="text-[11px] text-gray-500 mb-2">Puoi recensire chi hai contattato, o chi ha chiesto i contatti di un tuo spazio, dopo almeno 24 ore.</p>
+          <div id="toReviewList" class="space-y-2"></div>
+        </div>
+        <div id="myHostReviewsBox">
+          <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Ricevute come Host <span id="myHostRating" class="text-amber-600 normal-case"></span></h4>
+          <div id="myHostReviews" class="space-y-2 text-xs"></div>
+        </div>
+        <div>
+          <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Ricevute come Freelance <span id="myFreeRating" class="text-amber-600 normal-case"></span></h4>
+          <div id="myFreeReviews" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
+
       <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <h3 class="text-sm font-bold text-gray-900">Il tuo account e i tuoi dati</h3>
         <p class="text-xs text-gray-500 mt-1">Puoi eliminare in qualsiasi momento il tuo account: verranno cancellati profilo, annunci, foto e contatti. L'operazione non si può annullare.</p>
@@ -427,9 +444,9 @@
       <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
         <p><strong>Natura del servizio.</strong> ChairShare è una vetrina di annunci che mette in contatto chi ha uno spazio con i professionisti che cercano una postazione. ChairShare non è parte degli accordi tra host e utenti, né gestisce pagamenti o prenotazioni: condizioni economiche e modalità di utilizzo sono concordate autonomamente tra le parti. Chi pubblica un annuncio è responsabile della veridicità dei dati e del diritto di offrire lo spazio.</p>
         <p><strong>Titolare del trattamento.</strong> <span id="legalTitolare"></span> — contatto privacy: <span id="legalEmail"></span></p>
-        <p><strong>Dati trattati.</strong> Nome e cognome, email e password (conservata in forma cifrata dal servizio di autenticazione); per chi pubblica un annuncio: nome dello spazio, città, zona, indirizzo, numero di telefono/WhatsApp, orari, tariffe, servizi e le foto caricate (che sono pubbliche); per chi consulta i contatti: l'elenco degli annunci di cui ha richiesto i recapiti, con data e ora, per prevenire abusi; per chi invia una segnalazione: motivo, eventuale testo e annuncio segnalato.</p>
+        <p><strong>Dati trattati.</strong> Nome e cognome, email e password (conservata in forma cifrata dal servizio di autenticazione); per chi pubblica un annuncio: nome dello spazio, città, zona, indirizzo, numero di telefono/WhatsApp, orari, tariffe, servizi e le foto caricate (che sono pubbliche); per chi consulta i contatti: l'elenco degli annunci di cui ha richiesto i recapiti, con data e ora, per prevenire abusi; per chi invia una segnalazione: motivo, eventuale testo e annuncio segnalato; per chi scrive una recensione: voto e testo, pubblicati con il nome abbreviato dell'autore.</p>
         <p><strong>Finalità e base giuridica.</strong> Creazione e gestione dell'account, pubblicazione degli annunci e messa in contatto tra utenti registrati (esecuzione del servizio richiesto, art. 6.1.b GDPR); sicurezza e prevenzione degli abusi (legittimo interesse, art. 6.1.f).</p>
-        <p><strong>Chi vede cosa.</strong> L'indirizzo esatto e il telefono di un annuncio sono visibili solo agli utenti registrati. Sulla mappa pubblica compare solo una posizione approssimativa. Pubblicando un annuncio l'host accetta che questi dati siano visibili agli utenti registrati. Ogni utente può consultare i recapiti di un numero limitato di annunci al giorno; l'host vede solo quante persone hanno richiesto i suoi recapiti, non chi sono. Le foto degli annunci sono invece visibili a chiunque.</p>
+        <p><strong>Chi vede cosa.</strong> L'indirizzo esatto e il telefono di un annuncio sono visibili solo agli utenti registrati. Sulla mappa pubblica compare solo una posizione approssimativa. Pubblicando un annuncio l'host accetta che questi dati siano visibili agli utenti registrati. Ogni utente può consultare i recapiti di un numero limitato di annunci al giorno; l'host vede quante persone hanno richiesto i suoi recapiti e, solo per poterle recensire dopo almeno 24 ore, il loro nome abbreviato (es. Mario R.), mai email o telefono. Le foto degli annunci sono invece visibili a chiunque.</p>
         <p><strong>Destinatari.</strong> I dati sono conservati su infrastruttura Supabase (database e autenticazione, regione UE). Per calcolare la posizione sulla mappa l'indirizzo viene inviato al servizio di geocodifica OpenStreetMap/Nominatim; la cartografia è fornita da CARTO su dati OpenStreetMap e le librerie del sito sono caricate da reti di distribuzione terze, che possono ricevere l'indirizzo IP del visitatore.</p>
         <p><strong>Cookie e archiviazione locale.</strong> Il sito usa solo l'archiviazione locale del browser strettamente necessaria al mantenimento della sessione di accesso. Non utilizza cookie di profilazione né di analisi.</p>
         <p><strong>Conservazione e cancellazione.</strong> I dati dell'account sono conservati finché l'account è attivo; i dati di un annuncio finché non viene eliminato dall'host. Puoi eliminare l'account in autonomia dalla pagina Profilo: vengono cancellati subito profilo, annunci, foto, contatti, segnalazioni inviate e registro degli sblocchi.</p>
@@ -455,10 +472,11 @@
         <p><strong>2. Account.</strong> Per vedere i recapiti e pubblicare serve un account. Devi avere almeno 18 anni, fornire dati veritieri e custodire con cura le tue credenziali. Sei responsabile di ciò che avviene con il tuo account.</p>
         <p><strong>3. Annunci.</strong> Chi pubblica dichiara di avere il diritto di offrire lo spazio e che testi, dati e foto sono veritieri e non violano diritti di terzi. Le foto non devono mostrare persone riconoscibili senza il loro consenso. Ogni utente può avere al massimo 10 annunci attivi e pubblicarne al massimo 5 al giorno.</p>
         <p><strong>4. Comportamenti vietati.</strong> È vietato pubblicare annunci falsi, ingannevoli, duplicati o fraudolenti; contenuti illeciti, offensivi o discriminatori; usare i recapiti degli Host per spam, pubblicità non richiesta o per scopi diversi dalla ricerca di uno spazio; copiare in modo sistematico annunci o contatti (scraping), aggirare i limiti tecnici del sito o tentare di accedere ai dati altrui.</p>
-        <p><strong>5. Segnalazioni e moderazione.</strong> Chiunque abbia un account può segnalare un annuncio. ChairShare può rimuovere annunci e sospendere o eliminare account che violino questi termini o la legge, anche senza preavviso nei casi più gravi.</p>
-        <p><strong>6. Limitazione di responsabilità.</strong> Il servizio è offerto "così com'è", senza garanzie di continuità, accuratezza degli annunci o esito dei contatti. Nei limiti consentiti dalla legge, ChairShare non risponde di danni derivanti dai rapporti tra utenti, da informazioni inesatte negli annunci o da interruzioni del servizio. Restano salvi i diritti inderogabili dei consumatori.</p>
-        <p><strong>7. Eliminazione dell'account.</strong> Puoi eliminare il tuo account in qualsiasi momento dalla pagina Profilo: gli annunci e i dati collegati vengono cancellati.</p>
-        <p><strong>8. Modifiche e legge applicabile.</strong> I termini possono essere aggiornati: la versione in vigore è quella pubblicata sul sito. Si applica la legge italiana; per i consumatori resta competente il foro di residenza o domicilio. Contatti: <span id="termsEmail"></span>.</p>
+        <p><strong>5. Segnalazioni e moderazione.</strong> Chiunque abbia un account può segnalare un annuncio. ChairShare può rimuovere annunci e recensioni e sospendere o eliminare account che violino questi termini o la legge, anche senza preavviso nei casi più gravi.</p>
+        <p><strong>6. Recensioni.</strong> Un Freelance può recensire un Host, e un Host un Freelance, solo dopo aver avuto un contatto tramite il sito (richiesta dei recapiti di un annuncio da almeno 24 ore). Le recensioni devono descrivere esperienze reali e vissute direttamente, in modo corretto e rispettoso: sono vietati insulti, minacce, dati personali di terzi, recensioni false, scambiate o scritte dietro compenso. Ogni autore può lasciare una recensione per persona e ruolo, modificarla o cancellarla. Le recensioni sono pubbliche con il nome abbreviato dell'autore. ChairShare non verifica che i fatti raccontati siano veri e può rimuovere recensioni che violino queste regole. Il badge "Verificato" indica solo che ChairShare ha controllato l'identità o lo spazio dell'Host secondo le proprie verifiche, non è una garanzia sul servizio.</p>
+        <p><strong>7. Limitazione di responsabilità.</strong> Il servizio è offerto "così com'è", senza garanzie di continuità, accuratezza degli annunci o esito dei contatti. Nei limiti consentiti dalla legge, ChairShare non risponde di danni derivanti dai rapporti tra utenti, da informazioni inesatte negli annunci o da interruzioni del servizio. Restano salvi i diritti inderogabili dei consumatori.</p>
+        <p><strong>8. Eliminazione dell'account.</strong> Puoi eliminare il tuo account in qualsiasi momento dalla pagina Profilo: gli annunci e i dati collegati vengono cancellati.</p>
+        <p><strong>9. Modifiche e legge applicabile.</strong> I termini possono essere aggiornati: la versione in vigore è quella pubblicata sul sito. Si applica la legge italiana; per i consumatori resta competente il foro di residenza o domicilio. Contatti: <span id="termsEmail"></span>.</p>
       </div>
       <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
         <button data-close-modal="termsModal" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold rounded-xl text-xs">Chiudi</button>
@@ -506,6 +524,37 @@
         <button type="button" data-close-modal="deleteAccountModal" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">Annulla</button>
         <button type="button" id="btnConfirmDelete" disabled class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-xl text-xs shadow-md disabled:opacity-40 disabled:cursor-not-allowed">Elimina definitivamente</button>
       </div>
+    </div>
+  </div>
+
+  <!-- SCRIVI RECENSIONE -->
+  <div id="reviewWriteModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+      <button data-close-modal="reviewWriteModal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+      <h2 class="text-xl font-extrabold text-gray-900 mb-1">Scrivi una recensione</h2>
+      <p id="reviewTargetInfo" class="text-xs text-gray-500 mb-4"></p>
+      <form id="form-review" class="space-y-3">
+        <div>
+          <label for="reviewRating" class="text-xs text-gray-500 uppercase font-bold">Voto</label>
+          <select id="reviewRating" required class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900 bg-white font-bold">
+            <option value="">Scegli un voto</option>
+            <option value="5">★★★★★ Eccellente</option>
+            <option value="4">★★★★☆ Buono</option>
+            <option value="3">★★★☆☆ Discreto</option>
+            <option value="2">★★☆☆☆ Scarso</option>
+            <option value="1">★☆☆☆☆ Pessimo</option>
+          </select>
+        </div>
+        <div>
+          <label for="reviewComment" class="text-xs text-gray-500 uppercase font-bold">La tua esperienza</label>
+          <textarea id="reviewComment" required minlength="10" maxlength="600" rows="4" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" placeholder="Racconta in modo onesto e rispettoso com'è andata (minimo 10 caratteri)"></textarea>
+          <p class="text-[11px] text-gray-400 mt-1">La recensione è pubblica e mostra il tuo nome abbreviato (es. Mario R.). Scrivi solo fatti ed esperienze tue.</p>
+        </div>
+        <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+          <button type="button" id="btnDeleteReview" class="hidden text-xs text-red-600 font-bold hover:underline">Elimina recensione</button>
+          <button type="submit" id="reviewSubmit" class="ml-auto px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-extrabold rounded-xl text-xs shadow-md">Pubblica</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -618,12 +667,21 @@
       <div class="border-b border-gray-100 pb-3 pr-10">
         <h3 id="detailSpaceTitle" class="text-xl font-extrabold text-gray-900">Nome Spazio</h3>
         <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-1 font-medium">Città • Zona</p>
+        <p class="mt-1 flex items-center gap-2 text-[11px]"><span id="detailVerified" class="hidden font-bold text-emerald-600">✔ Host verificato</span></p>
         <div id="detailHoursBadge" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 space-y-1"></div>
       </div>
 
       <div>
         <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Servizi Inclusi nello Spazio</h4>
         <div id="detailServicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider">Recensioni dell'Host <span id="detailRatingSummary" class="text-amber-600 normal-case"></span></h4>
+          <button type="button" id="btnWriteReview" class="hidden text-xs font-bold text-brand underline">Scrivi una recensione</button>
+        </div>
+        <div id="detailReviewsList" class="space-y-2 text-xs"></div>
       </div>
 
       <div id="contactLockNotice" class="bg-pink-50 border border-pink-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-xs transition-all">
@@ -827,6 +885,10 @@
     let statRichieste = {};   // space_id -> numero di richieste di contatto (solo per i miei annunci)
     let fotoEsistenti = [];   // percorsi delle foto già salvate dell'annuncio in modifica
     let fotoNuove = [];       // { blob, url } foto scelte ma non ancora caricate
+    let statsRecensioni = {}; // "userId|kind" -> { media, n }
+    let hostVerificati = new Set();
+    let daRecensire = [];     // persone che posso recensire (solo utente collegato)
+    let recensioneInCorso = null;
     const MAX_FOTO = 6;
     const BUCKET_FOTO = 'space-photos';
 
@@ -1161,6 +1223,7 @@
           spazi = data.map(mappaSpazio);
         }
         await caricaContatti();
+        await caricaReputazione();
       }
       cercaSpazi();
       renderizzaSpaziUtente();
@@ -1172,6 +1235,7 @@
       contatti = {};
       sbloccati = {};
       statRichieste = {};
+      daRecensire = [];
       const client = getSupabase();
       if (!client || !currentUser) return;
       const { data, error } = await client.from('space_contacts').select('space_id,address,phone');
@@ -1179,6 +1243,7 @@
       data.forEach(c => { contatti[c.space_id] = { address: c.address, phone: c.phone }; });
       const st = await client.rpc('unlock_stats');
       if (!st.error && Array.isArray(st.data)) st.data.forEach(r => { statRichieste[r.space_id] = Number(r.richieste); });
+      await caricaDaRecensire();
     }
 
     async function sbloccaContatti(spaceId) {
@@ -1372,6 +1437,7 @@
             ${fotoCard}
             <span class="inline-block text-[10px] font-bold uppercase tracking-wide text-brand bg-pink-50 border border-pink-100 rounded-full px-2 py-0.5 mb-1.5">${esc(TIPI[space.type] || space.type)}</span>
             <h4 class="text-base font-bold text-gray-900">${esc(space.name)}</h4>
+            ${badgeReputazione(space.userId)}
             <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
             ${activeMarkersMap[space.id] ? '<button type="button" data-action="mappa" class="text-[11px] text-gray-500 hover:text-brand underline mt-1">Vedi sulla mappa</button>' : ''}
           </div>
@@ -1445,7 +1511,7 @@
     function mostraPagina(pageId) {
       $('homePage').classList.toggle('hidden', pageId !== 'homePage');
       $('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
-      if (pageId === 'profilePage') renderizzaSpaziUtente();
+      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); }
       if (pageId === 'homePage') setTimeout(adattaMappa, 50);
     }
 
@@ -1510,6 +1576,12 @@
       } else {
         gal.classList.add('hidden');
       }
+
+      // Reputazione dell'Host
+      $('detailVerified').classList.toggle('hidden', !hostVerificati.has(s.userId));
+      $('detailRatingSummary').textContent = testoReputazione(s.userId, 'host');
+      mostraRecensioni($('detailReviewsList'), s.userId, 'host', 'Ancora nessuna recensione per questo Host.');
+      $('btnWriteReview').classList.toggle('hidden', !daRecensire.some(x => x.user_id === s.userId && x.kind === 'host'));
 
       // Segnalazione: solo per utenti registrati che non sono l'autore
       const rep = $('btnReportSpace');
@@ -1615,6 +1687,181 @@
       }
 
       toggleModal('detailModal', true);
+    }
+
+    // ---------- Recensioni e reputazione ----------
+    async function caricaReputazione() {
+      statsRecensioni = {};
+      hostVerificati = new Set();
+      const client = getSupabase();
+      if (!client) return;
+      try {
+        const [st, vf] = await Promise.all([client.rpc('rating_stats'), client.rpc('verified_users')]);
+        if (!st.error && Array.isArray(st.data)) st.data.forEach(r => { statsRecensioni[r.user_id + '|' + r.kind] = { media: Number(r.media), n: Number(r.n) }; });
+        if (!vf.error && Array.isArray(vf.data)) vf.data.forEach(r => hostVerificati.add(r.user_id));
+      } catch (e) { console.warn('Reputazione non disponibile:', e); }
+    }
+
+    async function caricaDaRecensire() {
+      daRecensire = [];
+      const client = getSupabase();
+      if (!client || !currentUser) return;
+      try {
+        const { data, error } = await client.rpc('reviewable_users');
+        if (!error && Array.isArray(data)) daRecensire = data;
+      } catch (e) { console.warn('Elenco recensioni non disponibile:', e); }
+    }
+
+    function testoReputazione(userId, kind) {
+      const s = statsRecensioni[userId + '|' + (kind || 'host')];
+      return s ? `★ ${s.media.toFixed(1)} (${s.n})` : '';
+    }
+
+    function badgeReputazione(userId) {
+      const rep = testoReputazione(userId, 'host');
+      const ver = hostVerificati.has(userId);
+      if (!rep && !ver) return '';
+      return `<p class="text-[11px] mt-0.5 flex items-center gap-2">${rep ? `<span class="font-bold text-amber-600">${esc(rep)}</span>` : ''}${ver ? '<span class="font-bold text-emerald-600">✔ Verificato</span>' : ''}</p>`;
+    }
+
+    function stelleTesto(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
+
+    // Disegna l'elenco delle recensioni ricevute da un utente in un contenitore
+    async function mostraRecensioni(container, userId, kind, vuoto) {
+      const tk = String(Math.random());
+      container.dataset.tk = tk;
+      container.textContent = 'Carico le recensioni...';
+      const client = getSupabase();
+      let res = { data: null, error: true };
+      if (client) { try { res = await client.rpc('get_reviews', { p_user: userId, p_kind: kind }); } catch (e) {} }
+      if (container.dataset.tk !== tk) return;
+      container.replaceChildren();
+      const msg = t => { const p = document.createElement('p'); p.className = 'text-[11px] text-gray-400'; p.textContent = t; container.appendChild(p); };
+      if (res.error || !Array.isArray(res.data)) { msg('Recensioni non disponibili al momento.'); return; }
+      if (!res.data.length) { msg(vuoto); return; }
+      res.data.forEach(r => {
+        const box = document.createElement('div');
+        box.className = 'p-3 bg-gray-50 rounded-xl border border-gray-200';
+        const top = document.createElement('div');
+        top.className = 'flex items-center justify-between gap-2';
+        const nome = document.createElement('strong');
+        nome.className = 'text-gray-800';
+        nome.textContent = r.reviewer_name || 'Utente';
+        const st = document.createElement('span');
+        st.className = 'text-amber-600 font-bold';
+        st.textContent = stelleTesto(r.rating);
+        st.setAttribute('aria-label', r.rating + ' stelle su 5');
+        top.append(nome, st);
+        const txt = document.createElement('p');
+        txt.className = 'text-gray-600 mt-1 whitespace-pre-line';
+        txt.textContent = r.comment;
+        const data = document.createElement('p');
+        data.className = 'text-[10px] text-gray-400 mt-1';
+        data.textContent = new Date(r.created_at).toLocaleDateString('it-IT') + (r.space_name ? ' • ' + r.space_name : '');
+        box.append(top, txt, data);
+        container.appendChild(box);
+      });
+    }
+
+    function apriRecensione(userId, kind) {
+      const voce = daRecensire.find(x => x.user_id === userId && x.kind === kind);
+      if (!voce) { mostraMessaggio("Puoi recensire solo chi hai contattato da almeno 24 ore.", 'err'); return; }
+      recensioneInCorso = { userId, kind };
+      $('reviewTargetInfo').textContent = kind === 'host'
+        ? `Host: ${voce.display_name} • ${voce.space_name}`
+        : `Freelance: ${voce.display_name}`;
+      $('form-review').reset();
+      if (voce.my_rating) { $('reviewRating').value = String(voce.my_rating); $('reviewComment').value = voce.my_comment || ''; }
+      $('btnDeleteReview').classList.toggle('hidden', !voce.my_rating);
+      $('reviewSubmit').textContent = voce.my_rating ? 'Aggiorna' : 'Pubblica';
+      toggleModal('reviewWriteModal', true);
+    }
+
+    async function aggiornaDopoRecensione() {
+      await Promise.all([caricaReputazione(), caricaDaRecensire()]);
+      cercaSpazi();
+      renderizzaProfiloRecensioni();
+      if (activeSelectedSpace && !$('detailModal').classList.contains('hidden')) mostraDettagliSpazio(activeSelectedSpace.id);
+    }
+
+    async function inviaRecensione(e) {
+      e.preventDefault();
+      const client = getSupabase();
+      if (!client || !currentUser || !recensioneInCorso) return;
+      const btn = $('reviewSubmit');
+      btn.disabled = true;
+      try {
+        const { error } = await client.rpc('add_review', {
+          p_reviewee: recensioneInCorso.userId,
+          p_kind: recensioneInCorso.kind,
+          p_rating: parseInt($('reviewRating').value, 10),
+          p_comment: $('reviewComment').value.trim()
+        });
+        if (error) throw error;
+        toggleModal('reviewWriteModal', false);
+        mostraMessaggio("Grazie, la tua recensione è stata pubblicata.");
+        await aggiornaDopoRecensione();
+      } catch (err) {
+        console.warn('Errore recensione:', err);
+        const m = (err && err.message) || '';
+        mostraMessaggio(m.includes('NON_IDONEO')
+          ? "Puoi recensire solo chi hai contattato (o chi ha contattato te) da almeno 24 ore."
+          : m.includes('LIMITE_RECENSIONI')
+            ? "Hai scritto troppe recensioni oggi. Riprova domani."
+            : m.includes('DATI_NON_VALIDI')
+              ? "Scegli un voto e scrivi un commento tra 10 e 600 caratteri."
+              : "Non è stato possibile pubblicare la recensione. Riprova tra poco.", 'err');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function eliminaRecensione() {
+      const client = getSupabase();
+      if (!client || !currentUser || !recensioneInCorso) return;
+      if (!confirm("Eliminare questa recensione?")) return;
+      const { error } = await client.rpc('delete_review', { p_reviewee: recensioneInCorso.userId, p_kind: recensioneInCorso.kind });
+      if (error) { mostraMessaggio("Non è stato possibile eliminare la recensione.", 'err'); return; }
+      toggleModal('reviewWriteModal', false);
+      mostraMessaggio("Recensione eliminata.");
+      await aggiornaDopoRecensione();
+    }
+
+    function renderizzaProfiloRecensioni() {
+      if (!currentUser || !$('toReviewList')) return;
+      const lista = $('toReviewList');
+      lista.replaceChildren();
+      if (!daRecensire.length) {
+        const p = document.createElement('p');
+        p.className = 'text-[11px] text-gray-400';
+        p.textContent = 'Nessuno da recensire per ora.';
+        lista.appendChild(p);
+      }
+      daRecensire.forEach(v => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs';
+        const info = document.createElement('div');
+        const n = document.createElement('strong');
+        n.className = 'text-gray-800';
+        n.textContent = v.display_name;
+        const sub = document.createElement('span');
+        sub.className = 'block text-[11px] text-gray-500';
+        sub.textContent = (v.kind === 'host' ? 'Host • ' : 'Freelance • ') + v.space_name + (v.my_rating ? ' • ' + stelleTesto(v.my_rating) : '');
+        info.append(n, sub);
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'shrink-0 text-xs font-bold text-brand underline';
+        b.textContent = v.my_rating ? 'Modifica' : 'Recensisci';
+        b.addEventListener('click', () => apriRecensione(v.user_id, v.kind));
+        row.append(info, b);
+        lista.appendChild(row);
+      });
+      const haSpazi = spazi.some(s => s.userId === currentUser.id);
+      $('myHostReviewsBox').classList.toggle('hidden', !haSpazi);
+      $('myHostRating').textContent = testoReputazione(currentUser.id, 'host');
+      $('myFreeRating').textContent = testoReputazione(currentUser.id, 'freelance');
+      if (haSpazi) mostraRecensioni($('myHostReviews'), currentUser.id, 'host', 'Non hai ancora ricevuto recensioni come Host.');
+      mostraRecensioni($('myFreeReviews'), currentUser.id, 'freelance', 'Non hai ancora ricevuto recensioni come Freelance.');
     }
 
     // ---------- Segnalazioni ----------
@@ -2072,6 +2319,9 @@
       $('deleteConfirmInput').addEventListener('input', () => {
         $('btnConfirmDelete').disabled = $('deleteConfirmInput').value.trim().toUpperCase() !== 'ELIMINA';
       });
+      $('btnWriteReview').addEventListener('click', () => { if (activeSelectedSpace) apriRecensione(activeSelectedSpace.userId, 'host'); });
+      $('form-review').addEventListener('submit', inviaRecensione);
+      $('btnDeleteReview').addEventListener('click', eliminaRecensione);
       $('photoInput').addEventListener('change', e => aggiungiFotoScelte(Array.from(e.target.files)));
       $('btnOpenLogin').addEventListener('click', () => openModal('login-modal'));
       $('btnOpenRegister').addEventListener('click', () => openModal('register-modal'));
