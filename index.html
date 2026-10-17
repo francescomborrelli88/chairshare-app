@@ -301,7 +301,11 @@
     <div class="space-y-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-gray-200 shadow-sm gap-4">
         <div>
-          <h2 id="profileUserFullName" class="text-2xl font-bold text-gray-900"></h2>
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 id="profileUserFullName" class="text-2xl font-bold text-gray-900"></h2>
+            <span id="userRoleBadge" class="hidden text-xs px-3 py-1 rounded-full font-bold bg-pink-100 text-brand"></span>
+            <button type="button" id="btnSwitchRole" class="hidden text-xs font-bold text-gray-500 hover:text-brand underline"></button>
+          </div>
           <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
         </div>
         <div class="flex items-center gap-3">
@@ -311,6 +315,15 @@
           <button id="btnLogoutProfile" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl text-xs transition-colors border border-red-200">
             🚪 Logout
           </button>
+        </div>
+      </div>
+
+      <div id="guestInviteBox" class="hidden bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+        <h3 class="text-lg font-bold text-gray-900">✂️ Cerchi una postazione?</h3>
+        <p class="text-xs text-gray-500 mt-1">Esplora la mappa e contatta direttamente gli host. Se hai uno spazio libero puoi pubblicarlo anche tu.</p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <button type="button" id="btnGuestExplore" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">Esplora la mappa</button>
+          <button type="button" id="btnGuestPublish" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-4 py-2 rounded-full">+ Pubblica uno spazio</button>
         </div>
       </div>
 
@@ -459,6 +472,19 @@
           <label for="reg-password" class="text-xs text-gray-500 uppercase font-bold">Password</label>
           <input type="password" id="reg-password" placeholder="Password (minimo 8 caratteri)" required minlength="8" autocomplete="new-password" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs text-gray-900" />
         </div>
+        <fieldset class="space-y-1.5">
+          <legend class="text-xs text-gray-500 uppercase font-bold">Seleziona il tuo profilo</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <label class="flex items-start gap-2 p-3 border border-gray-300 rounded-xl cursor-pointer text-xs font-bold text-gray-800 hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-pink-50">
+              <input type="radio" name="reg-role" value="host" required class="mt-0.5 text-brand focus:ring-brand" />
+              <span>🏢 Host / Proprietario di Salone<span class="block font-normal text-[11px] text-gray-500 mt-0.5">Ho uno spazio da condividere</span></span>
+            </label>
+            <label class="flex items-start gap-2 p-3 border border-gray-300 rounded-xl cursor-pointer text-xs font-bold text-gray-800 hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-pink-50">
+              <input type="radio" name="reg-role" value="guest" checked required class="mt-0.5 text-brand focus:ring-brand" />
+              <span>✂️ Freelance / Professionista<span class="block font-normal text-[11px] text-gray-500 mt-0.5">Cerco una postazione</span></span>
+            </label>
+          </div>
+        </fieldset>
         <label class="flex items-start gap-2 text-xs text-gray-600 cursor-pointer">
           <input type="checkbox" id="reg-consent" required class="mt-0.5 rounded text-brand focus:ring-brand" />
           <span>Ho letto l'<button type="button" id="btnLegalFromRegister" class="underline font-bold text-gray-800">Informativa Privacy</button> e accetto il trattamento dei miei dati per l'uso del servizio.</span>
@@ -939,9 +965,66 @@
       }
     }
 
+    // Ruolo scelto in fase di registrazione (host / guest), letto dalla tabella profiles
+    let ruoloUtente = null;
+    function aggiornaBadgeRuolo() {
+      const b = $('userRoleBadge');
+      if (!b) return;
+      const etichette = { host: '🏢 Host', guest: '✂️ Freelance', admin: 'Admin' };
+      if (ruoloUtente && etichette[ruoloUtente]) {
+        b.textContent = etichette[ruoloUtente];
+        b.classList.remove('hidden');
+      } else {
+        b.classList.add('hidden');
+      }
+      aggiornaVistaProfilo();
+    }
+
+    // Personalizza il Profilo in base al ruolo, senza bloccare nessuna funzione
+    function aggiornaVistaProfilo() {
+      const haSpazi = !!currentUser && spazi.some(s => s.userId === currentUser.id);
+      // I Freelance senza annunci vedono un invito; se il ruolo è sconosciuto mostro tutto
+      const mostraHost = ruoloUtente !== 'guest' || haSpazi;
+      $('hostSpacesSection').classList.toggle('hidden', !mostraHost);
+      $('guestInviteBox').classList.toggle('hidden', mostraHost);
+      const sw = $('btnSwitchRole');
+      if (ruoloUtente === 'host' || ruoloUtente === 'guest') {
+        sw.textContent = ruoloUtente === 'host' ? 'Passa a Freelance' : 'Passa a Host';
+        sw.classList.remove('hidden');
+      } else {
+        sw.classList.add('hidden');
+      }
+    }
+
+    async function cambiaRuolo() {
+      const client = getSupabase();
+      if (!client || !currentUser || (ruoloUtente !== 'host' && ruoloUtente !== 'guest')) return;
+      const nuovo = ruoloUtente === 'host' ? 'guest' : 'host';
+      const { data, error } = await client.from('profiles').update({ role: nuovo }).eq('id', currentUser.id).select('role').maybeSingle();
+      if (error || !data) {
+        console.warn('Errore cambio ruolo:', error);
+        mostraMessaggio("Non è stato possibile cambiare profilo. Riprova tra poco.", 'err');
+        return;
+      }
+      ruoloUtente = data.role;
+      aggiornaBadgeRuolo();
+      mostraMessaggio(nuovo === 'host' ? "Ora il tuo profilo è Host." : "Ora il tuo profilo è Freelance.");
+    }
+
+    async function caricaRuolo() {
+      ruoloUtente = null;
+      const client = getSupabase();
+      if (client && currentUser) {
+        const { data, error } = await client.from('profiles').select('role').eq('id', currentUser.id).maybeSingle();
+        if (!error && data) ruoloUtente = data.role;
+      }
+      aggiornaBadgeRuolo();
+    }
+
     async function sessioneCambiata(user) {
       currentUser = user;
       aggiornaStatoAuth();
+      await caricaRuolo();
       await caricaContatti();
       cercaSpazi();
       renderizzaSpaziUtente();
@@ -1411,6 +1494,7 @@
       if (!container) return;
       container.innerHTML = '';
       if (!currentUser) return;
+      aggiornaVistaProfilo();
 
       const mySpaces = spazi.filter(s => s.userId === currentUser.id);
       if (mySpaces.length === 0) {
@@ -1572,6 +1656,9 @@
       $('btnLogoutProfile').addEventListener('click', gestisciLogout);
       $('btnBackHome').addEventListener('click', () => mostraPagina('homePage'));
       $('btnAddSpaceProfile').addEventListener('click', apriAggiungiSpazio);
+      $('btnSwitchRole').addEventListener('click', cambiaRuolo);
+      $('btnGuestExplore').addEventListener('click', () => mostraPagina('homePage'));
+      $('btnGuestPublish').addEventListener('click', apriAggiungiSpazio);
 
       // Ricerca e filtri
       $('searchBtnDesktop').addEventListener('click', cercaSpazi);
@@ -1648,6 +1735,7 @@
       }
 
       aggiornaStatoAuth();
+      await caricaRuolo();
       await caricaSpazi();
 
       // Registrazione
@@ -1661,7 +1749,16 @@
           const fullName = $('reg-fullname').value.trim();
           const email = $('reg-email').value.trim();
           const password = $('reg-password').value;
-          const { data, error } = await c.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
+          // il ruolo è solo 'host' o 'guest'; il database lo ricontrolla comunque
+          const ruolo = document.querySelector('input[name="reg-role"]:checked')?.value === 'host' ? 'host' : 'guest';
+          const { data, error } = await c.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: window.location.origin + window.location.pathname,
+              data: { full_name: fullName, role: ruolo }
+            }
+          });
           if (error) { mostraMessaggio(traduciErroreAuth(error), 'err'); return; }
           if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
             mostraMessaggio("Questa email è già registrata: prova ad accedere.", 'err');
