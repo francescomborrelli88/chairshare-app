@@ -55,6 +55,9 @@
   </script>
 
   <style>
+    /* Viste esclusive: quando una vista è nascosta non deve mai comparire sotto l'altra */
+    #homePage.hidden, #profilePage.hidden { display: none !important; }
+
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
