@@ -100,6 +100,20 @@
       width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 6px rgba(0,0,0,0.12); z-index: 10;
     }
+    .leaflet-popup-tip { background: rgba(255, 255, 255, 0.95); box-shadow: 0 8px 20px -6px rgba(0,0,0,0.2); }
+
+    /* Mappa in stile Apple: pin con ombra morbida, controlli "vetro", attribuzione discreta */
+    .cs-pin { background: none; border: 0; }
+    .cs-pin svg { display: block; filter: drop-shadow(0 5px 6px rgba(0,0,0,0.28)); transform-origin: 50% 100%; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+    .cs-pin:hover svg, .cs-pin.cs-pin-active svg { transform: scale(1.18); }
+    .cs-pin.cs-pin-active path:first-child { fill: #E00B41; }
+    .leaflet-container { font-family: inherit; background: #eef1f5; }
+    .leaflet-bar { border: none !important; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); box-shadow: 0 6px 18px rgba(0,0,0,0.14) !important; }
+    .leaflet-bar a, .leaflet-bar a:hover { width: 36px; height: 36px; line-height: 36px; background: transparent; color: #1f2937; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .leaflet-bar a:last-child { border-bottom: 0; }
+    .leaflet-bar a:hover { background: rgba(255,255,255,0.95); color: #FF385C; }
+    .leaflet-control-attribution { background: rgba(255,255,255,0.7) !important; backdrop-filter: blur(8px); border-radius: 10px 0 0 0; font-size: 10px; color: #6b7280; }
+    .leaflet-control-attribution a { color: #6b7280; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col pb-20 lg:pb-0 selection:bg-brand selection:text-white">
@@ -408,7 +422,7 @@
         <p><strong>Dati trattati.</strong> Nome e cognome, email e password (conservata in forma cifrata dal servizio di autenticazione); per chi pubblica un annuncio: nome dello spazio, città, zona, indirizzo, numero di telefono/WhatsApp, orari, tariffe e servizi.</p>
         <p><strong>Finalità e base giuridica.</strong> Creazione e gestione dell'account, pubblicazione degli annunci e messa in contatto tra utenti registrati (esecuzione del servizio richiesto, art. 6.1.b GDPR); sicurezza e prevenzione degli abusi (legittimo interesse, art. 6.1.f).</p>
         <p><strong>Chi vede cosa.</strong> L'indirizzo esatto e il telefono di un annuncio sono visibili solo agli utenti registrati. Sulla mappa pubblica compare solo una posizione approssimativa. Pubblicando un annuncio l'host accetta che questi dati siano visibili agli utenti registrati.</p>
-        <p><strong>Destinatari.</strong> I dati sono conservati su infrastruttura Supabase (database e autenticazione, regione UE). Per calcolare la posizione sulla mappa l'indirizzo viene inviato al servizio di geocodifica OpenStreetMap/Nominatim; la mappa è fornita da OpenStreetMap e le librerie del sito sono caricate da reti di distribuzione terze, che possono ricevere l'indirizzo IP del visitatore.</p>
+        <p><strong>Destinatari.</strong> I dati sono conservati su infrastruttura Supabase (database e autenticazione, regione UE). Per calcolare la posizione sulla mappa l'indirizzo viene inviato al servizio di geocodifica OpenStreetMap/Nominatim; la cartografia è fornita da CARTO su dati OpenStreetMap e le librerie del sito sono caricate da reti di distribuzione terze, che possono ricevere l'indirizzo IP del visitatore.</p>
         <p><strong>Cookie e archiviazione locale.</strong> Il sito usa solo l'archiviazione locale del browser strettamente necessaria al mantenimento della sessione di accesso. Non utilizza cookie di profilazione né di analisi.</p>
         <p><strong>Conservazione.</strong> I dati dell'account sono conservati finché l'account è attivo; i dati di un annuncio finché non viene eliminato dall'host.</p>
         <p><strong>Diritti.</strong> Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione scrivendo al contatto privacy indicato sopra. Hai inoltre diritto di proporre reclamo al Garante per la protezione dei dati personali (garanteprivacy.it).</p>
@@ -751,13 +765,21 @@
     }
 
     // ---------- Mappa ----------
-    const map = L.map('map', { zoomControl: false }).setView([42.5, 12.5], 6);
+    const map = L.map('map', { zoomControl: false, zoomSnap: 0.5, zoomDelta: 0.5 }).setView([42.5, 12.5], 6);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
+    // Cartografia CARTO "Voyager" (dati OpenStreetMap), con tile ad alta risoluzione sugli schermi retina
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 20,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
     }).addTo(map);
     const markersGroup = L.layerGroup().addTo(map);
+
+    // Pin personalizzato (sostituisce il segnaposto blu standard di Leaflet)
+    const PIN_SVG = '<svg viewBox="0 0 36 46" width="36" height="46" aria-hidden="true">' +
+      '<path d="M18 2C9.2 2 2.5 8.7 2.5 17.2c0 11.2 11.6 21.9 14.6 26.2.4.6 1.4.6 1.8 0 3-4.3 14.6-15 14.6-26.2C33.5 8.7 26.8 2 18 2z" fill="#FF385C" stroke="#fff" stroke-width="2.5"/>' +
+      '<g transform="translate(9.6 8.6) scale(0.7)" fill="#fff"><path d="M19 10h-1V7c0-1.65-1.35-3-3-3H9C7.35 4 6 5.35 6 7v3H5c-1.1 0-2 .9-2 2v5c0 .55.45 1 1 1h1v2c0 .55.45 1 1 1s1-.45 1-1v-2h12v2c0 .55.45 1 1 1s1-.45 1-1v-2h1c.55 0 1-.45 1-1v-5c0-1.1-.9-2-2-2zm-11-3c0-.55.45-1 1-1h6c.55 0 1 .45 1 1v3H8V7zm11 8H5v-3h14v3z"/></g></svg>';
+    const pinIcon = L.divIcon({ className: 'cs-pin', html: PIN_SVG, iconSize: [36, 46], iconAnchor: [18, 44], popupAnchor: [0, -40] });
 
     function adattaMappa() {
       const size = map.getSize();
@@ -781,6 +803,18 @@
     }
 
     function evidenziaCard(id) {
+      // evidenzia anche il pin sulla mappa
+      Object.values(activeMarkersMap).forEach(m => {
+        const el = m.getElement();
+        if (el) el.classList.remove('cs-pin-active');
+        m.setZIndexOffset(0);
+      });
+      const mk = activeMarkersMap[id];
+      if (mk) {
+        const el = mk.getElement();
+        if (el) el.classList.add('cs-pin-active');
+        mk.setZIndexOffset(1000);
+      }
       document.querySelectorAll('.space-card.selected-card').forEach(c => c.classList.remove('selected-card'));
       const card = $('card_' + id);
       if (card) {
@@ -1106,7 +1140,7 @@
           : `📍 ${esc(space.city)} • Zona ${esc(space.zone || 'Riservata')}`;
 
         if (isFinite(space.lat) && isFinite(space.lon) && space.lat !== null && space.lon !== null) {
-          const marker = L.marker([space.lat, space.lon]).addTo(markersGroup);
+          const marker = L.marker([space.lat, space.lon], { icon: pinIcon, title: space.name, riseOnHover: true }).addTo(markersGroup);
           marker.bindPopup(creaPopup(space));
           marker.on('click', () => evidenziaCard(space.id));
           activeMarkersMap[space.id] = marker;
