@@ -114,6 +114,7 @@
     .leaflet-bar a:hover { background: rgba(255,255,255,0.95); color: #FF385C; }
     .leaflet-control-attribution { background: rgba(255,255,255,0.7) !important; backdrop-filter: blur(8px); border-radius: 10px 0 0 0; font-size: 10px; color: #6b7280; }
     .leaflet-control-attribution a { color: #6b7280; }
+  .cs-tiles { filter: saturate(.7) contrast(.94) brightness(1.05); }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col pb-20 lg:pb-0 selection:bg-brand selection:text-white">
@@ -964,11 +965,11 @@
     // ---------- Mappa ----------
     const map = L.map('map', { zoomControl: false, zoomSnap: 0.5, zoomDelta: 0.5 }).setView([42.5, 12.5], 6);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    // Cartografia CARTO "Positron" (chiara e minimale, dati OpenStreetMap), senza chiave API
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd',
-      maxZoom: 20,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    // Cartografia OpenStreetMap (nessuna chiave API richiesta), addolcita da un filtro CSS per un aspetto più pulito
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      className: 'cs-tiles',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
     const markersGroup = L.layerGroup().addTo(map);
 
