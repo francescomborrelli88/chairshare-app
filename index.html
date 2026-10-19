@@ -292,6 +292,25 @@
       </div>
     </div>
 
+    <!-- BENVENUTO: spiega subito cos'è il sito -->
+    <section id="heroIntro" class="bg-gradient-to-br from-pink-50 to-white border-b border-pink-100 px-4 py-5 md:py-7 hidden">
+      <div class="max-w-7xl mx-auto relative">
+        <button id="btnHeroClose" type="button" aria-label="Chiudi" class="absolute -top-1 right-0 text-gray-400 hover:text-gray-700 text-lg leading-none px-2">&times;</button>
+        <h1 class="text-xl md:text-3xl font-extrabold text-gray-900 leading-tight pr-8 max-w-3xl">Hai bisogno di una postazione dove lavorare? Oppure hai una poltrona o una stanza libera?</h1>
+        <p class="text-sm md:text-base text-gray-600 mt-2 max-w-2xl"><strong class="text-brand">ChairShare</strong> mette in contatto chi ha uno spazio libero (saloni, studi, cabine) con i professionisti che cercano dove lavorare, a ore o a giornata. Gratis e senza intermediari.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4 max-w-3xl text-xs text-gray-700">
+          <div class="bg-white border border-gray-200 rounded-2xl p-3"><strong class="text-gray-900">1. Cerca</strong><br>sulla mappa per città e categoria</div>
+          <div class="bg-white border border-gray-200 rounded-2xl p-3"><strong class="text-gray-900">2. Contatta</strong><br>l'host direttamente, su WhatsApp o per telefono</div>
+          <div class="bg-white border border-gray-200 rounded-2xl p-3"><strong class="text-gray-900">3. Lavora</strong><br>e accordatevi voi su prezzo e orari</div>
+        </div>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <button id="btnHeroSearch" type="button" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-2.5 rounded-full">Cerca uno spazio</button>
+          <button id="btnHeroPublish" type="button" class="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 text-xs font-bold px-5 py-2.5 rounded-full">+ Pubblica il tuo spazio</button>
+          <button id="btnHeroHow" type="button" class="text-xs font-bold text-gray-500 hover:text-brand underline px-2 py-2.5">Come funziona</button>
+        </div>
+      </div>
+    </section>
+
     <!-- MAIN CONTENT -->
     <main class="flex-1 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 md:p-6 overflow-hidden relative">
       <!-- LISTA SPAZI -->
@@ -1353,8 +1372,16 @@
       aggiornaBadgeRuolo();
     }
 
+    // Riquadro di benvenuto: lo vedono i visitatori non registrati, finché non lo chiudono
+    function aggiornaHero() {
+      let chiuso = false;
+      try { chiuso = localStorage.getItem('cs_hero_chiuso') === '1'; } catch (e) {}
+      $('heroIntro').classList.toggle('hidden', !!currentUser || chiuso);
+    }
+
     async function sessioneCambiata(user) {
       currentUser = user;
+      aggiornaHero();
       aggiornaStatoAuth();
       await caricaRuolo();
       await caricaContatti();
@@ -2345,6 +2372,17 @@
       // Header
       $('logoHome').addEventListener('click', resetToHome);
       $('newDescription').addEventListener('input', aggiornaContatoreDescr);
+      aggiornaHero();
+      $('btnHeroClose').addEventListener('click', () => {
+        try { localStorage.setItem('cs_hero_chiuso', '1'); } catch (e) {}
+        $('heroIntro').classList.add('hidden');
+      });
+      $('btnHeroSearch').addEventListener('click', () => {
+        const el = $('listSection');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      $('btnHeroPublish').addEventListener('click', apriAggiungiSpazio);
+      $('btnHeroHow').addEventListener('click', () => toggleModal('howItWorksModal', true));
       $('btnHowTop').addEventListener('click', () => toggleModal('howItWorksModal', true));
       $('btnHowFooter').addEventListener('click', () => toggleModal('howItWorksModal', true));
       $('btnLegalFooter').addEventListener('click', () => toggleModal('legalModal', true));
