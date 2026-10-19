@@ -478,7 +478,7 @@
       <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
         <p><strong>1. Il servizio.</strong> ChairShare è una vetrina online gratuita in cui gli Host pubblicano spazi di lavoro (studi, cabine, postazioni) e i professionisti li cercano e contattano direttamente. ChairShare non è parte dei rapporti tra Host e professionisti, non gestisce prenotazioni né pagamenti, non fornisce assicurazioni e non verifica le condizioni degli spazi: prezzi, orari, utilizzo, sicurezza, responsabilità e conformità alle norme (autorizzazioni, requisiti igienico-sanitari, contratti, fisco) sono concordati e curati dalle parti.</p>
         <p><strong>2. Account.</strong> Per vedere i recapiti e pubblicare serve un account. Devi avere almeno 18 anni, fornire dati veritieri e custodire con cura le tue credenziali. Sei responsabile di ciò che avviene con il tuo account.</p>
-        <p><strong>3. Annunci.</strong> Chi pubblica dichiara di avere il diritto di offrire lo spazio e che testi, dati e foto sono veritieri e non violano diritti di terzi. Le foto non devono mostrare persone riconoscibili senza il loro consenso. Ogni utente può avere al massimo 10 annunci attivi e pubblicarne al massimo 5 al giorno.</p>
+        <p><strong>3. Annunci.</strong> Chi pubblica dichiara di avere il diritto di offrire lo spazio e che testi, dati e foto sono veritieri e non violano diritti di terzi. Le foto non devono mostrare persone riconoscibili senza il loro consenso. La descrizione dell'annuncio è facoltativa, è sotto la tua responsabilità e non deve contenere recapiti (telefono, email, link). Ogni utente può avere al massimo 10 annunci attivi e pubblicarne al massimo 5 al giorno.</p>
         <p><strong>4. Comportamenti vietati.</strong> È vietato pubblicare annunci falsi, ingannevoli, duplicati o fraudolenti; contenuti illeciti, offensivi o discriminatori; usare i recapiti degli Host per spam, pubblicità non richiesta o per scopi diversi dalla ricerca di uno spazio; copiare in modo sistematico annunci o contatti (scraping), aggirare i limiti tecnici del sito o tentare di accedere ai dati altrui.</p>
         <p><strong>5. Segnalazioni e moderazione.</strong> Chiunque abbia un account può segnalare un annuncio. ChairShare può rimuovere annunci e recensioni e sospendere o eliminare account che violino questi termini o la legge, anche senza preavviso nei casi più gravi.</p>
         <p><strong>6. Recensioni.</strong> Un Freelance può recensire un Host, e un Host un Freelance, solo dopo aver avuto un contatto tramite il sito (richiesta dei recapiti di un annuncio da almeno 24 ore). Le recensioni devono descrivere esperienze reali e vissute direttamente, in modo corretto e rispettoso: sono vietati insulti, minacce, dati personali di terzi, recensioni false, scambiate o scritte dietro compenso. Ogni autore può lasciare una recensione per persona e ruolo, modificarla o cancellarla. Le recensioni sono pubbliche con il nome abbreviato dell'autore. ChairShare non verifica che i fatti raccontati siano veri e può rimuovere recensioni che violino queste regole. Il badge "Verificato" indica solo che ChairShare ha controllato l'identità o lo spazio dell'Host secondo le proprie verifiche, non è una garanzia sul servizio.</p>
@@ -677,6 +677,7 @@
         <p id="detailSpaceLocation" class="text-xs text-gray-500 mt-1 font-medium">Città • Zona</p>
         <p class="mt-1 flex items-center gap-2 text-[11px]"><span id="detailVerified" class="hidden font-bold text-emerald-600">✔ Host verificato</span></p>
         <div id="detailHoursBadge" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 space-y-1"></div>
+        <p id="detailDescription" class="hidden mt-3 text-sm text-gray-700 whitespace-pre-line"></p>
       </div>
 
       <div>
@@ -814,6 +815,15 @@
             </div>
           </div>
 
+          <div>
+            <label for="newDescription" class="text-xs text-gray-500 uppercase font-bold">Descrizione <span class="normal-case font-medium">(facoltativa)</span></label>
+            <textarea id="newDescription" rows="4" maxlength="500" placeholder="Cosa trova chi ti contatta? Metri quadri, attrezzature, orari, atmosfera..." class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 resize-none"></textarea>
+            <div class="flex justify-between text-[11px] text-gray-400 mt-1">
+              <span>Non inserire telefono, email o link: i recapiti si vedono dal pulsante "Mostra i contatti".</span>
+              <span id="descCount" class="shrink-0 ml-2">0/500</span>
+            </div>
+          </div>
+
           <div class="flex justify-between pt-3">
             <button type="button" data-goto-step="1" class="px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs">← Indietro</button>
             <button type="button" data-goto-step="3" class="px-6 py-2.5 bg-brand text-white font-bold rounded-xl text-xs">Avanti →</button>
@@ -924,7 +934,7 @@
         id: i.id, name: i.name, city: i.city, zone: i.zone, price: i.price,
         priceUnit: i.price_unit || 'giorno', type: i.type,
         dailySchedule: i.daily_schedule || {}, services: i.services || [],
-        lat: i.lat, lon: i.lon, userId: i.user_id, images: i.images || []
+        lat: i.lat, lon: i.lon, userId: i.user_id, images: i.images || [], description: i.description || ''
       };
     }
 
@@ -1447,6 +1457,7 @@
             <h4 class="text-base font-bold text-gray-900">${esc(space.name)}</h4>
             ${badgeReputazione(space.userId)}
             <p class="text-xs text-gray-500 mt-0.5">${locationText}</p>
+            ${space.description ? `<p class="text-xs text-gray-600 mt-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(space.description)}</p>` : ''}
             ${activeMarkersMap[space.id] ? '<button type="button" data-action="mappa" class="text-[11px] text-gray-500 hover:text-brand underline mt-1">Vedi sulla mappa</button>' : ''}
           </div>
           <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 bg-gray-50/50">
@@ -1554,6 +1565,9 @@
 
       $('detailSpaceTitle').textContent = s.name;
       $('detailSpacePrice').textContent = `${s.price} ${unita(s)}`;
+      const dd = $('detailDescription');
+      dd.textContent = s.description || '';
+      dd.classList.toggle('hidden', !s.description);
       $('detailSpaceLocation').textContent = (isLoggedIn && c)
         ? `${s.city} • ${c.address}`
         : `${s.city} • Zona ${s.zone || 'Riservata'}`;
@@ -1909,6 +1923,15 @@
       }
     }
 
+    // ---------- Descrizione dell'annuncio ----------
+    function aggiornaContatoreDescr() {
+      $('descCount').textContent = $('newDescription').value.length + '/500';
+    }
+    // true se il testo contiene telefoni, email o link (i recapiti si vedono solo dopo "Mostra i contatti")
+    function descrizioneConRecapiti(t) {
+      return /\d[\d\s.\-\/]{7,}\d/.test(t) || /@/.test(t) || /https?:\/\/|www\.|\.(it|com|net|org|eu)\b/i.test(t) || /wa\.me|whatsapp|telegram|instagram\.com/i.test(t);
+    }
+
     // ---------- Pubblicazione / modifica / eliminazione ----------
     function apriAggiungiSpazio() {
       if (!currentUser) { openModal('register-modal'); return; }
@@ -1919,6 +1942,7 @@
       $('addrVerified').classList.add('hidden');
       $('saveBtn').textContent = 'Salva e Pubblica';
       $('addSpaceForm').reset();
+      aggiornaContatoreDescr();
       azzeraFoto([]);
       generaCampiOrariGiornalieri();
       aggiornaServiziInclusiForm();
@@ -1953,6 +1977,8 @@
       $('newWhatsapp').value = c.phone || '';
       $('newPriceUnit').value = s.priceUnit || 'giorno';
       $('newPrice').value = s.price || '';
+      $('newDescription').value = s.description || '';
+      aggiornaContatoreDescr();
 
       aggiornaServiziInclusiForm();
       document.querySelectorAll('.service-checkbox').forEach(cb => {
@@ -1995,7 +2021,13 @@
       const priceUnit = $('newPriceUnit').value;
       const type = $('newType').value;
       const waDigits = normalizzaTelefono($('newWhatsapp').value);
+      const description = $('newDescription').value.trim().slice(0, 500);
 
+      if (description && descrizioneConRecapiti(description)) {
+        goToStep(2);
+        mostraMessaggio("Nella descrizione non inserire telefoni, email o link: i recapiti si vedono dal pulsante \"Mostra i contatti\".", 'err');
+        return;
+      }
       if (!name || !city || !zone || !address || !/^\d{5}$/.test(cap) || isNaN(price) || price <= 0) {
         goToStep(1);
         mostraMessaggio("Compila tutti i campi obbligatori (nome, città, CAP di 5 cifre, zona, indirizzo, prezzo).", 'err');
@@ -2045,7 +2077,7 @@
           const { data, error } = await client.from('spaces').update({
             name, city, zone, price, price_unit: priceUnit, type,
             daily_schedule: dailySchedule, services: selectedServices, lat, lon,
-            images: immaginiFinali
+            images: immaginiFinali, description
           }).eq('id', editId).select();
           if (error) throw error;
           if (!data || !data.length) throw new Error('NON_AUTORIZZATO');
@@ -2068,7 +2100,7 @@
             user_id: currentUser.id,
             name, city, zone, price, price_unit: priceUnit, type,
             daily_schedule: dailySchedule, services: selectedServices, lat, lon,
-            images: [...fotoEsistenti, ...fotoCaricate]
+            images: [...fotoEsistenti, ...fotoCaricate], description
           }]).select().single();
           if (error) throw error;
 
@@ -2096,6 +2128,9 @@
           mostraMessaggio("Hai pubblicato troppi annunci oggi (massimo 5 al giorno). Riprova domani.", 'err');
         } else if (msgErr.includes('LIMITE_ANNUNCI')) {
           mostraMessaggio("Hai raggiunto il massimo di 10 annunci. Elimina un annuncio per pubblicarne un altro.", 'err');
+        } else if (msgErr.includes('DESCRIZIONE_NON_VALIDA')) {
+          goToStep(2);
+          mostraMessaggio("Nella descrizione non inserire telefoni, email o link.", 'err');
         } else if (e && e.message === 'INDIRIZZO') {
           goToStep(1);
           const msgInd = e.dettaglio || "Non riesco a trovare questo indirizzo sulla mappa. Controlla via, numero civico, CAP e città.";
@@ -2309,6 +2344,7 @@
 
       // Header
       $('logoHome').addEventListener('click', resetToHome);
+      $('newDescription').addEventListener('input', aggiornaContatoreDescr);
       $('btnHowTop').addEventListener('click', () => toggleModal('howItWorksModal', true));
       $('btnHowFooter').addEventListener('click', () => toggleModal('howItWorksModal', true));
       $('btnLegalFooter').addEventListener('click', () => toggleModal('legalModal', true));
