@@ -729,6 +729,24 @@
         </div>
       </div>
 
+      <div id="detailWaPlanner" class="hidden mb-3 p-3 bg-emerald-50 border border-emerald-100 rounded-2xl text-xs">
+        <span class="font-bold text-emerald-800 block mb-2">💬 Vuoi proporre una data? Il messaggio WhatsApp parte già compilato</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label for="detailWaDate" class="text-[11px] text-gray-500 uppercase font-bold">Data</label>
+            <input id="detailWaDate" type="date" class="w-full mt-1 border border-gray-300 rounded-xl p-2.5 text-xs bg-white text-gray-900" />
+          </div>
+          <div>
+            <label for="detailWaFascia" class="text-[11px] text-gray-500 uppercase font-bold">Fascia</label>
+            <select id="detailWaFascia" class="w-full mt-1 border border-gray-300 rounded-xl p-2.5 text-xs bg-white text-gray-900">
+              <option>Mattina</option>
+              <option>Pomeriggio</option>
+              <option>Giornata intera</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
         <div>
           <span class="text-xs text-gray-400 uppercase font-bold block">Tariffa Indicativa</span>
@@ -834,7 +852,8 @@
             <div>
               <label for="newPriceUnit" class="text-xs text-gray-500 uppercase font-bold">Modalità Affitto</label>
               <select id="newPriceUnit" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white font-bold">
-                <option value="giorno">€ / Giorno</option>
+                <option value="giorno">€ / Giorno (intera giornata)</option>
+                <option value="mezza_giornata">€ / Mezza giornata (es. 4 ore)</option>
                 <option value="ora">€ / Ora</option>
               </select>
             </div>
@@ -842,6 +861,12 @@
               <label for="newPrice" class="text-xs text-gray-500 uppercase font-bold">Prezzo (€)</label>
               <input id="newPrice" type="number" min="1" step="0.5" required placeholder="Es. 35" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
+          </div>
+
+          <div id="minHoursWrap" class="hidden">
+            <label for="newMinHours" class="text-xs text-gray-500 uppercase font-bold">Minimo ore consecutive</label>
+            <input id="newMinHours" type="number" min="1" max="12" step="1" value="1" class="w-full sm:w-40 mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+            <p id="minHoursHint" class="text-[11px] text-gray-400 mt-1"></p>
           </div>
 
           <div>
@@ -956,12 +981,20 @@
     };
     const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 
-    function unita(s) { return s.priceUnit === 'ora' ? '€/ora' : '€/giorno'; }
+    const TIPI_MIN_2_ORE = ['barbiere', 'estetica'];
+    const NOMI_UNITA = { giorno: 'giorno', mezza_giornata: 'mezza giornata', ora: 'ora' };
+
+    // es. "35 € / giorno", "20 € / mezza giornata", "15 € / ora (min. 2 ore)"
+    function etichettaTariffa(s) {
+      const u = NOMI_UNITA[s.priceUnit] || 'giorno';
+      const min = (s.priceUnit === 'ora' && s.minHours > 1) ? ` (min. ${s.minHours} ore)` : '';
+      return `${s.price} € / ${u}${min}`;
+    }
 
     function mappaSpazio(i) {
       return {
         id: i.id, name: i.name, city: i.city, zone: i.zone, price: i.price,
-        priceUnit: i.price_unit || 'giorno', type: i.type,
+        priceUnit: i.price_unit || 'giorno', minHours: i.min_hours || 1, type: i.type,
         dailySchedule: i.daily_schedule || {}, services: i.services || [],
         lat: i.lat, lon: i.lon, userId: i.user_id, images: i.images || [], description: i.description || ''
       };
@@ -1102,7 +1135,7 @@
       div.innerHTML = `
         <h4 class="font-bold text-sm text-gray-900 pr-6">${esc(space.name)}</h4>
         <p class="text-[11px] text-gray-500 mt-0.5">${esc(space.city)} • Zona ${esc(space.zone)}</p>
-        <p class="text-sm font-extrabold text-brand mt-2">${esc(space.price)} ${unita(space)}</p>
+        <p class="text-sm font-extrabold text-brand mt-2">${esc(etichettaTariffa(space))}</p>
         <button type="button" class="mt-3 w-full bg-brand text-white text-xs font-bold py-2 rounded-xl">Vedi dettagli</button>
         <p class="text-[10px] text-gray-400 mt-2">Posizione approssimativa</p>`;
       div.querySelector('button').addEventListener('click', () => mostraDettagliSpazio(space.id));
@@ -1498,7 +1531,7 @@
             ${activeMarkersMap[space.id] ? '<button type="button" data-action="mappa" class="text-[11px] text-gray-500 hover:text-brand underline mt-1">Vedi sulla mappa</button>' : ''}
           </div>
           <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 bg-gray-50/50">
-            <span class="text-base font-extrabold text-gray-900">${esc(space.price)} ${unita(space)}</span>
+            <span class="text-base font-extrabold text-gray-900">${esc(etichettaTariffa(space))}</span>
             <button type="button" data-action="dettagli" class="bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl">
               ${isLoggedIn ? 'Dettagli & Contatti' : 'Sblocca Contatti'}
             </button>
@@ -1601,7 +1634,7 @@
       const c = contatti[s.id] || sbloccati[s.id];
 
       $('detailSpaceTitle').textContent = s.name;
-      $('detailSpacePrice').textContent = `${s.price} ${unita(s)}`;
+      $('detailSpacePrice').textContent = etichettaTariffa(s);
       const dd = $('detailDescription');
       dd.textContent = s.description || '';
       dd.classList.toggle('hidden', !s.description);
@@ -1683,6 +1716,7 @@
 
       const actions = $('detailActionButtons');
       actions.replaceChildren();
+      $('detailWaPlanner').classList.add('hidden');
       const phoneText = $('detailPhoneText');
 
       if (!isLoggedIn) {
@@ -1729,8 +1763,30 @@
           st.textContent = c.phone;
           phoneText.appendChild(st);
 
+          // pianificatore: data e fascia -> messaggio già compilato
+          const pian = $('detailWaPlanner');
+          pian.classList.remove('hidden');
+          const dIn = $('detailWaDate');
+          const fSel = $('detailWaFascia');
+          const oggi = new Date();
+          dIn.min = `${oggi.getFullYear()}-${String(oggi.getMonth() + 1).padStart(2, '0')}-${String(oggi.getDate()).padStart(2, '0')}`;
+          dIn.value = '';
+          fSel.value = s.priceUnit === 'mezza_giornata' ? 'Mattina' : 'Giornata intera';
           const waLink = document.createElement('a');
-          waLink.href = `https://wa.me/${wa}`;
+          const aggiornaLinkWa = () => {
+            let quando = '';
+            if (dIn.value) {
+              const [a, m, g] = dIn.value.split('-');
+              quando = ` per il ${g}/${m}/${a}`;
+            }
+            const testo = encodeURIComponent(
+              `Ciao! Ti contatto tramite ChairShare per il tuo spazio "${s.name}". Vorrei verificare la disponibilità${quando} nella fascia ${fSel.value}. È libero?`
+            );
+            waLink.href = `https://wa.me/${wa}?text=${testo}`;
+          };
+          dIn.oninput = aggiornaLinkWa;
+          fSel.onchange = aggiornaLinkWa;
+          aggiornaLinkWa();
           waLink.target = '_blank';
           waLink.rel = 'noopener noreferrer';
           waLink.className = 'px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md';
@@ -1960,6 +2016,32 @@
       }
     }
 
+    // ---------- Tariffa e tempi di affitto ----------
+    let unitaToccata = false;
+
+    function aggiornaCampoMinOre(impostaDefault) {
+      const tipo = $('newType').value;
+      const unit = $('newPriceUnit').value;
+      const wrap = $('minHoursWrap');
+      const inp = $('newMinHours');
+      const minimoTipo = TIPI_MIN_2_ORE.includes(tipo) ? 2 : 1;
+      wrap.classList.toggle('hidden', unit !== 'ora');
+      inp.required = unit === 'ora';
+      inp.min = String(minimoTipo);
+      $('minHoursHint').textContent = minimoTipo === 2
+        ? "Per barbieri ed estetiste l'affitto a ore è possibile solo con almeno 2 ore consecutive."
+        : "Quante ore consecutive deve prenotare, come minimo, chi ti contatta (1 = anche una sola ora).";
+      if (impostaDefault || !(parseInt(inp.value, 10) >= minimoTipo)) inp.value = String(minimoTipo);
+    }
+
+    // Preset in base alla tipologia: barbieri ed estetiste -> giornata, gli altri -> ora
+    function applicaPresetTariffa() {
+      if (!unitaToccata) {
+        $('newPriceUnit').value = TIPI_MIN_2_ORE.includes($('newType').value) ? 'giorno' : 'ora';
+      }
+      aggiornaCampoMinOre(true);
+    }
+
     // ---------- Descrizione dell'annuncio ----------
     function aggiornaContatoreDescr() {
       $('descCount').textContent = $('newDescription').value.length + '/500';
@@ -1980,6 +2062,8 @@
       $('saveBtn').textContent = 'Salva e Pubblica';
       $('addSpaceForm').reset();
       aggiornaContatoreDescr();
+      unitaToccata = false;
+      applicaPresetTariffa();
       azzeraFoto([]);
       generaCampiOrariGiornalieri();
       aggiornaServiziInclusiForm();
@@ -2013,6 +2097,9 @@
       $('newType').value = s.type || 'psicoterapia';
       $('newWhatsapp').value = c.phone || '';
       $('newPriceUnit').value = s.priceUnit || 'giorno';
+      unitaToccata = true;
+      $('newMinHours').value = String(s.minHours || 1);
+      aggiornaCampoMinOre(false);
       $('newPrice').value = s.price || '';
       $('newDescription').value = s.description || '';
       aggiornaContatoreDescr();
@@ -2057,6 +2144,15 @@
       const price = parseFloat($('newPrice').value);
       const priceUnit = $('newPriceUnit').value;
       const type = $('newType').value;
+      const minHours = priceUnit === 'ora' ? parseInt($('newMinHours').value, 10) : 1;
+      const minimoTipo = TIPI_MIN_2_ORE.includes(type) ? 2 : 1;
+      if (priceUnit === 'ora' && (!(minHours >= minimoTipo) || minHours > 12)) {
+        goToStep(2);
+        mostraMessaggio(minimoTipo === 2
+          ? "Per barbieri ed estetiste l'affitto a ore richiede almeno 2 ore consecutive (oppure scegli giornata o mezza giornata)."
+          : "Indica un minimo di ore consecutive valido (da 1 a 12).", 'err');
+        return;
+      }
       const waDigits = normalizzaTelefono($('newWhatsapp').value);
       const description = $('newDescription').value.trim().slice(0, 500);
 
@@ -2112,7 +2208,7 @@
           const immaginiFinali = [...fotoEsistenti, ...fotoCaricate];
 
           const { data, error } = await client.from('spaces').update({
-            name, city, zone, price, price_unit: priceUnit, type,
+            name, city, zone, price, price_unit: priceUnit, min_hours: minHours, type,
             daily_schedule: dailySchedule, services: selectedServices, lat, lon,
             images: immaginiFinali, description
           }).eq('id', editId).select();
@@ -2135,7 +2231,7 @@
 
           const { data, error } = await client.from('spaces').insert([{
             user_id: currentUser.id,
-            name, city, zone, price, price_unit: priceUnit, type,
+            name, city, zone, price, price_unit: priceUnit, min_hours: minHours, type,
             daily_schedule: dailySchedule, services: selectedServices, lat, lon,
             images: [...fotoEsistenti, ...fotoCaricate], description
           }]).select().single();
@@ -2165,6 +2261,9 @@
           mostraMessaggio("Hai pubblicato troppi annunci oggi (massimo 5 al giorno). Riprova domani.", 'err');
         } else if (msgErr.includes('LIMITE_ANNUNCI')) {
           mostraMessaggio("Hai raggiunto il massimo di 10 annunci. Elimina un annuncio per pubblicarne un altro.", 'err');
+        } else if (msgErr.includes('spaces_ore_minime') || msgErr.includes('spaces_price_unit') || msgErr.includes('spaces_min_hours')) {
+          goToStep(2);
+          mostraMessaggio("Tariffa non valida: per barbieri ed estetiste a ore servono almeno 2 ore consecutive.", 'err');
         } else if (msgErr.includes('DESCRIZIONE_NON_VALIDA')) {
           goToStep(2);
           mostraMessaggio("Nella descrizione non inserire telefoni, email o link.", 'err');
@@ -2207,7 +2306,7 @@
           <div>
             <h4 class="font-bold text-sm text-gray-900">${esc(s.name)}</h4>
             <p class="text-xs text-gray-500 mt-0.5">📍 ${c ? esc(c.address) + ', ' : ''}${esc(s.city)}</p>
-            <p class="text-xs font-bold text-brand mt-1">${esc(s.price)} € / ${esc(s.priceUnit)}</p>
+            <p class="text-xs font-bold text-brand mt-1">${esc(etichettaTariffa(s))}</p>
             <p class="text-[11px] text-gray-500 mt-1">📷 ${(s.images || []).length} foto • 👁 ${statRichieste[s.id] || 0} ${(statRichieste[s.id] || 0) === 1 ? 'richiesta' : 'richieste'} di contatto</p>
           </div>
           <div class="flex items-center gap-3 mt-4 pt-2 border-t border-gray-200">
@@ -2470,7 +2569,8 @@
         }
         goToStep(step);
       }));
-      $('newType').addEventListener('change', aggiornaServiziInclusiForm);
+      $('newType').addEventListener('change', () => { aggiornaServiziInclusiForm(); applicaPresetTariffa(); });
+      $('newPriceUnit').addEventListener('change', () => { unitaToccata = true; aggiornaCampoMinOre(true); });
       $('saveBtn').addEventListener('click', pubblicaNuovoSpazio);
       $('btnLoginToRegister').addEventListener('click', () => { closeModal('login-modal'); openModal('register-modal'); });
       $('btnRegisterToLogin').addEventListener('click', () => { closeModal('register-modal'); openModal('login-modal'); });
