@@ -799,8 +799,8 @@
               <input id="newCap" type="text" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" required placeholder="80131" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
             <div>
-              <label for="newZone" class="text-xs text-gray-500 uppercase font-bold">Quartiere / Zona</label>
-              <input id="newZone" type="text" required maxlength="60" placeholder="Es. Chiaiano" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
+              <label for="newZone" class="text-xs text-gray-500 uppercase font-bold">Quartiere / Zona <span class="normal-case font-medium">(facoltativo)</span></label>
+              <input id="newZone" type="text" maxlength="60" placeholder="Es. Chiaiano" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
             <div>
               <label for="newAddress" class="text-xs text-gray-500 uppercase font-bold">Indirizzo Riservato</label>
@@ -1134,7 +1134,7 @@
       div.className = 'p-4';
       div.innerHTML = `
         <h4 class="font-bold text-sm text-gray-900 pr-6">${esc(space.name)}</h4>
-        <p class="text-[11px] text-gray-500 mt-0.5">${esc(space.city)} • Zona ${esc(space.zone)}</p>
+        <p class="text-[11px] text-gray-500 mt-0.5">${esc(space.city)}${space.zone ? ' • Zona ' + esc(space.zone) : ''}</p>
         <p class="text-sm font-extrabold text-brand mt-2">${esc(etichettaTariffa(space))}</p>
         <button type="button" class="mt-3 w-full bg-brand text-white text-xs font-bold py-2 rounded-xl">Vedi dettagli</button>
         <p class="text-[10px] text-gray-400 mt-2">Posizione approssimativa</p>`;
@@ -1505,7 +1505,7 @@
         const c = contatti[space.id];
         const locationText = (isLoggedIn && c)
           ? `📍 ${esc(c.address)}, ${esc(space.city)}`
-          : `📍 ${esc(space.city)} • Zona ${esc(space.zone || 'Riservata')}`;
+          : `📍 ${esc(space.city)}${space.zone ? ' • Zona ' + esc(space.zone) : ''}`;
 
         if (isFinite(space.lat) && isFinite(space.lon) && space.lat !== null && space.lon !== null) {
           const marker = L.marker([space.lat, space.lon], { icon: pinIcon, title: space.name, riseOnHover: true }).addTo(markersGroup);
@@ -1640,7 +1640,7 @@
       dd.classList.toggle('hidden', !s.description);
       $('detailSpaceLocation').textContent = (isLoggedIn && c)
         ? `${s.city} • ${c.address}`
-        : `${s.city} • Zona ${s.zone || 'Riservata'}`;
+        : `${s.city}${s.zone ? ' • Zona ' + s.zone : ''}`;
 
       // Galleria foto
       const gal = $('detailGallery');
@@ -2161,9 +2161,9 @@
         mostraMessaggio("Nella descrizione non inserire telefoni, email o link: i recapiti si vedono dal pulsante \"Mostra i contatti\".", 'err');
         return;
       }
-      if (!name || !city || !zone || !address || !/^\d{5}$/.test(cap) || isNaN(price) || price <= 0) {
+      if (!name || !city || !address || !/^\d{5}$/.test(cap) || isNaN(price) || price <= 0) {
         goToStep(1);
-        mostraMessaggio("Compila tutti i campi obbligatori (nome, città, CAP di 5 cifre, zona, indirizzo, prezzo).", 'err');
+        mostraMessaggio("Compila tutti i campi obbligatori (nome, città, CAP di 5 cifre, indirizzo, prezzo).", 'err');
         return;
       }
       if (!waDigits) {
@@ -2439,7 +2439,7 @@
 
     function validaStep1() {
       const form = $('addSpaceForm');
-      const campi = ['newName', 'newCity', 'newCap', 'newZone', 'newAddress', 'newWhatsapp'];
+      const campi = ['newName', 'newCity', 'newCap', 'newAddress', 'newWhatsapp'];
       for (const id of campi) {
         const el = $(id);
         if (!el.value.trim()) { el.focus(); mostraMessaggio("Compila tutti i campi obbligatori.", 'err'); return false; }
