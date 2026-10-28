@@ -357,7 +357,7 @@
           <div class="flex flex-wrap items-center gap-2">
             <h2 id="profileUserFullName" class="text-2xl font-bold text-gray-900"></h2>
             <span id="userRoleBadge" class="hidden text-xs px-3 py-1 rounded-full font-bold bg-pink-100 text-brand"></span>
-            <button type="button" id="btnSwitchRole" class="hidden text-xs font-bold text-gray-500 hover:text-brand underline"></button>
+            <span id="roleSupportNote" class="hidden text-[11px] text-gray-400">(Vuoi cambiare tipologia di profilo? <a href="mailto:info@chairshare.it" class="underline hover:text-brand">Contatta l'assistenza</a>)</span>
           </div>
           <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
         </div>
@@ -373,10 +373,9 @@
 
       <div id="guestInviteBox" class="hidden bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <h3 class="text-lg font-bold text-gray-900">✂️ Cerchi una postazione?</h3>
-        <p class="text-xs text-gray-500 mt-1">Esplora la mappa e contatta direttamente gli host. Se hai uno spazio libero puoi pubblicarlo anche tu.</p>
+        <p class="text-xs text-gray-500 mt-1">Esplora la mappa e contatta direttamente gli host: sblocca i recapiti dell'annuncio e accordati sulla postazione.</p>
         <div class="flex flex-wrap gap-2 mt-4">
           <button type="button" id="btnGuestExplore" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">Esplora la mappa</button>
-          <button type="button" id="btnGuestPublish" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-4 py-2 rounded-full">+ Pubblica uno spazio</button>
         </div>
       </div>
 
@@ -1495,35 +1494,25 @@
     // Personalizza il Profilo in base al ruolo, senza bloccare nessuna funzione
     function aggiornaVistaProfilo() {
       const haSpazi = !!currentUser && spazi.some(s => s.userId === currentUser.id);
-      // I Freelance senza annunci vedono un invito; se il ruolo è sconosciuto mostro tutto
-      const mostraHost = ruoloUtente !== 'guest' || haSpazi;
-      $('hostSpacesSection').classList.toggle('hidden', !mostraHost);
-      $('guestInviteBox').classList.toggle('hidden', mostraHost);
-      const mostraAgenda = ruoloUtente === 'guest' && !!currentUser;
+      // Ruolo fisso dalla registrazione: Host = gestione annunci, Freelance = ricerca + agenda.
+      // Se il ruolo è sconosciuto (profilo non letto) non nascondo nulla.
+      const èFree = ruoloUtente === 'guest', èHost = ruoloUtente === 'host';
+      $('hostSpacesSection').classList.toggle('hidden', èFree);
+      $('guestInviteBox').classList.toggle('hidden', !èFree);
+      const mostraAgenda = èFree && !!currentUser;
       $('agendaSection').classList.toggle('hidden', !mostraAgenda);
       if (mostraAgenda && !$('profilePage').classList.contains('hidden')) caricaAgenda();
-      const sw = $('btnSwitchRole');
-      if (ruoloUtente === 'host' || ruoloUtente === 'guest') {
-        sw.textContent = ruoloUtente === 'host' ? 'Passa a Freelance' : 'Passa a Host';
-        sw.classList.remove('hidden');
-      } else {
-        sw.classList.add('hidden');
-      }
+      $('roleSupportNote').classList.toggle('hidden', !(èFree || èHost));
+      aggiornaPulsantiPubblica();
     }
 
-    async function cambiaRuolo() {
-      const client = getSupabase();
-      if (!client || !currentUser || (ruoloUtente !== 'host' && ruoloUtente !== 'guest')) return;
-      const nuovo = ruoloUtente === 'host' ? 'guest' : 'host';
-      const { data, error } = await client.from('profiles').update({ role: nuovo }).eq('id', currentUser.id).select('role').maybeSingle();
-      if (error || !data) {
-        console.warn('Errore cambio ruolo:', error);
-        mostraMessaggio("Non è stato possibile cambiare profilo. Riprova tra poco.", 'err');
-        return;
-      }
-      ruoloUtente = data.role;
-      aggiornaBadgeRuolo();
-      mostraMessaggio(nuovo === 'host' ? "Ora il tuo profilo è Host." : "Ora il tuo profilo è Freelance.");
+    // I Freelance non pubblicano saloni: nascondo ogni pulsante di pubblicazione
+    function aggiornaPulsantiPubblica() {
+      const nascondi = !!currentUser && ruoloUtente === 'guest';
+      $('btnPublishTop').style.display = nascondi ? 'none' : '';
+      $('btnHeroPublish').style.display = nascondi ? 'none' : '';
+      const add = document.querySelector('#spacesList [data-action="add"]');
+      if (add) add.style.display = nascondi ? 'none' : '';
     }
 
     async function caricaRuolo() {
@@ -1617,6 +1606,7 @@
             <button type="button" data-action="add" class="mt-4 bg-brand text-white text-xs font-bold px-4 py-2 rounded-xl shadow">+ Pubblica uno Spazio</button>
           </div>`;
         listContainer.querySelector('[data-action="add"]').addEventListener('click', apriAggiungiSpazio);
+        aggiornaPulsantiPubblica();
         return;
       }
 
@@ -2178,6 +2168,7 @@
     // ---------- Pubblicazione / modifica / eliminazione ----------
     function apriAggiungiSpazio() {
       if (!currentUser) { openModal('register-modal'); return; }
+      if (ruoloUtente === 'guest') { mostraMessaggio("Il tuo profilo è Freelance: gli spazi possono essere pubblicati solo dagli Host.", 'err'); return; }
       $('editingSpaceId').value = '';
       $('modalSpaceTitle').textContent = 'Pubblica il tuo Spazio';
       indirizzoVerificato = null;
@@ -2981,9 +2972,7 @@
       $('btnLogoutProfile').addEventListener('click', gestisciLogout);
       $('btnBackHome').addEventListener('click', () => mostraPagina('homePage'));
       $('btnAddSpaceProfile').addEventListener('click', apriAggiungiSpazio);
-      $('btnSwitchRole').addEventListener('click', cambiaRuolo);
       $('btnGuestExplore').addEventListener('click', () => mostraPagina('homePage'));
-      $('btnGuestPublish').addEventListener('click', apriAggiungiSpazio);
 
       // Ricerca e filtri
       $('searchBtnDesktop').addEventListener('click', cercaSpazi);
