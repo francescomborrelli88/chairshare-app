@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
-  <title>Modello Contratto Affitto Poltrona / Cabina - ChairShare</title>
+  <title>Contratto Standard di Concessione Spazio Attrezzato - ChairShare</title>
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; background: #f3f4f6; color: #1f2937; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; padding: 16px; }
@@ -24,8 +24,10 @@
     .sheet p { margin: 0 0 10px; text-align: justify; }
     .sign { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: center; margin-top: 26px; }
     .sign .l { margin-top: 44px; color: #9ca3af; }
+    .cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; font-size: 12px; }
+    .cats label { display: flex; align-items: center; gap: 6px; }
     .small { font-size: 10px; color: #9ca3af; text-align: center; margin-top: 18px; }
-    @media (max-width: 560px) { .sheet { padding: 22px 16px; } .sign { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) { .cats { grid-template-columns: 1fr 1fr; } .sheet { padding: 22px 16px; } .sign { grid-template-columns: 1fr; } }
     @media print {
       @page { size: A4; margin: 18mm; }
       .bar, .warn { display: none !important; }
@@ -40,8 +42,8 @@
 
   <div class="bar">
     <div>
-      <h1>Modello Contratto di Affitto Poltrona / Cabina</h1>
-      <p>Compila i campi, stampa in doppio originale e sottoscrivi con firma autografa.</p>
+      <h1>Modello Contrattuale Universale ChairShare</h1>
+      <p>Per poltrone, cabine, studi, set e scrivanie. Compila, stampa in doppio originale e firma.</p>
     </div>
     <div>
       <button class="btn p" onclick="window.print()">🖨️ Stampa / Salva in PDF</button>
@@ -50,12 +52,12 @@
   </div>
 
   <div class="warn">
-    <strong>Modello orientativo, non consulenza legale.</strong> Adattalo al tuo caso e fallo verificare da un consulente del lavoro, da un legale o dalla tua associazione di categoria. Un contratto firmato non basta da solo a escludere contestazioni: in caso di controlli contano le modalità reali di svolgimento del rapporto (autonomia, assenza di orari e direttive imposti, clientela e incassi propri) e il rispetto delle norme regionali e comunali applicabili alla tua attività. Questo avviso non viene stampato.
+    <strong>Modello orientativo, non consulenza legale.</strong> Adattalo alla tua categoria e al tuo caso e fallo verificare da un consulente del lavoro, da un legale o dalla tua associazione di categoria. Un contratto firmato non basta da solo a escludere contestazioni: in caso di controlli contano le modalità reali di svolgimento del rapporto (autonomia, assenza di orari e direttive imposti, clientela e incassi propri) e il rispetto delle norme regionali e comunali applicabili alla tua attività (per le attività sanitarie, ad esempio, possono servire autorizzazioni specifiche del locale). Questo avviso non viene stampato.
   </div>
 
   <main class="sheet">
-    <h2>Scrittura Privata di Concessione Temporanea di Postazione</h2>
-    <p class="sub" style="text-align:center">(Contratto di "affitto di poltrona / postazione di lavoro", con riferimento alla disciplina dell'attività di acconciatore, L. 174/2005, alle norme regionali e agli accordi di categoria applicabili)</p>
+    <h2>Scrittura Privata di Concessione Temporanea di Postazione Attrezzata</h2>
+    <p class="sub" style="text-align:center">(Contratto atipico di godimento temporaneo di spazio e servizi accessori, ai sensi degli artt. 1322 e 1571 e ss. del Codice Civile; per i servizi alla persona con riferimento anche a L. 174/2005, L. 1/1990 e alle norme regionali)</p>
 
     <p>Con la presente scrittura privata, redatta in duplice originale, tra le parti:</p>
 
@@ -71,14 +73,26 @@
       <p>Sig./Sig.ra: __________________________________________________________________________</p>
       <p>P.IVA: ___________________________ C.F.: ______________________________________________</p>
       <p>Nato/a a: ___________________________ il: ______________ Residente in: ____________________</p>
-      <p>Qualifica professionale / abilitazione n.: ____________________ Telefono/Email: ______________</p>
+      <p>Albo / Ordine / Abilitazione n.: ____________________ Telefono/Email: ______________</p>
+    </div>
+
+    <div class="box">
+      <p><strong>Tipologia di postazione e attività concessa</strong> (barrare):</p>
+      <div class="cats">
+        <label><input type="checkbox"> Poltrona Hair &amp; Barber</label>
+        <label><input type="checkbox"> Cabina Estetica &amp; Nails</label>
+        <label><input type="checkbox"> Cabina Massaggi / Fisioterapia</label>
+        <label><input type="checkbox"> Studio Psicoterapia / Counseling</label>
+        <label><input type="checkbox"> Set Foto &amp; Video</label>
+        <label><input type="checkbox"> Postazione Coworking</label>
+      </div>
     </div>
 
     <p><strong>Art. 1 - Oggetto e ubicazione.</strong> Il Concedente concede in godimento temporaneo e non esclusivo al Conduttore, che accetta, la postazione di lavoro n. ____ situata nel proprio locale in Via ______________________________, Città ________________, con accesso ai servizi igienici, alla sala d'attesa e agli impianti comuni, e con le seguenti attrezzature: ______________________________.</p>
 
     <p><strong>Art. 2 - Autonomia operativa.</strong> Il Conduttore opera in piena autonomia organizzativa e gestionale, con proprio rischio d'impresa, senza vincoli di orario o gerarchici verso il Concedente, salvi gli orari di apertura e le regole di uso del locale. Il Conduttore gestisce la propria clientela e i propri appuntamenti, determina liberamente i prezzi delle prestazioni, incassa direttamente e rilascia i documenti fiscali di propria competenza.</p>
 
-    <p><strong>Art. 3 - Requisiti di legge.</strong> Il Conduttore dichiara di possedere l'abilitazione professionale richiesta per la propria attività, di essere titolare di partita IVA attiva e di aver effettuato le comunicazioni o segnalazioni previste. Il Concedente dichiara che il locale è autorizzato all'esercizio dell'attività, è conforme alle norme urbanistiche, di sicurezza e igienico-sanitarie e può essere utilizzato anche da terzi. Il Conduttore utilizza i propri strumenti di lavoro e li custodisce con diligenza.</p>
+    <p><strong>Art. 3 - Requisiti di legge, igiene e riservatezza.</strong> Il Conduttore dichiara di possedere i titoli richiesti per la propria attività, di essere titolare di partita IVA attiva (o di operare nelle forme di legge) e di aver effettuato le comunicazioni previste. Il Concedente dichiara che il locale è autorizzato all'uso previsto, conforme alle norme urbanistiche, di sicurezza e igienico-sanitarie, e può essere utilizzato anche da terzi. In particolare: (a) <em>servizi alla persona, estetica e barber:</em> abilitazione professionale di legge (ad es. L. 174/2005 o L. 1/1990) e requisiti igienico-sanitari, con sanificazione di postazione e strumenti; (b) <em>attività sanitarie, psicoterapia e counseling:</em> rispetto del segreto professionale e della riservatezza dei dati dei pazienti (Reg. UE 2016/679), iscrizione all'albo ove richiesta e idoneità del locale all'attività; (c) <em>foto e video:</em> il Conduttore ottiene le liberatorie per immagine e diritti d'autore dei soggetti ripresi e risponde dell'uso dei materiali realizzati; (d) <em>coworking:</em> rispetto del regolamento del locale e delle regole di riservatezza degli spazi comuni. Il Conduttore usa i propri strumenti di lavoro e mantiene la postazione in ordine e pulita.</p>
 
     <p><strong>Art. 4 - Durata e orari.</strong> Dal ____/____/______ al ____/____/______ (oppure nei giorni ________________ dalle ore ______ alle ore ______). Ciascuna parte può recedere con preavviso scritto di ____ giorni; è ammessa la risoluzione immediata per grave inadempimento, mancato pagamento o perdita delle abilitazioni.</p>
 
