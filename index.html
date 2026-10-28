@@ -443,6 +443,14 @@
         <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
 
+      <div id="hostBlocksSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+        <div class="border-b border-gray-100 pb-3">
+          <h3 class="text-lg font-bold text-gray-900">📅 Prenotazioni Postazioni Ricevute</h3>
+          <p class="text-[11px] text-gray-500 mt-1">I freelance che hanno sbloccato i tuoi recapiti segnano qui giorno e fascia in cui lavoreranno da te. È un'annotazione loro: confermate sempre direttamente.</p>
+        </div>
+        <div id="hostBlocksList" class="space-y-2"></div>
+      </div>
+
       <div id="reviewsSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
         <h3 class="text-lg font-bold text-gray-900">⭐ Recensioni</h3>
         <div>
@@ -589,6 +597,7 @@
         <p><strong>Titolare del trattamento.</strong> <span id="legalTitolare"></span> — contatto privacy: <span id="legalEmail"></span></p>
         <p><strong>Dati trattati.</strong> Nome e cognome, email e password (conservata in forma cifrata dal servizio di autenticazione); per chi pubblica un annuncio: nome dello spazio, città, zona, indirizzo, numero di telefono/WhatsApp, orari, tariffe, servizi e le foto caricate (che sono pubbliche); per chi consulta i contatti: l'elenco degli annunci di cui ha richiesto i recapiti, con data e ora, per prevenire abusi; per chi invia una segnalazione: motivo, eventuale testo e annuncio segnalato; per chi scrive una recensione: voto e testo, pubblicati con il nome abbreviato dell'autore.</p>
         <p><strong>Agenda e prenotazioni.</strong> Quando un cliente prenota tramite il link di un Freelance, ChairShare tratta nome, numero di telefono, servizio e orario scelti, solo per registrare l'appuntamento e renderlo visibile a quel Freelance, che è autonomo titolare del trattamento verso i propri clienti. Il cliente non crea un account. I dati degli appuntamenti sono cancellati automaticamente dopo 90 giorni dalla data dell'appuntamento. Il cliente vede il nome del Freelance e il salone (nome e città, non l'indirizzo).</p>
+        <p><strong>Blocchi postazione.</strong> Quando un Freelance segna una postazione su un annuncio, l'Host di quell'annuncio vede nome, eventuale numero WhatsApp indicato nell'agenda, giorno e fascia, per potersi organizzare direttamente.</p>
         <p><strong>Finalità e base giuridica.</strong> Creazione e gestione dell'account, pubblicazione degli annunci e messa in contatto tra utenti registrati (esecuzione del servizio richiesto, art. 6.1.b GDPR); sicurezza e prevenzione degli abusi (legittimo interesse, art. 6.1.f).</p>
         <p><strong>Chi vede cosa.</strong> L'indirizzo esatto e il telefono di un annuncio sono visibili solo agli utenti registrati. Sulla mappa pubblica compare solo una posizione approssimativa. Pubblicando un annuncio l'host accetta che questi dati siano visibili agli utenti registrati. Ogni utente può consultare i recapiti di un numero limitato di annunci al giorno; l'host vede quante persone hanno richiesto i suoi recapiti e, solo per poterle recensire dopo almeno 24 ore, il loro nome abbreviato (es. Mario R.), mai email o telefono. Le foto degli annunci sono invece visibili a chiunque.</p>
         <p><strong>Destinatari.</strong> I dati sono conservati su infrastruttura Supabase (database e autenticazione, regione UE). Per calcolare la posizione sulla mappa l'indirizzo viene inviato al servizio di geocodifica OpenStreetMap/Nominatim; la cartografia è fornita da CARTO su dati OpenStreetMap e le librerie del sito sono caricate da reti di distribuzione terze, che possono ricevere l'indirizzo IP del visitatore.</p>
@@ -1502,8 +1511,35 @@
       const mostraAgenda = èFree && !!currentUser;
       $('agendaSection').classList.toggle('hidden', !mostraAgenda);
       if (mostraAgenda && !$('profilePage').classList.contains('hidden')) caricaAgenda();
+      $('hostBlocksSection').classList.toggle('hidden', èFree);
+      if (!èFree && !!currentUser && !$('profilePage').classList.contains('hidden')) caricaBlocchiHost();
       $('roleSupportNote').classList.toggle('hidden', !(èFree || èHost));
       aggiornaPulsantiPubblica();
+    }
+
+    // ---------- Host: blocchi postazione ricevuti ----------
+    async function caricaBlocchiHost() {
+      const c = getSupabase(); const box = $('hostBlocksList');
+      if (!c || !currentUser || ruoloUtente === 'guest') return;
+      const mio = currentUser.id;
+      const { data, error } = await c.rpc('get_host_blocks');
+      if (currentUser?.id !== mio) return;
+      if (error) { box.innerHTML = '<p class="text-[11px] text-gray-400">Elenco non disponibile al momento.</p>'; return; }
+      if (!data || !data.length) { box.innerHTML = '<p class="text-[11px] text-gray-400">Nessuna postazione segnata dai freelance per ora.</p>'; return; }
+      box.innerHTML = data.map(b => {
+        const wa = normalizzaTelefono(b.freelance_phone);
+        const quando = dataLunga(b.day) + ' dalle ' + oraBreve(b.start_time) + ' alle ' + oraBreve(b.end_time);
+        const msg = `Ciao ${String(b.freelance_name).split(' ')[0]}, ti scrivo per la postazione di ${b.space_name} che hai segnato per ${quando}. Ti scrivo per organizzarci: va bene?`;
+        return `<div class="border border-gray-200 rounded-xl px-3 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="min-w-0">
+            <p class="text-sm font-bold text-gray-900">${esc(dataLunga(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</p>
+            <p class="text-xs text-gray-600 truncate">${esc(b.space_name)} · ${esc(b.freelance_name)}</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2 py-1">Bloccata dal freelance</span>
+            ${wa ? `<a target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}" class="text-[11px] font-bold bg-green-600 text-white px-3 py-1.5 rounded-full">💬 WhatsApp</a>` : '<span class="text-[10px] text-gray-400">Nessun numero</span>'}
+          </div></div>`;
+      }).join('');
     }
 
     // I Freelance non pubblicano saloni: nascondo ogni pulsante di pubblicazione
@@ -1714,7 +1750,7 @@
       $('homePage').classList.toggle('hidden', pageId !== 'homePage');
       $('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
       $('bookPage').classList.toggle('hidden', pageId !== 'bookPage');
-      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); caricaAgenda(); }
+      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); caricaAgenda(); caricaBlocchiHost(); }
       if (pageId === 'homePage') setTimeout(adattaMappa, 50);
     }
 
