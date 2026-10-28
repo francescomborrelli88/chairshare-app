@@ -68,7 +68,8 @@
 
   <style>
     /* Viste esclusive: quando una vista è nascosta non deve mai comparire sotto l'altra */
-    #homePage.hidden, #profilePage.hidden { display: none !important; }
+    #homePage.hidden, #profilePage.hidden, #bookPage.hidden { display: none !important; }
+    body.book-mode #homePage, body.book-mode header, body.book-mode footer, body.book-mode #heroIntro { display: none !important; }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -379,6 +380,62 @@
         </div>
       </div>
 
+
+      <div id="agendaSection" class="hidden bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+        <div class="border-b border-gray-100 pb-3">
+          <h3 class="text-lg font-bold text-gray-900">📅 La mia Agenda &amp; Listino</h3>
+          <p class="text-xs text-gray-500 mt-1">Crea il tuo listino, segna le postazioni che hai concordato e condividi il link con i tuoi clienti: prenotano da soli negli orari liberi.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <h4 class="text-sm font-extrabold text-gray-900">1. Il tuo numero WhatsApp</h4>
+            <p class="text-[11px] text-gray-500">Serve perché i clienti ti scrivano la conferma. Lo vedono solo dopo aver prenotato.</p>
+            <div class="flex gap-2">
+              <input id="agPhone" type="tel" inputmode="tel" maxlength="20" placeholder="es. 333 1234567" class="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand/30 focus:border-brand outline-none">
+              <button type="button" id="btnAgPhone" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Salva</button>
+            </div>
+
+            <h4 class="text-sm font-extrabold text-gray-900 pt-3">2. Il tuo listino</h4>
+            <form id="formServizio" class="grid grid-cols-6 gap-2">
+              <input id="svName" type="text" maxlength="60" required placeholder="Servizio (es. Taglio)" class="col-span-6 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+              <input id="svDur" type="number" min="5" max="480" step="5" required placeholder="Minuti" class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+              <input id="svPrice" type="number" min="0" max="99999" step="0.5" required placeholder="Prezzo €" class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+              <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold rounded-xl">+ Aggiungi</button>
+            </form>
+            <div id="agServices" class="space-y-2"></div>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="text-sm font-extrabold text-gray-900">3. Blocca una postazione</h4>
+            <p class="text-[11px] text-gray-500">Dopo esserti accordato con l'host (contatto sbloccato dall'annuncio), segna giorno e fascia in cui lavori lì. Il tuo link userà queste fasce. L'host non riceve nulla: l'accordo resta tra voi.</p>
+            <form id="formBlocco" class="grid grid-cols-2 gap-2">
+              <select id="blSpace" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select>
+              <input id="blDay" type="date" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+              <label class="text-[11px] text-gray-500">Dalle<input id="blStart" type="time" step="900" value="14:00" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand"></label>
+              <label class="text-[11px] text-gray-500">Alle<input id="blEnd" type="time" step="900" value="19:00" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand"></label>
+              <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold py-2.5 rounded-xl">Blocca postazione</button>
+            </form>
+            <div id="agBlocks" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <div class="bg-pink-50 border border-pink-100 rounded-2xl p-4 space-y-2">
+          <h4 class="text-sm font-extrabold text-gray-900">🔗 Il tuo link di prenotazione</h4>
+          <p id="agLinkHint" class="text-[11px] text-gray-600"></p>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input id="agLink" type="text" readonly class="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
+            <button type="button" id="btnAgCopy" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Copia link</button>
+            <a id="btnAgShare" target="_blank" rel="noopener" class="bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-xl text-center">Condividi su WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="text-sm font-extrabold text-gray-900">🗓️ I miei appuntamenti</h4>
+          <div id="agAppts" class="space-y-2"></div>
+        </div>
+      </div>
+
       <div id="hostSpacesSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
           <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi in Vetrina</h3>
@@ -415,6 +472,56 @@
   </div>
 
   <!-- FOOTER -->
+
+  <!-- PAGINA PUBBLICA DI PRENOTAZIONE (?book=<id>) -->
+  <div id="bookPage" class="hidden flex-1 w-full max-w-lg mx-auto px-4 py-6">
+    <div class="flex items-center gap-2 mb-5">
+      <span class="w-8 h-8 rounded-full bg-brand flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v9a2 2 0 0 0 2 2h8M7 8H5m4 6v7m8-7v7M17 14V9"/></svg></span>
+      <span class="text-lg font-extrabold"><span class="text-brand">Chair</span><span class="text-gray-900">Share</span></span>
+    </div>
+    <div id="bookLoading" class="text-center text-sm text-gray-500 py-16">Caricamento…</div>
+    <div id="bookError" class="hidden bg-white border border-gray-200 rounded-2xl p-6 text-center">
+      <p class="text-3xl mb-2">😕</p>
+      <p class="text-sm font-bold text-gray-900">Pagina di prenotazione non disponibile</p>
+      <p class="text-xs text-gray-500 mt-1">Il link potrebbe essere errato. Chiedi al professionista di inviartelo di nuovo.</p>
+    </div>
+    <div id="bookMain" class="hidden space-y-5">
+      <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Prenota con</p>
+        <h1 id="bookName" class="text-2xl font-extrabold text-gray-900"></h1>
+        <p id="bookWhere" class="text-xs text-gray-500 mt-1"></p>
+      </div>
+      <div id="bookEmpty" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-800">Al momento non ci sono giorni disponibili per prenotare. Riprova più tardi o contatta direttamente il professionista.</div>
+
+      <div id="bookStep1" class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+        <h2 class="text-sm font-extrabold text-gray-900 mb-3">1. Scegli il servizio</h2>
+        <div id="bookServices" class="space-y-2"></div>
+      </div>
+      <div id="bookStep2" class="hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+        <h2 class="text-sm font-extrabold text-gray-900 mb-3">2. Scegli giorno e orario</h2>
+        <div id="bookDays" class="flex gap-2 overflow-x-auto no-scrollbar pb-2"></div>
+        <div id="bookSlots" class="mt-3 space-y-3"></div>
+      </div>
+      <form id="bookStep3" class="hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm space-y-3">
+        <h2 class="text-sm font-extrabold text-gray-900">3. I tuoi dati</h2>
+        <p id="bookRiepilogo" class="text-xs font-bold text-brand"></p>
+        <input id="bkNome" type="text" maxlength="40" required autocomplete="given-name" placeholder="Nome" class="w-full px-3 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+        <input id="bkCognome" type="text" maxlength="40" required autocomplete="family-name" placeholder="Cognome" class="w-full px-3 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+        <input id="bkTel" type="tel" inputmode="tel" maxlength="20" required autocomplete="tel" placeholder="Cellulare / WhatsApp" class="w-full px-3 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+        <label class="flex items-start gap-2 text-[11px] text-gray-500"><input id="bkPrivacy" type="checkbox" required class="mt-0.5"><span>Acconsento al trattamento di nome e cellulare per gestire questo appuntamento (cancellati dopo 90 giorni). <button type="button" id="btnBookPrivacy" class="underline font-bold text-gray-700">Informativa</button></span></label>
+        <button type="submit" id="btnBookConfirm" class="w-full bg-brand hover:bg-brand-hover text-white font-extrabold text-sm py-3.5 rounded-xl">Conferma prenotazione</button>
+        <p class="text-[10px] text-gray-400 text-center">Nessun pagamento online: paghi direttamente al professionista.</p>
+      </form>
+      <div id="bookDone" class="hidden bg-white border border-green-200 rounded-2xl p-6 text-center shadow-sm space-y-3">
+        <p class="text-4xl">✅</p>
+        <h2 class="text-lg font-extrabold text-gray-900">Prenotazione registrata!</h2>
+        <p id="bookDoneText" class="text-sm text-gray-600"></p>
+        <a id="bookWa" target="_blank" rel="noopener" class="hidden block w-full bg-green-600 text-white font-extrabold text-sm py-3.5 rounded-xl">Invia conferma su WhatsApp</a>
+        <p class="text-[11px] text-gray-400">Il messaggio è già pronto: ti basta premere invio.</p>
+      </div>
+    </div>
+  </div>
+
   <footer class="bg-white border-t border-gray-200 py-6 px-4 text-center text-xs text-gray-500 mt-auto">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
       <div>© 2026 ChairShare • Tutti i diritti riservati</div>
@@ -479,9 +586,10 @@
       <p class="text-xs text-gray-500 mb-4">Informativa ai sensi degli artt. 13-14 del Regolamento (UE) 2016/679 (GDPR).</p>
 
       <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
-        <p><strong>Natura del servizio.</strong> ChairShare è una vetrina di annunci che mette in contatto chi ha uno spazio con i professionisti che cercano una postazione. ChairShare non è parte degli accordi tra host e utenti, né gestisce pagamenti o prenotazioni: condizioni economiche e modalità di utilizzo sono concordate autonomamente tra le parti. Chi pubblica un annuncio è responsabile della veridicità dei dati e del diritto di offrire lo spazio.</p>
+        <p><strong>Natura del servizio.</strong> ChairShare è una vetrina di annunci che mette in contatto chi ha uno spazio con i professionisti che cercano una postazione. ChairShare non è parte degli accordi tra host e utenti, né gestisce pagamenti: condizioni economiche e modalità di utilizzo sono concordate autonomamente tra le parti. Chi pubblica un annuncio è responsabile della veridicità dei dati e del diritto di offrire lo spazio.</p>
         <p><strong>Titolare del trattamento.</strong> <span id="legalTitolare"></span> — contatto privacy: <span id="legalEmail"></span></p>
         <p><strong>Dati trattati.</strong> Nome e cognome, email e password (conservata in forma cifrata dal servizio di autenticazione); per chi pubblica un annuncio: nome dello spazio, città, zona, indirizzo, numero di telefono/WhatsApp, orari, tariffe, servizi e le foto caricate (che sono pubbliche); per chi consulta i contatti: l'elenco degli annunci di cui ha richiesto i recapiti, con data e ora, per prevenire abusi; per chi invia una segnalazione: motivo, eventuale testo e annuncio segnalato; per chi scrive una recensione: voto e testo, pubblicati con il nome abbreviato dell'autore.</p>
+        <p><strong>Agenda e prenotazioni.</strong> Quando un cliente prenota tramite il link di un Freelance, ChairShare tratta nome, numero di telefono, servizio e orario scelti, solo per registrare l'appuntamento e renderlo visibile a quel Freelance, che è autonomo titolare del trattamento verso i propri clienti. Il cliente non crea un account. I dati degli appuntamenti sono cancellati automaticamente dopo 90 giorni dalla data dell'appuntamento. Il cliente vede il nome del Freelance e il salone (nome e città, non l'indirizzo).</p>
         <p><strong>Finalità e base giuridica.</strong> Creazione e gestione dell'account, pubblicazione degli annunci e messa in contatto tra utenti registrati (esecuzione del servizio richiesto, art. 6.1.b GDPR); sicurezza e prevenzione degli abusi (legittimo interesse, art. 6.1.f).</p>
         <p><strong>Chi vede cosa.</strong> L'indirizzo esatto e il telefono di un annuncio sono visibili solo agli utenti registrati. Sulla mappa pubblica compare solo una posizione approssimativa. Pubblicando un annuncio l'host accetta che questi dati siano visibili agli utenti registrati. Ogni utente può consultare i recapiti di un numero limitato di annunci al giorno; l'host vede quante persone hanno richiesto i suoi recapiti e, solo per poterle recensire dopo almeno 24 ore, il loro nome abbreviato (es. Mario R.), mai email o telefono. Le foto degli annunci sono invece visibili a chiunque.</p>
         <p><strong>Destinatari.</strong> I dati sono conservati su infrastruttura Supabase (database e autenticazione, regione UE). Per calcolare la posizione sulla mappa l'indirizzo viene inviato al servizio di geocodifica OpenStreetMap/Nominatim; la cartografia è fornita da CARTO su dati OpenStreetMap e le librerie del sito sono caricate da reti di distribuzione terze, che possono ricevere l'indirizzo IP del visitatore.</p>
@@ -505,7 +613,7 @@
       <h2 class="text-xl font-extrabold text-gray-900 mb-1">Termini e condizioni d'uso</h2>
       <p class="text-xs text-gray-500 mb-4">Regole di utilizzo di ChairShare. Usando il sito le accetti.</p>
       <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
-        <p><strong>1. Il servizio.</strong> ChairShare è una vetrina online gratuita in cui gli Host pubblicano spazi di lavoro (studi, cabine, postazioni) e i professionisti li cercano e contattano direttamente. ChairShare non è parte dei rapporti tra Host e professionisti, non gestisce prenotazioni né pagamenti, non fornisce assicurazioni e non verifica le condizioni degli spazi: prezzi, orari, utilizzo, sicurezza, responsabilità e conformità alle norme (autorizzazioni, requisiti igienico-sanitari, contratti, fisco) sono concordati e curati dalle parti.</p>
+        <p><strong>1. Il servizio.</strong> ChairShare è una vetrina online gratuita in cui gli Host pubblicano spazi di lavoro (studi, cabine, postazioni) e i professionisti li cercano e contattano direttamente. ChairShare non è parte dei rapporti tra Host e professionisti, non gestisce pagamenti e non conferma né garantisce l'uso delle postazioni (il "blocco postazione" è un'annotazione nell'agenda del Freelance, non una prenotazione presso l'Host, da concordare direttamente), non fornisce assicurazioni e non verifica le condizioni degli spazi: prezzi, orari, utilizzo, sicurezza, responsabilità e conformità alle norme (autorizzazioni, requisiti igienico-sanitari, contratti, fisco) sono concordati e curati dalle parti.</p>
         <p><strong>2. Account.</strong> Per vedere i recapiti e pubblicare serve un account. Devi avere almeno 18 anni, fornire dati veritieri e custodire con cura le tue credenziali. Sei responsabile di ciò che avviene con il tuo account.</p>
         <p><strong>3. Annunci.</strong> Chi pubblica dichiara di avere il diritto di offrire lo spazio e che testi, dati e foto sono veritieri e non violano diritti di terzi. Le foto non devono mostrare persone riconoscibili senza il loro consenso. La descrizione dell'annuncio è facoltativa, è sotto la tua responsabilità e non deve contenere recapiti (telefono, email, link). Ogni utente può avere al massimo 10 annunci attivi e pubblicarne al massimo 5 al giorno.</p>
         <p><strong>4. Comportamenti vietati.</strong> È vietato pubblicare annunci falsi, ingannevoli, duplicati o fraudolenti; contenuti illeciti, offensivi o discriminatori; usare i recapiti degli Host per spam, pubblicità non richiesta o per scopi diversi dalla ricerca di uno spazio; copiare in modo sistematico annunci o contatti (scraping), aggirare i limiti tecnici del sito o tentare di accedere ai dati altrui.</p>
@@ -513,6 +621,7 @@
         <p><strong>6. Recensioni.</strong> Un Freelance può recensire un Host, e un Host un Freelance, solo dopo aver avuto un contatto tramite il sito (richiesta dei recapiti di un annuncio da almeno 24 ore). Le recensioni devono descrivere esperienze reali e vissute direttamente, in modo corretto e rispettoso: sono vietati insulti, minacce, dati personali di terzi, recensioni false, scambiate o scritte dietro compenso. Ogni autore può lasciare una recensione per persona e ruolo, modificarla o cancellarla. Le recensioni sono pubbliche con il nome abbreviato dell'autore. ChairShare non verifica che i fatti raccontati siano veri e può rimuovere recensioni che violino queste regole. Il badge "Verificato" indica solo che ChairShare ha controllato l'identità o lo spazio dell'Host secondo le proprie verifiche, non è una garanzia sul servizio.</p>
         <p><strong>7. Limitazione di responsabilità.</strong> Il servizio è offerto "così com'è", senza garanzie di continuità, accuratezza degli annunci o esito dei contatti. Nei limiti consentiti dalla legge, ChairShare non risponde di danni derivanti dai rapporti tra utenti, da informazioni inesatte negli annunci o da interruzioni del servizio. Restano salvi i diritti inderogabili dei consumatori.</p>
         <p><strong>8. Eliminazione dell'account.</strong> Puoi eliminare il tuo account in qualsiasi momento dalla pagina Profilo: gli annunci e i dati collegati vengono cancellati.</p>
+        <p><strong>8-bis. Agenda dei Freelance.</strong> I Freelance possono usare un'agenda con listino e un link di prenotazione per i propri clienti. Il Freelance è l'unico responsabile del rapporto con i propri clienti (appuntamenti, prezzi, prestazioni, obblighi fiscali e informativa privacy verso di loro) e ChairShare fornisce solo lo strumento tecnico, senza intervenire in pagamenti o prestazioni. È vietato usare l'agenda per bloccare postazioni in modo falso o per inviare messaggi indesiderati ai clienti.</p>
         <p><strong>9. Modifiche e legge applicabile.</strong> I termini possono essere aggiornati: la versione in vigore è quella pubblicata sul sito. Si applica la legge italiana; per i consumatori resta competente il foro di residenza o domicilio. Contatti: <span id="termsEmail"></span>.</p>
       </div>
       <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
@@ -1381,6 +1490,9 @@
       const mostraHost = ruoloUtente !== 'guest' || haSpazi;
       $('hostSpacesSection').classList.toggle('hidden', !mostraHost);
       $('guestInviteBox').classList.toggle('hidden', mostraHost);
+      const mostraAgenda = ruoloUtente === 'guest' && !!currentUser;
+      $('agendaSection').classList.toggle('hidden', !mostraAgenda);
+      if (mostraAgenda && !$('profilePage').classList.contains('hidden')) caricaAgenda();
       const sw = $('btnSwitchRole');
       if (ruoloUtente === 'host' || ruoloUtente === 'guest') {
         sw.textContent = ruoloUtente === 'host' ? 'Passa a Freelance' : 'Passa a Host';
@@ -1598,9 +1710,11 @@
     }
 
     function mostraPagina(pageId) {
+      if (MODO_PRENOTA) pageId = 'bookPage';
       $('homePage').classList.toggle('hidden', pageId !== 'homePage');
       $('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
-      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); }
+      $('bookPage').classList.toggle('hidden', pageId !== 'bookPage');
+      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); caricaAgenda(); }
       if (pageId === 'homePage') setTimeout(adattaMappa, 50);
     }
 
@@ -2465,6 +2579,341 @@
       if (modal) modal.classList.toggle('hidden', !show);
     }
 
+
+    // =====================================================================
+    // AGENDA & LISTINO (Freelance) + PRENOTAZIONE PUBBLICA (?book=<id>)
+    // =====================================================================
+    const PARAM_PRENOTA = (() => {
+      try {
+        const v = new URLSearchParams(window.location.search).get('book');
+        return v && /^[0-9a-fA-F-]{36}$/.test(v) ? v.toLowerCase() : (v ? 'invalido' : null);
+      } catch (e) { return null; }
+    })();
+    const MODO_PRENOTA = PARAM_PRENOTA !== null;
+    if (MODO_PRENOTA) document.body.classList.add('book-mode');
+
+    const MESI = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+    const GIORNI = ['dom','lun','mar','mer','gio','ven','sab'];
+    const GIORNI_LUNGHI = ['domenica','lunedì','martedì','mercoledì','giovedì','venerdì','sabato'];
+    function parteData(iso) { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d); }
+    function dataBreve(iso) { const dt = parteData(iso); return GIORNI[dt.getDay()] + ' ' + dt.getDate() + ' ' + MESI[dt.getMonth()]; }
+    function dataLunga(iso) { const dt = parteData(iso); return GIORNI_LUNGHI[dt.getDay()] + ' ' + dt.getDate() + ' ' + MESI[dt.getMonth()]; }
+    function isoOggi() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+    function minuti(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
+    function hhmm(min) { return String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0'); }
+    function oraBreve(t) { return String(t).slice(0, 5); }
+    function euro(n) { const v = Number(n); return (Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',')) + ' €'; }
+    function erroreAgenda(error) {
+      const m = String((error && (error.message || error.details)) || '');
+      const mappa = {
+        CONTATTO_NON_SBLOCCATO: "Prima sblocca i recapiti dell'annuncio di questo salone (dalla scheda dell'annuncio), poi potrai bloccare la postazione.",
+        BLOCCO_SOVRAPPOSTO: "Hai già una postazione bloccata in quell'orario.",
+        DATA_NON_VALIDA: "Scegli una data da oggi in poi (massimo 120 giorni).",
+        ORARIO_NON_VALIDO: "L'orario di fine deve essere dopo l'inizio (massimo 14 ore).",
+        LIMITE_BLOCCHI: "Hai raggiunto il limite di postazioni bloccate.",
+        LIMITE_SERVIZI: "Il listino può contenere al massimo 30 servizi.",
+        BLOCCO_CON_APPUNTAMENTI: "Ci sono appuntamenti attivi in quella fascia: annullali prima di liberare la postazione.",
+        SLOT_OCCUPATO: "Questo orario è stato appena prenotato da un altro cliente: scegline un altro.",
+        FUORI_FASCIA: "Questo orario non è più disponibile: scegline un altro.",
+        ORARIO_PASSATO: "Questo orario è già passato: scegline un altro.",
+        SLOT_NON_DISPONIBILE: "Questa disponibilità non esiste più: ricarica la pagina.",
+        SERVIZIO_NON_TROVATO: "Questo servizio non è più disponibile: ricarica la pagina.",
+        TROPPE_PRENOTAZIONI: "Hai raggiunto il numero massimo di prenotazioni: contatta direttamente il professionista.",
+        DATI_NON_VALIDI: "Controlla nome e numero di cellulare."
+      };
+      for (const k of Object.keys(mappa)) if (m.includes(k)) return mappa[k];
+      return "Operazione non riuscita, riprova tra poco.";
+    }
+
+    // ---------- Area Freelance ----------
+    let agServizi = [], agBlocchi = [], agAppunt = [], agTelefono = '';
+    let agCaricamento = null;
+
+    function linkPrenotazione() { return 'https://chairshare.it/?book=' + currentUser.id; }
+
+    async function caricaAgenda() {
+      if (ruoloUtente !== 'guest' || !currentUser) return;
+      const c = getSupabase();
+      if (!c) return;
+      const mio = currentUser.id;
+      if (agCaricamento) return agCaricamento;
+      agCaricamento = (async () => {
+        try {
+          const ieri = new Date(Date.now() - 7 * 86400000);
+          const da = ieri.getFullYear() + '-' + String(ieri.getMonth() + 1).padStart(2, '0') + '-' + String(ieri.getDate()).padStart(2, '0');
+          const [sv, bl, ap, pr] = await Promise.all([
+            c.from('freelance_services').select('id,name,duration_min,price').order('created_at'),
+            c.from('chair_blocks').select('id,space_id,day,start_time,end_time').gte('day', isoOggi()).order('day').order('start_time'),
+            c.from('client_appointments').select('id,block_id,service_name,service_duration,service_price,client_name,client_phone,day,start_time,end_time,status')
+              .gte('day', da).order('day').order('start_time'),
+            c.from('profiles').select('phone').eq('id', mio).maybeSingle()
+          ]);
+          if (currentUser?.id !== mio) return;
+          agServizi = sv.data || []; agBlocchi = bl.data || []; agAppunt = ap.data || [];
+          agTelefono = pr.data?.phone || '';
+          if (sv.error || bl.error || ap.error) mostraMessaggio("Impossibile caricare l'agenda. Hai eseguito lo script SQL dell'agenda?", 'err');
+        } catch (e) { console.warn('Errore agenda:', e); }
+        finally { agCaricamento = null; }
+        disegnaAgenda();
+      })();
+      return agCaricamento;
+    }
+
+    function nomeSalone(spaceId) {
+      const sp = spazi.find(x => x.id === spaceId);
+      return sp ? sp.name + (sp.city ? ' — ' + sp.city : '') : 'Salone';
+    }
+
+    function disegnaAgenda() {
+      if (!currentUser) return;
+      const ph = $('agPhone');
+      if (document.activeElement !== ph) ph.value = agTelefono;
+      // listino
+      $('agServices').innerHTML = agServizi.length ? agServizi.map(x =>
+        `<div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2">
+          <div class="min-w-0"><p class="text-sm font-bold text-gray-900 truncate">${esc(x.name)}</p><p class="text-[11px] text-gray-500">${x.duration_min} min · ${euro(x.price)}</p></div>
+          <button type="button" data-del-sv="${esc(x.id)}" class="text-xs font-bold text-red-600 hover:underline shrink-0">Elimina</button>
+        </div>`).join('') : '<p class="text-[11px] text-gray-400">Nessun servizio: aggiungine almeno uno.</p>';
+      // select saloni
+      const sel = $('blSpace');
+      const prec = sel.value;
+      sel.innerHTML = '<option value="">Scegli il salone…</option>' + spazi.filter(x => x.userId !== currentUser.id)
+        .map(x => `<option value="${esc(x.id)}">${esc(x.name)}${x.city ? ' — ' + esc(x.city) : ''}</option>`).join('');
+      if (prec) sel.value = prec;
+      // blocchi
+      $('agBlocks').innerHTML = agBlocchi.length ? agBlocchi.map(b =>
+        `<div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2">
+          <div class="min-w-0"><p class="text-sm font-bold text-gray-900 truncate">${esc(nomeSalone(b.space_id))}</p><p class="text-[11px] text-gray-500">${esc(dataLunga(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</p></div>
+          <button type="button" data-del-bl="${esc(b.id)}" class="text-xs font-bold text-red-600 hover:underline shrink-0">Libera</button>
+        </div>`).join('') : '<p class="text-[11px] text-gray-400">Nessuna postazione bloccata.</p>';
+      // link
+      const ok = agServizi.length > 0 && agBlocchi.length > 0;
+      $('agLink').value = linkPrenotazione();
+      $('agLinkHint').textContent = ok ? "Mandalo ai tuoi clienti: vedranno il tuo listino e gli orari liberi nelle fasce che hai bloccato."
+        : "Il link funziona quando hai almeno un servizio nel listino e una postazione bloccata.";
+      const msg = "Ciao! Puoi prenotare un appuntamento con me da qui: " + linkPrenotazione();
+      $('btnAgShare').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+      // appuntamenti
+      const blk = {}; agBlocchi.forEach(b => blk[b.id] = b);
+      const lista = agAppunt;
+      const stati = { confirmed: '', completed: '✅ Completato', cancelled: '✖ Annullato' };
+      $('agAppts').innerHTML = lista.length ? lista.map(a => {
+        const attivo = a.status === 'confirmed';
+        const wa = normalizzaTelefono(a.client_phone);
+        const testo = `Ciao ${a.client_name.split(' ')[0]}, ti confermo l'appuntamento di ${dataLunga(a.day)} alle ${oraBreve(a.start_time)} (${a.service_name}, ${euro(a.service_price)}). A presto!`;
+        return `<div class="border ${attivo ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50 opacity-70'} rounded-xl px-3 py-3 space-y-2">
+          <div class="flex justify-between gap-2">
+            <div class="min-w-0"><p class="text-sm font-bold text-gray-900">${esc(dataLunga(a.day))} · ${oraBreve(a.start_time)} - ${oraBreve(a.end_time)}</p>
+              <p class="text-xs text-gray-600">${esc(a.client_name)} · ${esc(a.service_name)} · ${euro(a.service_price)}</p>
+              <p class="text-[11px] text-gray-400">${esc(a.client_phone)}</p></div>
+            <span class="text-[11px] font-bold text-gray-500 shrink-0">${stati[a.status] || ''}</span>
+          </div>
+          ${attivo ? `<div class="flex flex-wrap gap-2">
+            ${wa ? `<a target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(testo)}" class="text-[11px] font-bold bg-green-600 text-white px-3 py-1.5 rounded-full">💬 WhatsApp al cliente</a>` : ''}
+            <button type="button" data-ap="${esc(a.id)}" data-st="completed" class="text-[11px] font-bold bg-gray-900 text-white px-3 py-1.5 rounded-full">Completato</button>
+            <button type="button" data-ap="${esc(a.id)}" data-st="cancelled" class="text-[11px] font-bold bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-full">Annulla</button>
+          </div>` : ''}
+        </div>`;
+      }).join('') : '<p class="text-[11px] text-gray-400">Ancora nessun appuntamento.</p>';
+    }
+
+    async function salvaTelefonoAgenda() {
+      const c = getSupabase(); if (!c || !currentUser) return;
+      const v = $('agPhone').value.trim();
+      if (v && !normalizzaTelefono(v)) { mostraMessaggio("Numero non valido.", 'err'); return; }
+      const { error } = await c.from('profiles').update({ phone: v || null }).eq('id', currentUser.id);
+      if (error) { mostraMessaggio("Impossibile salvare il numero.", 'err'); return; }
+      agTelefono = v;
+      mostraMessaggio("Numero salvato.");
+    }
+
+    async function aggiungiServizio(e) {
+      e.preventDefault();
+      const c = getSupabase(); if (!c || !currentUser) return;
+      const durata = parseInt($('svDur').value, 10), prezzo = parseFloat($('svPrice').value);
+      if (!(durata >= 5 && durata <= 480 && durata % 5 === 0)) { mostraMessaggio("La durata deve essere in minuti, a multipli di 5.", 'err'); return; }
+      if (!(prezzo >= 0)) { mostraMessaggio("Prezzo non valido.", 'err'); return; }
+      const { error } = await c.from('freelance_services').insert({ name: $('svName').value.trim(), duration_min: durata, price: prezzo });
+      if (error) { mostraMessaggio(erroreAgenda(error), 'err'); return; }
+      $('formServizio').reset();
+      await caricaAgenda();
+    }
+
+    async function eliminaServizio(id) {
+      const c = getSupabase(); if (!c) return;
+      const { error } = await c.from('freelance_services').delete().eq('id', id);
+      if (error) { mostraMessaggio(erroreAgenda(error), 'err'); return; }
+      await caricaAgenda();
+    }
+
+    async function creaBlocco(e) {
+      e.preventDefault();
+      const c = getSupabase(); if (!c || !currentUser) return;
+      const sp = $('blSpace').value, day = $('blDay').value, a = $('blStart').value, b = $('blEnd').value;
+      if (!sp || !day || !a || !b) { mostraMessaggio("Compila salone, giorno e fascia oraria.", 'err'); return; }
+      if (b <= a) { mostraMessaggio("L'orario di fine deve essere dopo l'inizio.", 'err'); return; }
+      const { error } = await c.rpc('create_chair_block', { p_space: sp, p_day: day, p_start: a, p_end: b });
+      if (error) { mostraMessaggio(erroreAgenda(error), 'err'); return; }
+      mostraMessaggio("Postazione bloccata.");
+      await caricaAgenda();
+    }
+
+    async function liberaBlocco(id) {
+      const c = getSupabase(); if (!c) return;
+      const { error } = await c.rpc('delete_chair_block', { p_block: id });
+      if (error) { mostraMessaggio(erroreAgenda(error), 'err'); return; }
+      await caricaAgenda();
+    }
+
+    async function cambiaStatoAppuntamento(id, stato) {
+      const c = getSupabase(); if (!c) return;
+      if (stato === 'cancelled' && !confirm("Annullare questo appuntamento? Ricordati di avvisare il cliente.")) return;
+      const { error } = await c.from('client_appointments').update({ status: stato }).eq('id', id);
+      if (error) { mostraMessaggio("Impossibile aggiornare l'appuntamento.", 'err'); return; }
+      await caricaAgenda();
+    }
+
+    function initAgenda() {
+      $('btnAgPhone').addEventListener('click', salvaTelefonoAgenda);
+      $('formServizio').addEventListener('submit', aggiungiServizio);
+      $('formBlocco').addEventListener('submit', creaBlocco);
+      $('blDay').min = isoOggi();
+      $('btnAgCopy').addEventListener('click', async () => {
+        const v = $('agLink').value;
+        try { await navigator.clipboard.writeText(v); mostraMessaggio("Link copiato."); }
+        catch (e) { $('agLink').select(); mostraMessaggio("Seleziona e copia il link."); }
+      });
+      $('agendaSection').addEventListener('click', ev => {
+        const t = ev.target.closest('button'); if (!t) return;
+        if (t.dataset.delSv) eliminaServizio(t.dataset.delSv);
+        else if (t.dataset.delBl) liberaBlocco(t.dataset.delBl);
+        else if (t.dataset.ap) cambiaStatoAppuntamento(t.dataset.ap, t.dataset.st);
+      });
+    }
+
+    // ---------- Pagina pubblica di prenotazione ----------
+    const bk = { data: null, servizio: null, giorno: null, slot: null };
+
+    function slotLiberi(blocco, durata) {
+      const occupati = (bk.data.busy || []).filter(x => x.block === blocco.id).map(x => [minuti(x.start), minuti(x.end)]);
+      const out = [];
+      const oggi = isoOggi();
+      const adesso = new Date(); const minAdesso = adesso.getHours() * 60 + adesso.getMinutes() + 30;
+      for (let t = minuti(blocco.start); t + durata <= minuti(blocco.end); t += 15) {
+        if (blocco.day === oggi && t < minAdesso) continue;
+        if (occupati.some(([a, b]) => t < b && t + durata > a)) continue;
+        out.push(t);
+      }
+      return out;
+    }
+
+    function giorniDisponibili() {
+      const durata = bk.servizio.duration, giorni = {};
+      bk.data.blocks.forEach(b => { if (slotLiberi(b, durata).length) (giorni[b.day] = giorni[b.day] || []).push(b); });
+      return giorni;
+    }
+
+    function disegnaGiorniPrenota() {
+      const giorni = giorniDisponibili(), chiavi = Object.keys(giorni).sort();
+      $('bookStep3').classList.add('hidden'); bk.slot = null;
+      if (!chiavi.length) {
+        $('bookDays').innerHTML = ''; $('bookSlots').innerHTML = '<p class="text-xs text-gray-500">Nessun orario libero per questo servizio.</p>'; return;
+      }
+      if (!giorni[bk.giorno]) bk.giorno = chiavi[0];
+      $('bookDays').innerHTML = chiavi.map(d => {
+        const dt = parteData(d), sel = d === bk.giorno;
+        return `<button type="button" data-day="${d}" class="shrink-0 w-16 py-2 rounded-xl border text-center ${sel ? 'bg-brand text-white border-brand' : 'bg-white text-gray-800 border-gray-200'}">
+          <span class="block text-[10px] font-bold uppercase">${GIORNI[dt.getDay()]}</span><span class="block text-lg font-extrabold leading-tight">${dt.getDate()}</span><span class="block text-[10px]">${MESI[dt.getMonth()]}</span></button>`;
+      }).join('');
+      $('bookSlots').innerHTML = giorni[bk.giorno].map(b => {
+        const sl = slotLiberi(b, bk.servizio.duration);
+        return `<div><p class="text-[11px] font-bold text-gray-500 mb-1.5">📍 ${esc(b.salon)}${b.city ? ' — ' + esc(b.city) : ''}</p>
+          <div class="grid grid-cols-4 gap-2">${sl.map(t => `<button type="button" data-slot="${hhmm(t)}" data-blk="${esc(b.id)}" class="py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-800">${hhmm(t)}</button>`).join('')}</div></div>`;
+      }).join('');
+    }
+
+    function selezionaSlot(btn) {
+      bk.slot = { block: btn.dataset.blk, start: btn.dataset.slot };
+      document.querySelectorAll('#bookSlots button').forEach(x => { const on = x === btn; x.classList.toggle('bg-brand', on); x.classList.toggle('text-white', on); x.classList.toggle('border-brand', on); });
+      const blocco = bk.data.blocks.find(b => b.id === bk.slot.block);
+      $('bookRiepilogo').textContent = `${bk.servizio.name} · ${dataLunga(blocco.day)} alle ${bk.slot.start} · ${euro(bk.servizio.price)}`;
+      $('bookStep3').classList.remove('hidden');
+      $('bookStep3').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    async function caricaPaginaPrenota() {
+      $('bookPage').classList.remove('hidden');
+      const c = getSupabase();
+      let dati = null;
+      if (c && PARAM_PRENOTA !== 'invalido') {
+        const { data, error } = await c.rpc('get_booking_page', { p_freelance: PARAM_PRENOTA });
+        if (!error) dati = data;
+      }
+      $('bookLoading').classList.add('hidden');
+      if (!dati) { $('bookError').classList.remove('hidden'); return; }
+      bk.data = dati;
+      document.title = 'Prenota con ' + dati.name + ' — ChairShare';
+      $('bookName').textContent = dati.name;
+      const saloni = [...new Set(dati.blocks.map(b => b.salon + (b.city ? ' (' + b.city + ')' : '')))];
+      $('bookWhere').textContent = saloni.length ? 'Lavora presso: ' + saloni.slice(0, 3).join(', ') : '';
+      $('bookMain').classList.remove('hidden');
+      if (!dati.services.length || !dati.blocks.length) {
+        $('bookEmpty').classList.remove('hidden'); $('bookStep1').classList.add('hidden'); return;
+      }
+      $('bookServices').innerHTML = dati.services.map(x =>
+        `<button type="button" data-sv="${esc(x.id)}" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-white text-left">
+          <span><span class="block text-sm font-bold text-gray-900">${esc(x.name)}</span><span class="block text-[11px] text-gray-500">${x.duration} min</span></span>
+          <span class="text-sm font-extrabold text-gray-900">${euro(x.price)}</span></button>`).join('');
+    }
+
+    async function confermaPrenotazione(e) {
+      e.preventDefault();
+      const c = getSupabase(); if (!c || !bk.slot) return;
+      const nome = ($('bkNome').value.trim() + ' ' + $('bkCognome').value.trim()).trim();
+      const tel = $('bkTel').value.trim();
+      if (!normalizzaTelefono(tel)) { mostraMessaggio("Inserisci un numero di cellulare valido.", 'err'); return; }
+      const btn = $('btnBookConfirm'); btn.disabled = true; btn.textContent = 'Invio…';
+      try {
+        const { data, error } = await c.rpc('book_appointment', { p_block: bk.slot.block, p_service: bk.servizio.id, p_start: bk.slot.start, p_name: nome, p_phone: tel });
+        if (error) {
+          mostraMessaggio(erroreAgenda(error), 'err');
+          if (/SLOT_OCCUPATO|FUORI_FASCIA|ORARIO_PASSATO|SLOT_NON_DISPONIBILE/.test(error.message || '')) {
+            const r = await c.rpc('get_booking_page', { p_freelance: PARAM_PRENOTA });
+            if (r.data) { bk.data = r.data; disegnaGiorniPrenota(); }
+          }
+          return;
+        }
+        $('bookStep1').classList.add('hidden'); $('bookStep2').classList.add('hidden'); $('bookStep3').classList.add('hidden');
+        $('bookDone').classList.remove('hidden');
+        const quando = `${dataLunga(data.day)} alle ${data.start}`;
+        $('bookDoneText').textContent = `${bk.servizio.name} con ${bk.data.name}, ${quando}` + (data.salon ? ` — ${data.salon}${data.city ? ' (' + data.city + ')' : ''}` : '') + '.';
+        const wa = normalizzaTelefono(data.freelance_phone);
+        if (wa) {
+          const msg = `Ciao ${bk.data.name.split(' ')[0]}, sono ${nome}. Ho prenotato ${bk.servizio.name} per ${quando}${data.salon ? ' presso ' + data.salon : ''}. Confermi? Grazie!`;
+          $('bookWa').href = 'https://wa.me/' + wa + '?text=' + encodeURIComponent(msg);
+          $('bookWa').classList.remove('hidden');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        mostraMessaggio("Operazione non riuscita, riprova tra poco.", 'err');
+      } finally { btn.disabled = false; btn.textContent = 'Conferma prenotazione'; }
+    }
+
+    function initPrenota() {
+      $('bookServices').addEventListener('click', ev => {
+        const t = ev.target.closest('button[data-sv]'); if (!t) return;
+        bk.servizio = bk.data.services.find(x => x.id === t.dataset.sv);
+        document.querySelectorAll('#bookServices button').forEach(x => { const on = x === t; x.classList.toggle('border-brand', on); x.classList.toggle('bg-pink-50', on); });
+        $('bookStep2').classList.remove('hidden');
+        disegnaGiorniPrenota();
+        $('bookStep2').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+      $('bookDays').addEventListener('click', ev => { const t = ev.target.closest('button[data-day]'); if (t) { bk.giorno = t.dataset.day; disegnaGiorniPrenota(); } });
+      $('bookSlots').addEventListener('click', ev => { const t = ev.target.closest('button[data-slot]'); if (t) selezionaSlot(t); });
+      $('bookStep3').addEventListener('submit', confermaPrenotazione);
+      $('btnBookPrivacy').addEventListener('click', () => toggleModal('legalModal', true));
+    }
+
     function gestisciClickProfilo() {
       if (!currentUser) openModal('login-modal');
       else mostraPagina('profilePage');
@@ -2601,6 +3050,13 @@
         });
       }
 
+      initAgenda();
+      initPrenota();
+      if (MODO_PRENOTA) {
+        mostraPagina('bookPage');
+        await caricaPaginaPrenota();
+        return;
+      }
       aggiornaStatoAuth();
       await caricaRuolo();
       await caricaSpazi();
