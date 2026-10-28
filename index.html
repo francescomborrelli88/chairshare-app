@@ -452,6 +452,23 @@
         <div id="hostBlocksList" class="space-y-2"></div>
       </div>
 
+      <div id="legalToolsSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">📄 Modulistica e Tutela Legale</h3>
+          <p class="text-xs text-gray-500 mt-1">Consulta o scarica il Contratto Tipo di Affitto Poltrona/Cabina, uno schema orientativo che richiama la L. 174/2005 e le linee guida per l'esercizio professionale autonomo. Va adattato al tuo caso e verificato da un professionista.</p>
+          <a href="/contratto-affitto-poltrona.html" target="_blank" rel="noopener" class="inline-block mt-3 bg-gray-900 hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-full">Visualizza Contratto Tipo ↗</a>
+        </div>
+        <div class="border-t border-gray-100 pt-4">
+          <label for="profTaxId" class="text-xs text-gray-500 uppercase font-bold">Partita IVA o Codice Fiscale</label>
+          <p class="text-[11px] text-gray-400">Facoltativo, visibile solo a te. Utile per compilare il contratto.</p>
+          <div class="flex gap-2 mt-1">
+            <input id="profTaxId" type="text" maxlength="16" autocomplete="off" placeholder="11 cifre (P.IVA) o 16 caratteri (C.F.)" class="flex-1 sm:max-w-xs px-3 py-2 border border-gray-200 rounded-xl text-sm uppercase outline-none focus:border-brand">
+            <button type="button" id="btnProfTaxId" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Salva</button>
+          </div>
+          <p id="profTaxIdMsg" class="text-[11px] mt-1"></p>
+        </div>
+      </div>
+
       <div id="reviewsSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
         <h3 class="text-lg font-bold text-gray-900">⭐ Recensioni</h3>
         <div>
@@ -598,6 +615,7 @@
         <p><strong>Titolare del trattamento.</strong> <span id="legalTitolare"></span> — contatto privacy: <span id="legalEmail"></span></p>
         <p><strong>Dati trattati.</strong> Nome e cognome, email e password (conservata in forma cifrata dal servizio di autenticazione); per chi pubblica un annuncio: nome dello spazio, città, zona, indirizzo, numero di telefono/WhatsApp, orari, tariffe, servizi e le foto caricate (che sono pubbliche); per chi consulta i contatti: l'elenco degli annunci di cui ha richiesto i recapiti, con data e ora, per prevenire abusi; per chi invia una segnalazione: motivo, eventuale testo e annuncio segnalato; per chi scrive una recensione: voto e testo, pubblicati con il nome abbreviato dell'autore.</p>
         <p><strong>Agenda e prenotazioni.</strong> Quando un cliente prenota tramite il link di un Freelance, ChairShare tratta nome, numero di telefono, servizio e orario scelti, solo per registrare l'appuntamento e renderlo visibile a quel Freelance, che è autonomo titolare del trattamento verso i propri clienti. Il cliente non crea un account. I dati degli appuntamenti sono cancellati automaticamente dopo 90 giorni dalla data dell'appuntamento. Il cliente vede il nome del Freelance e il salone (nome e città, non l'indirizzo).</p>
+        <p><strong>Partita IVA / Codice Fiscale.</strong> Se decidi di inserirli, sono conservati nel tuo profilo privato, visibili solo a te, e usati per verificare la correttezza formale del dato e per la tua documentazione contrattuale. Non sono mostrati ad altri utenti.</p>
         <p><strong>Blocchi postazione.</strong> Quando un Freelance segna una postazione su un annuncio, l'Host di quell'annuncio vede nome, eventuale numero WhatsApp indicato nell'agenda, giorno e fascia, per potersi organizzare direttamente.</p>
         <p><strong>Finalità e base giuridica.</strong> Creazione e gestione dell'account, pubblicazione degli annunci e messa in contatto tra utenti registrati (esecuzione del servizio richiesto, art. 6.1.b GDPR); sicurezza e prevenzione degli abusi (legittimo interesse, art. 6.1.f).</p>
         <p><strong>Chi vede cosa.</strong> L'indirizzo esatto e il telefono di un annuncio sono visibili solo agli utenti registrati. Sulla mappa pubblica compare solo una posizione approssimativa. Pubblicando un annuncio l'host accetta che questi dati siano visibili agli utenti registrati. Ogni utente può consultare i recapiti di un numero limitato di annunci al giorno; l'host vede quante persone hanno richiesto i suoi recapiti e, solo per poterle recensire dopo almeno 24 ore, il loro nome abbreviato (es. Mario R.), mai email o telefono. Le foto degli annunci sono invece visibili a chiunque.</p>
@@ -622,7 +640,7 @@
       <h2 class="text-xl font-extrabold text-gray-900 mb-1">Termini e condizioni d'uso</h2>
       <p class="text-xs text-gray-500 mb-4">Regole di utilizzo di ChairShare. Usando il sito le accetti.</p>
       <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
-        <p><strong>1. Il servizio.</strong> ChairShare è una vetrina online gratuita in cui gli Host pubblicano spazi di lavoro (studi, cabine, postazioni) e i professionisti li cercano e contattano direttamente. ChairShare non è parte dei rapporti tra Host e professionisti, non gestisce pagamenti e non conferma né garantisce l'uso delle postazioni (il "blocco postazione" è un'annotazione nell'agenda del Freelance, non una prenotazione presso l'Host, da concordare direttamente), non fornisce assicurazioni e non verifica le condizioni degli spazi: prezzi, orari, utilizzo, sicurezza, responsabilità e conformità alle norme (autorizzazioni, requisiti igienico-sanitari, contratti, fisco) sono concordati e curati dalle parti.</p>
+        <p><strong>1. Il servizio e natura della piattaforma.</strong> ChairShare è un'infrastruttura tecnologica SaaS e di marketplace che consente agli Host di valorizzare postazioni professionali libere e ai Professionisti Freelance di organizzare la propria agenda di lavoro e gli appuntamenti con i propri clienti. ChairShare fornisce strumenti software di calendarizzazione e gestione spazi, ma rimane totalmente estranea al rapporto contrattuale di utilizzo della postazione e alle prestazioni d'opera rese ai clienti finali. Condizioni di utilizzo dei locali, rispetto delle prescrizioni igienico-sanitarie, abilitazioni professionali, conformità fiscale e assicurativa competono esclusivamente e autonomamente alle parti contraenti.</p>
         <p><strong>2. Account.</strong> Per vedere i recapiti e pubblicare serve un account. Devi avere almeno 18 anni, fornire dati veritieri e custodire con cura le tue credenziali. Sei responsabile di ciò che avviene con il tuo account.</p>
         <p><strong>3. Annunci.</strong> Chi pubblica dichiara di avere il diritto di offrire lo spazio e che testi, dati e foto sono veritieri e non violano diritti di terzi. Le foto non devono mostrare persone riconoscibili senza il loro consenso. La descrizione dell'annuncio è facoltativa, è sotto la tua responsabilità e non deve contenere recapiti (telefono, email, link). Ogni utente può avere al massimo 10 annunci attivi e pubblicarne al massimo 5 al giorno.</p>
         <p><strong>4. Comportamenti vietati.</strong> È vietato pubblicare annunci falsi, ingannevoli, duplicati o fraudolenti; contenuti illeciti, offensivi o discriminatori; usare i recapiti degli Host per spam, pubblicità non richiesta o per scopi diversi dalla ricerca di uno spazio; copiare in modo sistematico annunci o contatti (scraping), aggirare i limiti tecnici del sito o tentare di accedere ai dati altrui.</p>
@@ -632,6 +650,9 @@
         <p><strong>8. Eliminazione dell'account.</strong> Puoi eliminare il tuo account in qualsiasi momento dalla pagina Profilo: gli annunci e i dati collegati vengono cancellati.</p>
         <p><strong>8-bis. Agenda dei Freelance.</strong> I Freelance possono usare un'agenda con listino e un link di prenotazione per i propri clienti. Il Freelance è l'unico responsabile del rapporto con i propri clienti (appuntamenti, prezzi, prestazioni, obblighi fiscali e informativa privacy verso di loro) e ChairShare fornisce solo lo strumento tecnico, senza intervenire in pagamenti o prestazioni. È vietato usare l'agenda per bloccare postazioni in modo falso o per inviare messaggi indesiderati ai clienti.</p>
         <p><strong>9. Modifiche e legge applicabile.</strong> I termini possono essere aggiornati: la versione in vigore è quella pubblicata sul sito. Si applica la legge italiana; per i consumatori resta competente il foro di residenza o domicilio. Contatti: <span id="termsEmail"></span>.</p>
+        <p><strong>10. Manleva per intermediazione di manodopera.</strong> ChairShare non svolge attività di intermediazione, ricerca e selezione, somministrazione di lavoro o di personale e non costituisce alcun rapporto di lavoro subordinato, di collaborazione o di associazione tra Host e Freelance, né tra questi e i clienti finali. Ciascuna parte opera in piena autonomia, a proprio rischio e con propria organizzazione. Host e Freelance si impegnano a tenere indenne e manlevare ChairShare da qualsiasi pretesa, sanzione o onere (anche contributivo, previdenziale, fiscale o giuslavoristico) derivante dalla qualificazione o dall'esecuzione del rapporto tra loro intercorrente.</p>
+        <p><strong>11. Abilitazioni professionali e conformità.</strong> Il Freelance dichiara di essere in possesso delle abilitazioni e dei requisiti previsti per la propria attività (a titolo esemplificativo: per acconciatori e barbieri la L. 174/2005, per l'estetica la L. 1/1990, nonché partita IVA, comunicazioni e segnalazioni di inizio attività dove richieste). L'Host dichiara che i locali sono idonei e conformi (autorizzazioni, requisiti igienico-sanitari, sicurezza) e che può consentirne l'uso a terzi. ChairShare non verifica tali requisiti, salvo il badge "Verificato" che attesta solo un controllo telefonico dell'Host e non costituisce certificazione. Ciascuna parte manleva ChairShare da conseguenze di dichiarazioni non veritiere o di inadempimenti alle norme applicabili.</p>
+        <p><strong>12. Assicurazione.</strong> Ciascuna parte è tenuta a stipulare e mantenere in vigore, per la propria attività, una polizza di responsabilità civile verso terzi (consigliata anche la responsabilità civile professionale e infortuni) adeguata ai rischi dell'utilizzo della postazione. ChairShare non offre coperture assicurative e non risponde di danni a persone, locali, attrezzature o clienti. Resta fermo che nulla di quanto sopra esclude la responsabilità di ChairShare nei casi in cui la legge non consente di escluderla.</p>
       </div>
       <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
         <button data-close-modal="termsModal" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold rounded-xl text-xs">Chiudi</button>
@@ -985,6 +1006,12 @@
             <label for="newMinHours" class="text-xs text-gray-500 uppercase font-bold">Minimo ore consecutive</label>
             <input id="newMinHours" type="number" min="1" max="12" step="1" value="1" class="w-full sm:w-40 mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             <p id="minHoursHint" class="text-[11px] text-gray-400 mt-1"></p>
+          </div>
+
+          <div>
+            <label for="newTaxId" class="text-xs text-gray-500 uppercase font-bold">Partita IVA o Codice Fiscale <span class="normal-case font-normal">(facoltativo, privato)</span></label>
+            <input id="newTaxId" type="text" maxlength="16" autocomplete="off" placeholder="11 cifre (P.IVA) o 16 caratteri (C.F.)" class="w-full sm:w-72 mt-1 border border-gray-300 rounded-xl p-3 text-xs uppercase focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand" />
+            <p class="text-[11px] text-gray-400 mt-1">Non viene mostrato agli altri utenti. Controlliamo solo che sia formalmente corretto.</p>
           </div>
 
           <div>
@@ -1524,6 +1551,56 @@
       aggiornaPulsantiPubblica();
     }
 
+    // ---------- Partita IVA / Codice Fiscale (controllo formale, solo lato browser) ----------
+    function pivaValida(v) {
+      if (!/^\d{11}$/.test(v)) return false;
+      let somma = 0;
+      for (let i = 0; i < 11; i++) {
+        let d = Number(v[i]);
+        if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; }
+        somma += d;
+      }
+      return somma % 10 === 0;
+    }
+    function cfValido(v) {
+      if (!/^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/.test(v)) return false;
+      const dispari = { 0:1,1:0,2:5,3:7,4:9,5:13,6:15,7:17,8:19,9:21,A:1,B:0,C:5,D:7,E:9,F:13,G:15,H:17,I:19,J:21,K:2,L:4,M:18,N:20,O:11,P:3,Q:6,R:8,S:12,T:14,U:16,V:10,W:22,X:25,Y:24,Z:23 };
+      let tot = 0;
+      for (let i = 0; i < 15; i++) {
+        const ch = v[i];
+        tot += (i % 2 === 0) ? dispari[ch] : (/\d/.test(ch) ? Number(ch) : ch.charCodeAt(0) - 65);
+      }
+      return String.fromCharCode(65 + (tot % 26)) === v[15];
+    }
+    function normalizzaTaxId(raw) { return String(raw || '').replace(/[\s.\-]/g, '').toUpperCase().replace(/^IT(?=\d{11}$)/, ''); }
+    function taxIdValido(v) { return pivaValida(v) || cfValido(v); }
+
+    let taxIdUtente = '';
+    async function caricaTaxId() {
+      taxIdUtente = '';
+      const c = getSupabase(); if (!c || !currentUser) return;
+      const { data, error } = await c.from('profiles').select('tax_id').eq('id', currentUser.id).maybeSingle();
+      if (!error && data && data.tax_id) taxIdUtente = data.tax_id;
+      if ($('profTaxId')) $('profTaxId').value = taxIdUtente;
+    }
+    async function salvaTaxId(raw) {
+      const v = normalizzaTaxId(raw);
+      if (!v) return { ok: true, vuoto: true };
+      if (!taxIdValido(v)) return { ok: false, msg: "Partita IVA o Codice Fiscale non valido: controlla le cifre." };
+      if (v === taxIdUtente) return { ok: true, valore: v };
+      const c = getSupabase(); if (!c || !currentUser) return { ok: false, msg: "Servizio non raggiungibile." };
+      const { error } = await c.from('profiles').update({ tax_id: v }).eq('id', currentUser.id);
+      if (error) return { ok: false, msg: "Impossibile salvare il dato fiscale, riprova tra poco." };
+      taxIdUtente = v;
+      return { ok: true, valore: v };
+    }
+    async function salvaTaxIdProfilo() {
+      const msg = $('profTaxIdMsg');
+      const r = await salvaTaxId($('profTaxId').value);
+      msg.className = 'text-[11px] mt-1 ' + (r.ok ? 'text-green-700' : 'text-red-600');
+      msg.textContent = r.ok ? (r.vuoto ? 'Nessun dato inserito.' : 'Salvato.') : r.msg;
+      if (r.ok && r.valore) $('profTaxId').value = r.valore;
+    }
     // ---------- Host: blocchi postazione ricevuti ----------
     async function caricaBlocchiHost() {
       const c = getSupabase(); const box = $('hostBlocksList');
@@ -1608,6 +1685,7 @@
       }
       aggiornaBadgeRuolo();
       avviaRealtime();
+      caricaTaxId();
     }
 
     // Riquadro di benvenuto: lo vedono i visitatori non registrati, finché non lo chiudono
@@ -1799,7 +1877,7 @@
       $('homePage').classList.toggle('hidden', pageId !== 'homePage');
       $('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
       $('bookPage').classList.toggle('hidden', pageId !== 'bookPage');
-      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); caricaAgenda(); caricaBlocchiHost(); }
+      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); caricaAgenda(); caricaBlocchiHost(); caricaTaxId(); }
       if (pageId === 'homePage') setTimeout(adattaMappa, 50);
     }
 
@@ -2261,6 +2339,7 @@
       $('addrVerified').classList.add('hidden');
       $('saveBtn').textContent = 'Salva e Pubblica';
       $('addSpaceForm').reset();
+      $('newTaxId').value = taxIdUtente || '';
       aggiornaContatoreDescr();
       unitaToccata = false;
       applicaPresetTariffa();
@@ -2300,6 +2379,7 @@
       unitaToccata = true;
       $('newMinHours').value = String(s.minHours || 1);
       $('newAvailableChairs').value = String(s.availableChairs || 1);
+      $('newTaxId').value = taxIdUtente || '';
       aggiornaCampoMinOre(false);
       $('newPrice').value = s.price || '';
       $('newDescription').value = s.description || '';
@@ -2352,6 +2432,8 @@
         mostraMessaggio("Indica quante postazioni sono disponibili in contemporanea (da 1 a 50).", 'err');
         return;
       }
+      const rTax = await salvaTaxId($('newTaxId').value);
+      if (!rTax.ok) { goToStep(2); mostraMessaggio(rTax.msg, 'err'); return; }
       const minimoTipo = TIPI_MIN_2_ORE.includes(type) ? 2 : 1;
       if (priceUnit === 'ora' && (!(minHours >= minimoTipo) || minHours > 12)) {
         goToStep(2);
@@ -3172,6 +3254,7 @@
 
       initAgenda();
       initPrenota();
+      $('btnProfTaxId').addEventListener('click', salvaTaxIdProfilo);
       if (MODO_PRENOTA) {
         mostraPagina('bookPage');
         await caricaPaginaPrenota();

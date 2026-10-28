@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Modello Contratto Affitto Poltrona / Cabina - ChairShare</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f4f6; color: #1f2937; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; padding: 16px; }
+    .bar, .sheet { max-width: 820px; margin: 0 auto; background: #fff; border: 1px solid #e5e7eb; }
+    .bar { border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+    .bar h1 { font-size: 14px; margin: 0; }
+    .bar p { font-size: 12px; color: #6b7280; margin: 2px 0 0; }
+    .btn { border: 0; border-radius: 12px; padding: 10px 16px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .btn.p { background: #FF385C; color: #fff; }
+    .btn.s { background: #f3f4f6; color: #374151; }
+    .warn { max-width: 820px; margin: 0 auto 14px; background: #fffbeb; border: 1px solid #fde68a; color: #92400e; border-radius: 12px; padding: 10px 14px; font-size: 12px; line-height: 1.5; }
+    .sheet { border-radius: 20px; padding: 36px 40px; font-size: 13px; line-height: 1.6; }
+    .sheet h2 { text-align: center; font-size: 16px; text-transform: uppercase; letter-spacing: .05em; margin: 0; }
+    .sub { text-align: center; font-size: 11px; color: #6b7280; margin: 4px 0 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 14px; }
+    .box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
+    .box p { margin: 6px 0; }
+    .sheet p { margin: 0 0 10px; text-align: justify; }
+    .sign { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: center; margin-top: 26px; }
+    .sign .l { margin-top: 44px; color: #9ca3af; }
+    .small { font-size: 10px; color: #9ca3af; text-align: center; margin-top: 18px; }
+    @media (max-width: 560px) { .sheet { padding: 22px 16px; } .sign { grid-template-columns: 1fr; } }
+    @media print {
+      @page { size: A4; margin: 18mm; }
+      .bar, .warn { display: none !important; }
+      body { background: #fff; padding: 0; font-size: 11pt; line-height: 1.4; color: #000; }
+      .sheet { border: 0; border-radius: 0; box-shadow: none; padding: 0; max-width: 100%; }
+      .box { background: #fff; border-color: #999; break-inside: avoid; }
+      p, .sign { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bar">
+    <div>
+      <h1>Modello Contratto di Affitto Poltrona / Cabina</h1>
+      <p>Compila i campi, stampa in doppio originale e sottoscrivi con firma autografa.</p>
+    </div>
+    <div>
+      <button class="btn p" onclick="window.print()">🖨️ Stampa / Salva in PDF</button>
+      <button class="btn s" onclick="window.close()">Chiudi</button>
+    </div>
+  </div>
+
+  <div class="warn">
+    <strong>Modello orientativo, non consulenza legale.</strong> Adattalo al tuo caso e fallo verificare da un consulente del lavoro, da un legale o dalla tua associazione di categoria. Un contratto firmato non basta da solo a escludere contestazioni: in caso di controlli contano le modalità reali di svolgimento del rapporto (autonomia, assenza di orari e direttive imposti, clientela e incassi propri) e il rispetto delle norme regionali e comunali applicabili alla tua attività. Questo avviso non viene stampato.
+  </div>
+
+  <main class="sheet">
+    <h2>Scrittura Privata di Concessione Temporanea di Postazione</h2>
+    <p class="sub" style="text-align:center">(Contratto di "affitto di poltrona / postazione di lavoro", con riferimento alla disciplina dell'attività di acconciatore, L. 174/2005, alle norme regionali e agli accordi di categoria applicabili)</p>
+
+    <p>Con la presente scrittura privata, redatta in duplice originale, tra le parti:</p>
+
+    <div class="box">
+      <p><strong>1. IL CONCEDENTE (HOST)</strong></p>
+      <p>Ragione sociale / Sig./Sig.ra: ___________________________________________________________</p>
+      <p>P.IVA / C.F.: ___________________________ Sede legale in: _______________________________</p>
+      <p>Rappresentato da: ___________________________ Telefono/Email: ____________________________</p>
+    </div>
+
+    <div class="box">
+      <p><strong>2. IL CONDUTTORE (FREELANCE)</strong></p>
+      <p>Sig./Sig.ra: __________________________________________________________________________</p>
+      <p>P.IVA: ___________________________ C.F.: ______________________________________________</p>
+      <p>Nato/a a: ___________________________ il: ______________ Residente in: ____________________</p>
+      <p>Qualifica professionale / abilitazione n.: ____________________ Telefono/Email: ______________</p>
+    </div>
+
+    <p><strong>Art. 1 - Oggetto e ubicazione.</strong> Il Concedente concede in godimento temporaneo e non esclusivo al Conduttore, che accetta, la postazione di lavoro n. ____ situata nel proprio locale in Via ______________________________, Città ________________, con accesso ai servizi igienici, alla sala d'attesa e agli impianti comuni, e con le seguenti attrezzature: ______________________________.</p>
+
+    <p><strong>Art. 2 - Autonomia operativa.</strong> Il Conduttore opera in piena autonomia organizzativa e gestionale, con proprio rischio d'impresa, senza vincoli di orario o gerarchici verso il Concedente, salvi gli orari di apertura e le regole di uso del locale. Il Conduttore gestisce la propria clientela e i propri appuntamenti, determina liberamente i prezzi delle prestazioni, incassa direttamente e rilascia i documenti fiscali di propria competenza.</p>
+
+    <p><strong>Art. 3 - Requisiti di legge.</strong> Il Conduttore dichiara di possedere l'abilitazione professionale richiesta per la propria attività, di essere titolare di partita IVA attiva e di aver effettuato le comunicazioni o segnalazioni previste. Il Concedente dichiara che il locale è autorizzato all'esercizio dell'attività, è conforme alle norme urbanistiche, di sicurezza e igienico-sanitarie e può essere utilizzato anche da terzi. Il Conduttore utilizza i propri strumenti di lavoro e li custodisce con diligenza.</p>
+
+    <p><strong>Art. 4 - Durata e orari.</strong> Dal ____/____/______ al ____/____/______ (oppure nei giorni ________________ dalle ore ______ alle ore ______). Ciascuna parte può recedere con preavviso scritto di ____ giorni; è ammessa la risoluzione immediata per grave inadempimento, mancato pagamento o perdita delle abilitazioni.</p>
+
+    <p><strong>Art. 5 - Corrispettivo e fatturazione.</strong> Il corrispettivo per la concessione della postazione e delle utenze (energia elettrica, acqua, climatizzazione) è di € ________ per ☐ ora ☐ mezza giornata ☐ giornata ☐ mese, IVA ☐ inclusa ☐ esclusa, da corrispondere con ________________ entro ________________. Il Concedente emette regolare fattura per il servizio di concessione spazi.</p>
+
+    <p><strong>Art. 6 - Sicurezza e igiene.</strong> Il Conduttore dichiara di aver preso visione del Documento di Valutazione dei Rischi (DVR) e delle misure di sicurezza dei locali e si impegna a rispettare il D.Lgs. 81/2008 e i regolamenti igienico-sanitari comunali, curando la sanificazione di postazione e strumenti.</p>
+
+    <p><strong>Art. 7 - Responsabilità e assicurazione.</strong> Ciascuna parte risponde dei danni causati con colpa a persone, cose e clienti. Il Conduttore è responsabile verso i terzi delle prestazioni che esegue ed è tenuto a mantenere una polizza di responsabilità civile verso terzi (RCT) adeguata (polizza n. ______________ presso ______________); è consigliata la responsabilità civile professionale. Il Concedente dichiara di avere analoga copertura per i locali (polizza n. ______________ presso ______________).</p>
+
+    <p><strong>Art. 8 - Dati personali.</strong> Ciascuna parte tratta i dati personali dei propri clienti come autonomo titolare, nel rispetto del Reg. UE 2016/679. Il Concedente non accede alla clientela del Conduttore né ne utilizza i dati.</p>
+
+    <p><strong>Art. 9 - Ruolo della piattaforma ChairShare.</strong> Le parti riconoscono che la piattaforma ChairShare (chairshare.it) ha fornito solo strumenti tecnologici per il contatto e la gestione delle disponibilità ed è estranea al presente rapporto, nei limiti consentiti dalla legge.</p>
+
+    <p><strong>Art. 10 - Disposizioni finali.</strong> Ogni modifica deve essere fatta per iscritto. Per quanto non previsto valgono le norme del Codice civile. Legge italiana; foro competente: ______________________.</p>
+
+    <div class="sign">
+      <div><strong>Firma del Concedente (Host)</strong><div class="l">______________________________</div></div>
+      <div><strong>Firma del Conduttore (Freelance)</strong><div class="l">______________________________</div></div>
+    </div>
+
+    <p class="small">Luogo e data di sottoscrizione: ________________________, lì ______________</p>
+  </main>
+
+</body>
+</html>
