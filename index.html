@@ -415,6 +415,7 @@
               <label class="text-[11px] text-gray-500">Alle<input id="blEnd" type="time" step="900" value="19:00" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand"></label>
               <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold py-2.5 rounded-xl">Blocca postazione</button>
             </form>
+            <p id="blAvail" class="text-[11px] text-gray-500"></p>
             <div id="agBlocks" class="space-y-2"></div>
           </div>
         </div>
@@ -987,6 +988,12 @@
           </div>
 
           <div>
+            <label for="newAvailableChairs" class="text-xs text-gray-500 uppercase font-bold">Postazioni/Poltrone/Scrivanie disponibili in contemporanea</label>
+            <input id="newAvailableChairs" type="number" min="1" max="50" step="1" value="1" required class="w-full sm:w-40 mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand" />
+            <p class="text-[11px] text-gray-400 mt-1">Quante persone possono lavorare insieme nello stesso orario. Serve a non far bloccare più freelance del possibile.</p>
+          </div>
+
+          <div>
             <label for="newDescription" class="text-xs text-gray-500 uppercase font-bold">Descrizione <span class="normal-case font-medium">(facoltativa)</span></label>
             <textarea id="newDescription" rows="4" maxlength="500" placeholder="Cosa trova chi ti contatta? Metri quadri, attrezzature, orari, atmosfera..." class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 resize-none"></textarea>
             <div class="flex justify-between text-[11px] text-gray-400 mt-1">
@@ -1111,7 +1118,7 @@
     function mappaSpazio(i) {
       return {
         id: i.id, name: i.name, city: i.city, zone: i.zone, price: i.price,
-        priceUnit: i.price_unit || 'giorno', minHours: i.min_hours || 1, type: i.type,
+        priceUnit: i.price_unit || 'giorno', minHours: i.min_hours || 1, availableChairs: i.available_chairs || 1, type: i.type,
         dailySchedule: i.daily_schedule || {}, services: i.services || [],
         lat: i.lat, lon: i.lon, userId: i.user_id, images: i.images || [], description: i.description || ''
       };
@@ -1542,6 +1549,47 @@
       }).join('');
     }
 
+    // ---------- Aggiornamento in tempo reale (Supabase Realtime) ----------
+    let canaleRT = null, rtTimer = null, rtUtente = null;
+    async function ricaricaPrenotazioniProfilo() {
+      if (!currentUser) return;
+      if (ruoloUtente === 'guest') {
+        if (agCaricamento) { try { await agCaricamento; } catch (e) {} }
+        await caricaAgenda();
+      } else if (ruoloUtente === 'host') {
+        await caricaBlocchiHost();
+      }
+    }
+    function eventoRealtime(tabella, tipo, riga) {
+      clearTimeout(rtTimer);
+      rtTimer = setTimeout(ricaricaPrenotazioniProfilo, 400);
+      const mio = currentUser && currentUser.id;
+      if (tabella === 'chair_blocks' && tipo === 'INSERT' && riga && riga.user_id !== mio)
+        mostraMessaggio("Nuova postazione segnata da un freelance nel calendario!");
+      else if (tabella === 'client_appointments' && tipo === 'INSERT')
+        mostraMessaggio("Nuova prenotazione da un cliente!");
+    }
+    function avviaRealtime() {
+      const c = getSupabase();
+      const uid = currentUser ? currentUser.id : null;
+      if (!c || typeof c.channel !== 'function') return;
+      if (uid && rtUtente === uid && canaleRT) return;
+      if (canaleRT) { try { c.removeChannel(canaleRT); } catch (e) {} canaleRT = null; }
+      rtUtente = null;
+      if (!uid || (ruoloUtente !== 'host' && ruoloUtente !== 'guest')) return;
+      try {
+        let ch = c.channel('rt_agenda_' + uid)
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chair_blocks' }, p => eventoRealtime('chair_blocks', 'INSERT', p.new))
+          .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'chair_blocks' }, p => eventoRealtime('chair_blocks', 'DELETE', p.old));
+        if (ruoloUtente === 'guest') {
+          ch = ch.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'client_appointments' }, p => eventoRealtime('client_appointments', 'INSERT', p.new))
+                 .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'client_appointments' }, p => eventoRealtime('client_appointments', 'UPDATE', p.new));
+        }
+        canaleRT = ch.subscribe();
+        rtUtente = uid;
+      } catch (e) { console.warn('Realtime non disponibile:', e); }
+    }
+
     // I Freelance non pubblicano saloni: nascondo ogni pulsante di pubblicazione
     function aggiornaPulsantiPubblica() {
       const nascondi = !!currentUser && ruoloUtente === 'guest';
@@ -1559,6 +1607,7 @@
         if (!error && data) ruoloUtente = data.role;
       }
       aggiornaBadgeRuolo();
+      avviaRealtime();
     }
 
     // Riquadro di benvenuto: lo vedono i visitatori non registrati, finché non lo chiudono
@@ -2250,6 +2299,7 @@
       $('newPriceUnit').value = s.priceUnit || 'giorno';
       unitaToccata = true;
       $('newMinHours').value = String(s.minHours || 1);
+      $('newAvailableChairs').value = String(s.availableChairs || 1);
       aggiornaCampoMinOre(false);
       $('newPrice').value = s.price || '';
       $('newDescription').value = s.description || '';
@@ -2296,6 +2346,12 @@
       const priceUnit = $('newPriceUnit').value;
       const type = $('newType').value;
       const minHours = priceUnit === 'ora' ? parseInt($('newMinHours').value, 10) : 1;
+      const availableChairs = parseInt($('newAvailableChairs').value, 10);
+      if (!(availableChairs >= 1 && availableChairs <= 50)) {
+        goToStep(2);
+        mostraMessaggio("Indica quante postazioni sono disponibili in contemporanea (da 1 a 50).", 'err');
+        return;
+      }
       const minimoTipo = TIPI_MIN_2_ORE.includes(type) ? 2 : 1;
       if (priceUnit === 'ora' && (!(minHours >= minimoTipo) || minHours > 12)) {
         goToStep(2);
@@ -2359,7 +2415,7 @@
           const immaginiFinali = [...fotoEsistenti, ...fotoCaricate];
 
           const { data, error } = await client.from('spaces').update({
-            name, city, zone, price, price_unit: priceUnit, min_hours: minHours, type,
+            name, city, zone, price, price_unit: priceUnit, min_hours: minHours, available_chairs: availableChairs, type,
             daily_schedule: dailySchedule, services: selectedServices, lat, lon,
             images: immaginiFinali, description
           }).eq('id', editId).select();
@@ -2382,7 +2438,7 @@
 
           const { data, error } = await client.from('spaces').insert([{
             user_id: currentUser.id,
-            name, city, zone, price, price_unit: priceUnit, min_hours: minHours, type,
+            name, city, zone, price, price_unit: priceUnit, min_hours: minHours, available_chairs: availableChairs, type,
             daily_schedule: dailySchedule, services: selectedServices, lat, lon,
             images: [...fotoEsistenti, ...fotoCaricate], description
           }]).select().single();
@@ -2644,6 +2700,7 @@
       const m = String((error && (error.message || error.details)) || '');
       const mappa = {
         CONTATTO_NON_SBLOCCATO: "Prima sblocca i recapiti dell'annuncio di questo salone (dalla scheda dell'annuncio), poi potrai bloccare la postazione.",
+        POSTAZIONI_ESAURITE: "In quella fascia tutte le postazioni di questo salone sono già occupate: scegli un altro orario o giorno.",
         BLOCCO_SOVRAPPOSTO: "Hai già una postazione bloccata in quell'orario.",
         DATA_NON_VALIDA: "Scegli una data da oggi in poi (massimo 120 giorni).",
         ORARIO_NON_VALIDO: "L'orario di fine deve essere dopo l'inizio (massimo 14 ore).",
@@ -2783,6 +2840,31 @@
       await caricaAgenda();
     }
 
+    // Anteprima disponibilità: conta le postazioni occupate nello stesso momento nella fascia scelta
+    let blDisp = null, blDispTok = 0;
+    function postiPieni(blocks, cap, a, b) {
+      const A = minuti(a), B = minuti(b);
+      const punti = [A, ...blocks.map(x => minuti(x.start)).filter(t => t > A && t < B)];
+      return Math.max(0, ...punti.map(t => blocks.filter(x => minuti(x.start) <= t && minuti(x.end) > t).length)) >= cap;
+    }
+    async function aggiornaDispBlocco() {
+      const c = getSupabase(), sp = $('blSpace').value, day = $('blDay').value, a = $('blStart').value, b = $('blEnd').value;
+      const msg = $('blAvail'), btn = $('formBlocco').querySelector('button[type=submit]');
+      const tok = ++blDispTok;
+      if (!c || !sp || !day) { msg.textContent = ''; btn.disabled = false; blDisp = null; return; }
+      if (!blDisp || blDisp.key !== sp + day) {
+        const { data } = await c.rpc('get_chair_availability', { p_space: sp, p_day: day });
+        if (tok !== blDispTok) return;
+        blDisp = data ? { key: sp + day, cap: data.capacity || 1, blocks: data.blocks || [] } : null;
+      }
+      if (!blDisp) { msg.textContent = ''; btn.disabled = false; return; }
+      const occ = blDisp.blocks.length ? ' Fasce già bloccate: ' + blDisp.blocks.map(x => x.start + '-' + x.end).join(', ') + '.' : '';
+      const esaurito = a && b && b > a && postiPieni(blDisp.blocks, blDisp.cap, a, b);
+      msg.className = 'text-[11px] ' + (esaurito ? 'text-red-600 font-bold' : 'text-gray-500');
+      msg.textContent = (esaurito ? '⛔ ESAURITO in questa fascia. ' : '') + 'Postazioni del salone: ' + blDisp.cap + '.' + occ;
+      btn.disabled = !!esaurito;
+    }
+
     async function creaBlocco(e) {
       e.preventDefault();
       const c = getSupabase(); if (!c || !currentUser) return;
@@ -2790,9 +2872,11 @@
       if (!sp || !day || !a || !b) { mostraMessaggio("Compila salone, giorno e fascia oraria.", 'err'); return; }
       if (b <= a) { mostraMessaggio("L'orario di fine deve essere dopo l'inizio.", 'err'); return; }
       const { error } = await c.rpc('create_chair_block', { p_space: sp, p_day: day, p_start: a, p_end: b });
-      if (error) { mostraMessaggio(erroreAgenda(error), 'err'); return; }
+      if (error) { mostraMessaggio(erroreAgenda(error), 'err'); blDisp = null; aggiornaDispBlocco(); return; }
       mostraMessaggio("Postazione bloccata.");
+      blDisp = null;
       await caricaAgenda();
+      aggiornaDispBlocco();
     }
 
     async function liberaBlocco(id) {
@@ -2815,6 +2899,7 @@
       $('formServizio').addEventListener('submit', aggiungiServizio);
       $('formBlocco').addEventListener('submit', creaBlocco);
       $('blDay').min = isoOggi();
+      ['blSpace', 'blDay', 'blStart', 'blEnd'].forEach(id => $(id).addEventListener('change', aggiornaDispBlocco));
       $('btnAgCopy').addEventListener('click', async () => {
         const v = $('agLink').value;
         try { await navigator.clipboard.writeText(v); mostraMessaggio("Link copiato."); }
