@@ -398,7 +398,7 @@
             <h4 class="text-sm font-extrabold text-gray-900 pt-3">2. Il tuo listino</h4>
             <form id="formServizio" class="grid grid-cols-6 gap-2">
               <input id="svName" type="text" maxlength="60" required placeholder="Servizio (es. Taglio)" class="col-span-6 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
-              <input id="svDur" type="number" min="5" max="480" step="5" required placeholder="Minuti" class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+              <select id="svDur" required aria-label="Durata (in ore intere)" class="col-span-2 px-2 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="1">1 ora</option><option value="2">2 ore</option><option value="3">3 ore</option><option value="4">4 ore (mezza giornata)</option><option value="5">5 ore</option><option value="6">6 ore (giornata intera)</option><option value="8">8 ore</option><option value="10">10 ore</option><option value="12">12 ore</option></select>
               <input id="svPrice" type="number" min="0" max="99999" step="0.5" required placeholder="Prezzo €" class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
               <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold rounded-xl">+ Aggiungi</button>
             </form>
@@ -407,12 +407,12 @@
 
           <div class="space-y-3">
             <h4 class="text-sm font-extrabold text-gray-900">3. Blocca una postazione</h4>
-            <p class="text-[11px] text-gray-500">Dopo esserti accordato con l'host (contatto sbloccato dall'annuncio), segna giorno e fascia in cui lavori lì. Il tuo link userà queste fasce. L'host non riceve nulla: l'accordo resta tra voi.</p>
+            <p class="text-[11px] text-gray-500">A ore intere. Dopo esserti accordato con l'host (contatto sbloccato dall'annuncio), segna giorno e fascia in cui lavori lì. Il tuo link userà queste fasce. L'host non riceve nulla: l'accordo resta tra voi.</p>
             <form id="formBlocco" class="grid grid-cols-2 gap-2">
               <select id="blSpace" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select>
               <input id="blDay" type="date" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
-              <label class="text-[11px] text-gray-500">Dalle<input id="blStart" type="time" step="900" value="14:00" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand"></label>
-              <label class="text-[11px] text-gray-500">Alle<input id="blEnd" type="time" step="900" value="19:00" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand"></label>
+              <label class="text-[11px] text-gray-500">Dalle<select id="blStart" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00" selected>14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00">19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
+              <label class="text-[11px] text-gray-500">Alle<select id="blEnd" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00">14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00" selected>19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
               <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold py-2.5 rounded-xl">Blocca postazione</button>
             </form>
             <p id="blAvail" class="text-[11px] text-gray-500"></p>
@@ -2777,6 +2777,7 @@
     function minuti(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
     function hhmm(min) { return String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0'); }
     function oraBreve(t) { return String(t).slice(0, 5); }
+    function etichettaOre(min) { const h = Math.round(Number(min) / 60); return h + (h === 1 ? ' ora' : ' ore'); }
     function euro(n) { const v = Number(n); return (Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',')) + ' €'; }
     function erroreAgenda(error) {
       const m = String((error && (error.message || error.details)) || '');
@@ -2785,6 +2786,7 @@
         POSTAZIONI_ESAURITE: "In quella fascia tutte le postazioni di questo salone sono già occupate: scegli un altro orario o giorno.",
         BLOCCO_SOVRAPPOSTO: "Hai già una postazione bloccata in quell'orario.",
         DATA_NON_VALIDA: "Scegli una data da oggi in poi (massimo 120 giorni).",
+        ORE_INTERE: "Scegli orari a ore piene (es. 14:00 - 19:00).",
         ORARIO_NON_VALIDO: "L'orario di fine deve essere dopo l'inizio (massimo 14 ore).",
         LIMITE_BLOCCHI: "Hai raggiunto il limite di postazioni bloccate.",
         LIMITE_SERVIZI: "Il listino può contenere al massimo 30 servizi.",
@@ -2847,7 +2849,7 @@
       // listino
       $('agServices').innerHTML = agServizi.length ? agServizi.map(x =>
         `<div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2">
-          <div class="min-w-0"><p class="text-sm font-bold text-gray-900 truncate">${esc(x.name)}</p><p class="text-[11px] text-gray-500">${x.duration_min} min · ${euro(x.price)}</p></div>
+          <div class="min-w-0"><p class="text-sm font-bold text-gray-900 truncate">${esc(x.name)}</p><p class="text-[11px] text-gray-500">Durata: ${etichettaOre(x.duration_min)} · ${euro(x.price)}</p></div>
           <button type="button" data-del-sv="${esc(x.id)}" class="text-xs font-bold text-red-600 hover:underline shrink-0">Elimina</button>
         </div>`).join('') : '<p class="text-[11px] text-gray-400">Nessun servizio: aggiungine almeno uno.</p>';
       // select saloni
@@ -2906,8 +2908,8 @@
     async function aggiungiServizio(e) {
       e.preventDefault();
       const c = getSupabase(); if (!c || !currentUser) return;
-      const durata = parseInt($('svDur').value, 10), prezzo = parseFloat($('svPrice').value);
-      if (!(durata >= 5 && durata <= 480 && durata % 5 === 0)) { mostraMessaggio("La durata deve essere in minuti, a multipli di 5.", 'err'); return; }
+      const durata = parseInt($('svDur').value, 10) * 60, prezzo = parseFloat($('svPrice').value);
+      if (!(durata >= 60 && durata <= 720 && durata % 60 === 0)) { mostraMessaggio("La durata minima è 1 ora, a ore intere.", 'err'); return; }
       if (!(prezzo >= 0)) { mostraMessaggio("Prezzo non valido.", 'err'); return; }
       const { error } = await c.from('freelance_services').insert({ name: $('svName').value.trim(), duration_min: durata, price: prezzo });
       if (error) { mostraMessaggio(erroreAgenda(error), 'err'); return; }
@@ -3003,7 +3005,7 @@
       const out = [];
       const oggi = isoOggi();
       const adesso = new Date(); const minAdesso = adesso.getHours() * 60 + adesso.getMinutes() + 30;
-      for (let t = minuti(blocco.start); t + durata <= minuti(blocco.end); t += 15) {
+      for (let t = minuti(blocco.start); t + durata <= minuti(blocco.end); t += 60) {
         if (blocco.day === oggi && t < minAdesso) continue;
         if (occupati.some(([a, b]) => t < b && t + durata > a)) continue;
         out.push(t);
@@ -3066,7 +3068,7 @@
       }
       $('bookServices').innerHTML = dati.services.map(x =>
         `<button type="button" data-sv="${esc(x.id)}" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-white text-left">
-          <span><span class="block text-sm font-bold text-gray-900">${esc(x.name)}</span><span class="block text-[11px] text-gray-500">${x.duration} min</span></span>
+          <span><span class="block text-sm font-bold text-gray-900">${esc(x.name)}</span><span class="block text-[11px] text-gray-500">Durata: ${etichettaOre(x.duration)}</span></span>
           <span class="text-sm font-extrabold text-gray-900">${euro(x.price)}</span></button>`).join('');
     }
 
