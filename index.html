@@ -360,64 +360,90 @@
   </div>
 
   <!-- AREA PERSONALE -->
-  <div id="profilePage" class="hidden flex-1 max-w-5xl mx-auto w-full p-4 md:p-8">
-    <div class="space-y-6">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-gray-200 shadow-sm gap-4">
-        <div>
-          <div class="flex flex-wrap items-center gap-2">
-            <h2 id="profileUserFullName" class="text-2xl font-bold text-gray-900"></h2>
-            <span id="userRoleBadge" class="hidden text-xs px-3 py-1 rounded-full font-bold bg-pink-100 text-brand"></span>
+  <div id="profilePage" class="hidden flex-1 w-full bg-[#F9FAFB]">
+    <div class="max-w-6xl mx-auto px-4 py-8 space-y-5">
+
+      <!-- HEADER UTENTE -->
+      <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4 min-w-0">
+          <div id="profileAvatar" class="w-14 h-14 rounded-full bg-brand text-white flex items-center justify-center text-lg font-extrabold shrink-0" aria-hidden="true">?</div>
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 id="profileUserFullName" class="text-xl font-extrabold text-gray-900 truncate"></h2>
+              <span id="userRoleBadge" class="hidden text-[11px] px-3 py-1 rounded-full font-bold bg-pink-100 text-brand"></span>
+            </div>
+            <p class="text-xs text-gray-500 mt-0.5"><span id="profileUserEmail"></span><span id="profileUserPhoneWrap" class="hidden"> · 📞 <span id="profileUserPhone"></span></span></p>
             <span id="roleSupportNote" class="hidden text-[11px] text-gray-400">(Vuoi cambiare tipologia di profilo? <a href="mailto:info@chairshare.it" class="underline hover:text-brand">Contatta l'assistenza</a>)</span>
           </div>
-          <p id="profileUserEmail" class="text-sm text-gray-500 mt-1"></p>
         </div>
-        <div class="flex items-center gap-3">
-          <button id="btnBackHome" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition-colors">
-            ← Torna alla Mappa
-          </button>
-          <button id="btnLogoutProfile" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl text-xs transition-colors border border-red-200">
-            🚪 Logout
-          </button>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnEditProfile" type="button" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition-colors">✏️ Modifica Dati</button>
+          <button id="btnBackHome" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs transition-colors">← Mappa</button>
+          <button id="btnLogoutProfile" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl text-xs transition-colors border border-red-200">🚪 Esci</button>
         </div>
       </div>
 
-      <div id="guestInviteBox" class="hidden bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <h3 class="text-lg font-bold text-gray-900">✂️ Cerchi una postazione?</h3>
+      <div id="guestInviteBox" class="hidden bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5">
+        <h3 class="text-base font-extrabold text-gray-900">✂️ Cerchi una postazione?</h3>
         <p class="text-xs text-gray-500 mt-1">Esplora la mappa e contatta direttamente gli host: sblocca i recapiti dell'annuncio e accordati sulla postazione.</p>
-        <div class="flex flex-wrap gap-2 mt-4">
+        <div class="flex flex-wrap gap-2 mt-3">
           <button type="button" id="btnGuestExplore" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">Esplora la mappa</button>
         </div>
       </div>
 
-
-      <div id="agendaSection" class="hidden bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-        <div class="border-b border-gray-100 pb-3">
-          <h3 class="text-lg font-bold text-gray-900">📅 La mia Agenda &amp; Listino</h3>
-          <p class="text-xs text-gray-500 mt-1">Crea il tuo listino, segna le postazioni che hai concordato e condividi il link con i tuoi clienti: prenotano da soli negli orari liberi.</p>
+      <!-- ===== HOST ===== -->
+      <div id="hostMetricsSection" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Capienza e occupazione oggi</p>
+          <p id="hostMetricOcc" class="text-3xl font-black text-gray-900 mt-2">–</p>
+          <p id="hostMetricOccSub" class="text-xs text-gray-500 mt-1">Postazioni occupate adesso</p>
         </div>
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Prossimo arrivo</p>
+          <p id="hostMetricNext" class="text-lg font-extrabold text-gray-900 mt-2">–</p>
+          <p id="hostMetricNextSub" class="text-xs text-gray-500 mt-1"></p>
+        </div>
+      </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="space-y-3">
-            <h4 class="text-sm font-extrabold text-gray-900">1. Il tuo numero WhatsApp</h4>
-            <p class="text-[11px] text-gray-500">Serve perché i clienti ti scrivano la conferma. Lo vedono solo dopo aver prenotato.</p>
-            <div class="flex gap-2">
-              <input id="agPhone" type="tel" inputmode="tel" maxlength="20" placeholder="es. 333 1234567" class="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand/30 focus:border-brand outline-none">
+      <div id="hostBlocksSection" class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
+        <div>
+          <h3 class="text-base font-extrabold text-gray-900">📅 Prenotazioni Postazioni Ricevute</h3>
+          <p class="text-[11px] text-gray-500 mt-1">I freelance che hanno sbloccato i tuoi recapiti segnano qui giorno e fascia in cui lavoreranno da te. È un'annotazione loro: confermate sempre direttamente.</p>
+        </div>
+        <div id="hostBlocksList" class="space-y-2"></div>
+      </div>
+
+      <div id="hostSpacesSection" class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-base font-extrabold text-gray-900">🏢 I Miei Spazi Registrati</h3>
+          <button id="btnAddSpaceProfile" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Aggiungi Spazio</button>
+        </div>
+        <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- ===== FREELANCE ===== -->
+      <div id="agendaSection" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        <div id="agLinkBox" class="lg:col-span-2 rounded-3xl p-5 border border-white/60 bg-gradient-to-br from-pink-50/80 to-white/80 backdrop-blur-md shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)] space-y-3">
+          <h3 class="text-base font-extrabold text-gray-900">🔗 Il tuo Link Personale di Prenotazione</h3>
+          <p id="agLinkHint" class="text-[11px] text-gray-600"></p>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input id="agLink" type="text" readonly class="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
+            <button type="button" id="btnAgCopy" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Copia Link</button>
+            <a id="btnAgShare" target="_blank" rel="noopener" class="bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-xl text-center">💬 Condividi su WhatsApp</a>
+          </div>
+          <div class="pt-2 border-t border-pink-100">
+            <p class="text-[11px] font-bold text-gray-700">Il tuo numero WhatsApp <span class="font-normal text-gray-500">(lo vedono i clienti solo dopo aver prenotato)</span></p>
+            <div class="flex gap-2 mt-1">
+              <input id="agPhone" type="tel" inputmode="tel" maxlength="20" placeholder="es. 333 1234567" class="flex-1 sm:max-w-xs px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white">
               <button type="button" id="btnAgPhone" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Salva</button>
             </div>
-
-            <h4 class="text-sm font-extrabold text-gray-900 pt-3">2. Il tuo listino</h4>
-            <form id="formServizio" class="grid grid-cols-6 gap-2">
-              <input id="svName" type="text" maxlength="60" required placeholder="Servizio (es. Taglio)" class="col-span-6 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
-              <select id="svDur" required aria-label="Durata (in ore intere)" class="col-span-2 px-2 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="1">1 ora</option><option value="2">2 ore</option><option value="3">3 ore</option><option value="4">4 ore (mezza giornata)</option><option value="5">5 ore</option><option value="6">6 ore (giornata intera)</option><option value="8">8 ore</option><option value="10">10 ore</option><option value="12">12 ore</option></select>
-              <input id="svPrice" type="number" min="0" max="99999" step="0.5" required placeholder="Prezzo €" class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
-              <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold rounded-xl">+ Aggiungi</button>
-            </form>
-            <div id="agServices" class="space-y-2"></div>
           </div>
+        </div>
 
-          <div class="space-y-3">
-            <h4 class="text-sm font-extrabold text-gray-900">3. Blocca una postazione</h4>
-            <p class="text-[11px] text-gray-500">A ore intere. Dopo esserti accordato con l'host (contatto sbloccato dall'annuncio), segna giorno e fascia in cui lavori lì. Il tuo link userà queste fasce. L'host non riceve nulla: l'accordo resta tra voi.</p>
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
+          <h3 class="text-base font-extrabold text-gray-900">📍 Le mie Postazioni Prenotate</h3>
+          <p class="text-[11px] text-gray-500">A ore intere. Dopo esserti accordato con l'host (contatto sbloccato dall'annuncio), segna giorno e fascia in cui lavori lì. L'host non riceve nulla: l'accordo resta tra voi.</p>
             <form id="formBlocco" class="grid grid-cols-2 gap-2">
               <select id="blSpace" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select>
               <input id="blDay" type="date" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
@@ -426,60 +452,39 @@
               <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold py-2.5 rounded-xl">Blocca postazione</button>
             </form>
             <p id="blAvail" class="text-[11px] text-gray-500"></p>
-            <div id="agBlocks" class="space-y-2"></div>
-          </div>
+          <div id="agBlocks" class="space-y-2"></div>
         </div>
 
-        <div class="bg-pink-50 border border-pink-100 rounded-2xl p-4 space-y-2">
-          <h4 class="text-sm font-extrabold text-gray-900">🔗 Il tuo link di prenotazione</h4>
-          <p id="agLinkHint" class="text-[11px] text-gray-600"></p>
-          <div class="flex flex-col sm:flex-row gap-2">
-            <input id="agLink" type="text" readonly class="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
-            <button type="button" id="btnAgCopy" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Copia link</button>
-            <a id="btnAgShare" target="_blank" rel="noopener" class="bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-xl text-center">Condividi su WhatsApp</a>
-          </div>
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
+          <h3 class="text-base font-extrabold text-gray-900">🗓️ Agenda Appuntamenti con i Clienti</h3>
+          <div id="agAppts" class="space-y-3"></div>
         </div>
 
-        <div class="space-y-3">
-          <h4 class="text-sm font-extrabold text-gray-900">🗓️ I miei appuntamenti</h4>
-          <div id="agAppts" class="space-y-2"></div>
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
+          <h3 class="text-base font-extrabold text-gray-900">💈 Gestione Listino Trattamenti</h3>
+          <p class="text-[11px] text-gray-500">Durata a ore intere (minimo 1 ora).</p>
+            <form id="formServizio" class="grid grid-cols-6 gap-2">
+              <input id="svName" type="text" maxlength="60" required placeholder="Servizio (es. Taglio)" class="col-span-6 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+              <select id="svDur" required aria-label="Durata (in ore intere)" class="col-span-2 px-2 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="1">1 ora</option><option value="2">2 ore</option><option value="3">3 ore</option><option value="4">4 ore (mezza giornata)</option><option value="5">5 ore</option><option value="6">6 ore (giornata intera)</option><option value="8">8 ore</option><option value="10">10 ore</option><option value="12">12 ore</option></select>
+              <input id="svPrice" type="number" min="0" max="99999" step="0.5" required placeholder="Prezzo €" class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+              <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold rounded-xl">+ Aggiungi</button>
+            </form>
+          <div id="agServices" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
         </div>
       </div>
 
-      <div id="hostSpacesSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-        <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
-          <h3 class="text-lg font-bold text-gray-900">🏢 I Tuoi Spazi in Vetrina</h3>
-          <button id="btnAddSpaceProfile" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Aggiungi Spazio</button>
+      <!-- DATI FISCALI -->
+      <div id="legalToolsSection" class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5">
+        <label for="profTaxId" class="text-xs text-gray-500 uppercase font-bold">Partita IVA o Codice Fiscale</label>
+        <p class="text-[11px] text-gray-400">Facoltativo, visibile solo a te. Utile per compilare il contratto.</p>
+        <div class="flex gap-2 mt-1">
+          <input id="profTaxId" type="text" maxlength="16" autocomplete="off" placeholder="11 cifre (P.IVA) o 16 caratteri (C.F.)" class="flex-1 sm:max-w-xs px-3 py-2 border border-gray-200 rounded-xl text-sm uppercase outline-none focus:border-brand">
+          <button type="button" id="btnProfTaxId" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Salva</button>
         </div>
-        <div id="myHostSpacesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <p id="profTaxIdMsg" class="text-[11px] mt-1"></p>
       </div>
 
-      <div id="hostBlocksSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-3">
-        <div class="border-b border-gray-100 pb-3">
-          <h3 class="text-lg font-bold text-gray-900">📅 Prenotazioni Postazioni Ricevute</h3>
-          <p class="text-[11px] text-gray-500 mt-1">I freelance che hanno sbloccato i tuoi recapiti segnano qui giorno e fascia in cui lavoreranno da te. È un'annotazione loro: confermate sempre direttamente.</p>
-        </div>
-        <div id="hostBlocksList" class="space-y-2"></div>
-      </div>
-
-      <div id="legalToolsSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
-        <div>
-          <h3 class="text-lg font-bold text-gray-900">📄 Modulistica e Tutela Legale</h3>
-          <p class="text-xs text-gray-500 mt-1">Contratto Standard di Concessione Spazio &amp; Postazione: modello universale per studi, cabine, poltrone e scrivanie, da compilare, stampare e firmare tra Host e Freelance. È uno schema orientativo da adattare e far verificare da un professionista.</p>
-          <a href="/contratto-affitto-poltrona.html" target="_blank" rel="noopener" class="inline-block mt-3 bg-gray-900 hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-full">Apri e Stampa Contratto ↗</a>
-        </div>
-        <div class="border-t border-gray-100 pt-4">
-          <label for="profTaxId" class="text-xs text-gray-500 uppercase font-bold">Partita IVA o Codice Fiscale</label>
-          <p class="text-[11px] text-gray-400">Facoltativo, visibile solo a te. Utile per compilare il contratto.</p>
-          <div class="flex gap-2 mt-1">
-            <input id="profTaxId" type="text" maxlength="16" autocomplete="off" placeholder="11 cifre (P.IVA) o 16 caratteri (C.F.)" class="flex-1 sm:max-w-xs px-3 py-2 border border-gray-200 rounded-xl text-sm uppercase outline-none focus:border-brand">
-            <button type="button" id="btnProfTaxId" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Salva</button>
-          </div>
-          <p id="profTaxIdMsg" class="text-[11px] mt-1"></p>
-        </div>
-      </div>
-
-      <div id="reviewsSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
+      <div id="reviewsSection" class="bg-white p-6 rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] space-y-5">
         <h3 class="text-lg font-bold text-gray-900">⭐ Recensioni</h3>
         <div>
           <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-1">Da recensire</h4>
@@ -496,10 +501,23 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)]">
         <h3 class="text-sm font-bold text-gray-900">Il tuo account e i tuoi dati</h3>
         <p class="text-xs text-gray-500 mt-1">Puoi eliminare in qualsiasi momento il tuo account: verranno cancellati profilo, annunci, foto e contatti. L'operazione non si può annullare.</p>
         <button type="button" id="btnDeleteAccount" class="mt-3 text-xs font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl">Elimina il mio account</button>
+      </div>
+
+
+      <!-- TUTELA LEGALE -->
+      <div class="bg-amber-50/70 border border-amber-200/80 rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-8">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl shrink-0">🛡️</div>
+          <div>
+            <h4 class="text-xs font-bold text-amber-950 uppercase tracking-wider">Tutela Legale &amp; Contratto Tipo</h4>
+            <p class="text-xs text-amber-800 mt-0.5">Scarica e compila la scrittura privata di concessione postazione per documentare le condizioni d'uso. È uno schema orientativo: fallo verificare da un professionista prima dell'uso.</p>
+          </div>
+        </div>
+        <a href="/contratto-affitto-poltrona.html" target="_blank" rel="noopener noreferrer" class="shrink-0 bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all">Apri Contratto Standard ↗</a>
       </div>
 
       <p class="text-xs text-gray-400 text-center"><button type="button" class="underline" id="btnLegalProfile">Informativa Privacy</button> · <button type="button" class="underline" id="btnTermsProfile">Termini e condizioni</button></p>
@@ -652,6 +670,18 @@
       <a id="cancelNoticeWa" target="_blank" rel="noopener" class="hidden block w-full bg-green-600 text-white font-extrabold text-sm py-3 rounded-xl"></a>
       <button type="button" data-close-modal="cancelNoticeModal" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold text-xs py-2.5 rounded-xl">Chiudi</button>
     </div>
+  </div>
+
+  <div id="editProfileModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
+    <form id="formEditProfile" class="bg-white rounded-3xl max-w-sm w-full p-6 relative shadow-2xl space-y-3">
+      <h2 class="text-lg font-extrabold text-gray-900">Modifica i tuoi dati</h2>
+      <label class="block text-[11px] font-bold text-gray-500 uppercase">Nome e cognome<input id="epName" type="text" maxlength="80" required class="mt-1 w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm normal-case font-normal text-gray-900 outline-none focus:border-brand"></label>
+      <label class="block text-[11px] font-bold text-gray-500 uppercase">Telefono / WhatsApp<input id="epPhone" type="tel" inputmode="tel" maxlength="20" class="mt-1 w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm normal-case font-normal text-gray-900 outline-none focus:border-brand"></label>
+      <div class="flex gap-2 pt-1">
+        <button type="submit" class="flex-1 bg-brand hover:bg-brand-hover text-white font-extrabold text-xs py-2.5 rounded-xl">Salva</button>
+        <button type="button" data-close-modal="editProfileModal" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold text-xs py-2.5 rounded-xl">Annulla</button>
+      </div>
+    </form>
   </div>
 
   <div id="termsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
@@ -1184,7 +1214,7 @@
         id: i.id, name: i.name, city: i.city, zone: i.zone, price: i.price,
         priceUnit: i.price_unit || 'giorno', minHours: i.min_hours || 1, availableChairs: i.available_chairs || 1, type: i.type,
         dailySchedule: i.daily_schedule || {}, services: i.services || [],
-        lat: i.lat, lon: i.lon, userId: i.user_id, images: i.images || [], description: i.description || ''
+        lat: i.lat, lon: i.lon, active: i.active !== false, userId: i.user_id, images: i.images || [], description: i.description || ''
       };
     }
 
@@ -1549,11 +1579,48 @@
         $('user-display-name').textContent = `Ciao, ${nome}`;
         $('profileUserFullName').textContent = nome;
         $('profileUserEmail').textContent = currentUser.email || '';
+        $('profileAvatar').textContent = (nome || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase() || '?';
+        aggiornaTelefonoHeader();
       } else {
         $('auth-guest-links').style.display = 'flex';
         $('auth-user-links').style.display = 'none';
         if (!$('profilePage').classList.contains('hidden')) mostraPagina('homePage');
       }
+    }
+
+    let telefonoUtente = '';
+    function aggiornaTelefonoHeader() {
+      const w = $('profileUserPhoneWrap'); if (!w) return;
+      $('profileUserPhone').textContent = telefonoUtente;
+      w.classList.toggle('hidden', !telefonoUtente);
+    }
+    async function caricaTelefonoProfilo() {
+      telefonoUtente = '';
+      const c = getSupabase();
+      if (c && currentUser) {
+        const { data } = await c.from('profiles').select('phone').eq('id', currentUser.id).maybeSingle();
+        if (data && data.phone) telefonoUtente = data.phone;
+      }
+      aggiornaTelefonoHeader();
+    }
+    function apriModificaProfilo() {
+      $('epName').value = nomeUtente() || '';
+      $('epPhone').value = telefonoUtente || '';
+      toggleModal('editProfileModal', true);
+    }
+    async function salvaModificaProfilo(e) {
+      e.preventDefault();
+      const c = getSupabase(); if (!c || !currentUser) return;
+      const nome = $('epName').value.trim(), tel = $('epPhone').value.trim();
+      if (nome.length < 2) { mostraMessaggio("Inserisci nome e cognome.", 'err'); return; }
+      if (tel && !normalizzaTelefono(tel)) { mostraMessaggio("Numero non valido.", 'err'); return; }
+      const { error } = await c.from('profiles').update({ full_name: nome, phone: tel || null }).eq('id', currentUser.id);
+      if (error) { mostraMessaggio("Impossibile salvare i dati, riprova tra poco.", 'err'); return; }
+      try { const r = await c.auth.updateUser({ data: { full_name: nome } }); if (r.data && r.data.user) currentUser = r.data.user; } catch (err) {}
+      telefonoUtente = tel; agTelefono = tel;
+      toggleModal('editProfileModal', false);
+      aggiornaStatoAuth(); disegnaAgenda();
+      mostraMessaggio("Dati aggiornati.");
     }
 
     // Ruolo scelto in fase di registrazione (host / guest), letto dalla tabella profiles
@@ -1583,6 +1650,7 @@
       $('agendaSection').classList.toggle('hidden', !mostraAgenda);
       if (mostraAgenda && !$('profilePage').classList.contains('hidden')) caricaAgenda();
       $('hostBlocksSection').classList.toggle('hidden', èFree);
+      $('hostMetricsSection').classList.toggle('hidden', èFree);
       if (!èFree && !!currentUser && !$('profilePage').classList.contains('hidden')) caricaBlocchiHost();
       $('roleSupportNote').classList.toggle('hidden', !(èFree || èHost));
       aggiornaPulsantiPubblica();
@@ -1639,6 +1707,29 @@
       if (r.ok && r.valore) $('profTaxId').value = r.valore;
     }
     // ---------- Host: blocchi postazione ricevuti ----------
+    function nomeBreveJS(n) { const p = String(n || '').trim().split(/\s+/); return p.length > 1 ? p[0] + ' ' + p[p.length - 1][0].toUpperCase() + '.' : (p[0] || 'Freelance'); }
+    function ymdOggi() { return isoOggi(); }
+    function disegnaMetricheHost(blocchi) {
+      const mieiSpazi = spazi.filter(x => x.userId === currentUser.id && x.active !== false);
+      const totale = mieiSpazi.reduce((t, x) => t + (x.availableChairs || 1), 0);
+      const ora = new Date(), minOra = ora.getHours() * 60 + ora.getMinutes(), oggi = ymdOggi();
+      const occupate = blocchi.filter(b => b.day === oggi && minuti(oraBreve(b.start_time)) <= minOra && minuti(oraBreve(b.end_time)) > minOra).length;
+      $('hostMetricOcc').textContent = totale ? Math.min(occupate, totale) + ' / ' + totale : '–';
+      $('hostMetricOccSub').textContent = totale ? 'Postazioni occupate adesso (segnate dai freelance)' : 'Pubblica uno spazio per vedere la capienza';
+      const futuri = blocchi.filter(b => (b.day > oggi) || (b.day === oggi && minuti(oraBreve(b.start_time)) > minOra))
+        .sort((x, y) => (x.day + x.start_time).localeCompare(y.day + y.start_time));
+      const n = futuri[0];
+      if (n) {
+        const dom = new Date(Date.now() + 86400000), domIso = dom.getFullYear() + '-' + String(dom.getMonth() + 1).padStart(2, '0') + '-' + String(dom.getDate()).padStart(2, '0');
+        const quando = n.day === oggi ? 'Oggi' : (n.day === domIso ? 'Domani' : dataBreve(n.day));
+        $('hostMetricNext').textContent = quando + ' ore ' + oraBreve(n.start_time) + ' - ' + nomeBreveJS(n.freelance_name);
+        $('hostMetricNextSub').textContent = n.space_name;
+      } else {
+        $('hostMetricNext').textContent = 'Nessun arrivo previsto';
+        $('hostMetricNextSub').textContent = '';
+      }
+    }
+
     async function caricaBlocchiHost() {
       const c = getSupabase(); const box = $('hostBlocksList');
       if (!c || !currentUser || ruoloUtente === 'guest') return;
@@ -1646,15 +1737,17 @@
       const { data, error } = await c.rpc('get_host_blocks');
       if (currentUser?.id !== mio) return;
       if (error) { box.innerHTML = '<p class="text-[11px] text-gray-400">Elenco non disponibile al momento.</p>'; return; }
+      disegnaMetricheHost(data || []);
       if (!data || !data.length) { box.innerHTML = '<p class="text-[11px] text-gray-400">Nessuna postazione segnata dai freelance per ora.</p>'; return; }
       box.innerHTML = data.map(b => {
         const wa = normalizzaTelefono(b.freelance_phone);
         const quando = dataLunga(b.day) + ' dalle ' + oraBreve(b.start_time) + ' alle ' + oraBreve(b.end_time);
         const msg = `Ciao ${String(b.freelance_name).split(' ')[0]}, ti scrivo per la postazione di ${b.space_name} che hai segnato per ${quando}. Ti scrivo per organizzarci: va bene?`;
-        return `<div class="border border-gray-200 rounded-xl px-3 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        return `<div class="border border-gray-100 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div class="min-w-0">
-            <p class="text-sm font-bold text-gray-900">${esc(dataLunga(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</p>
-            <p class="text-xs text-gray-600 truncate">${esc(b.space_name)} · ${esc(b.freelance_name)}</p>
+            <span class="inline-block text-[11px] font-bold bg-pink-50 text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
+            <p class="text-sm font-bold text-gray-900 truncate mt-1">${esc(b.space_name)}</p>
+            <p class="text-xs text-gray-600 truncate">${esc(b.freelance_name)}${b.freelance_phone ? ' · ' + esc(b.freelance_phone) : ''}</p>
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <span class="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2 py-1">Bloccata dal freelance</span>
@@ -1723,6 +1816,7 @@
       aggiornaBadgeRuolo();
       avviaRealtime();
       caricaTaxId();
+      caricaTelefonoProfilo();
     }
 
     // Riquadro di benvenuto: lo vedono i visitatori non registrati, finché non lo chiudono
@@ -1880,6 +1974,7 @@
       const q = ($('cityInput').value || '').trim().toLowerCase();
       const max = prezzoMassimo();
       const res = spazi.filter(s => {
+        if (s.active === false) return false;
         if (q && !((s.city || '').toLowerCase().includes(q) || (s.zone || '').toLowerCase().includes(q))) return false;
         if (!(MACRO[macroSettore] || []).includes(s.type)) return false;
         if (selectedCategory && s.type !== selectedCategory) return false;
@@ -2657,22 +2752,35 @@
       mySpaces.forEach(s => {
         const c = contatti[s.id];
         const div = document.createElement('div');
-        div.className = 'border border-gray-200 rounded-2xl p-4 bg-gray-50 flex flex-col justify-between shadow-sm';
+        div.className = 'border border-gray-100 rounded-3xl p-4 bg-white flex flex-col justify-between shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)]' + (s.active === false ? ' opacity-60' : '');
         div.innerHTML = `
           <div>
-            <h4 class="font-bold text-sm text-gray-900">${esc(s.name)}</h4>
+            <div class="flex items-center justify-between gap-2"><h4 class="font-bold text-sm text-gray-900 truncate">${esc(s.name)}</h4>${s.active === false ? '<span class="text-[10px] font-bold bg-gray-200 text-gray-600 rounded-full px-2 py-0.5 shrink-0">Disattivato</span>' : ''}</div>
+            <span class="inline-block text-[10px] font-bold bg-pink-50 text-brand rounded-full px-2 py-0.5 mt-1">${s.availableChairs || 1} postazion${(s.availableChairs || 1) > 1 ? 'i' : 'e'} in contemporanea</span>
             <p class="text-xs text-gray-500 mt-0.5">📍 ${c ? esc(c.address) + ', ' : ''}${esc(s.city)}</p>
             <p class="text-xs font-bold text-brand mt-1">${esc(etichettaTariffa(s))}</p>
             <p class="text-[11px] text-gray-500 mt-1">📷 ${(s.images || []).length} foto • 👁 ${statRichieste[s.id] || 0} ${(statRichieste[s.id] || 0) === 1 ? 'richiesta' : 'richieste'} di contatto</p>
           </div>
           <div class="flex items-center gap-3 mt-4 pt-2 border-t border-gray-200">
             <button type="button" data-action="edit" class="text-xs text-blue-600 font-bold hover:underline">✏️ Modifica</button>
+            <button type="button" data-action="toggle" class="text-xs text-gray-600 font-bold hover:underline">${s.active === false ? '▶️ Riattiva' : '⏸ Disattiva'}</button>
             <button type="button" data-action="delete" class="text-xs text-red-600 font-bold hover:underline">🗑️ Elimina</button>
           </div>`;
+        div.querySelector('[data-action="toggle"]').addEventListener('click', () => attivaDisattivaSpazio(s.id, s.active === false));
         div.querySelector('[data-action="edit"]').addEventListener('click', () => apriModificaSpazio(s.id));
         div.querySelector('[data-action="delete"]').addEventListener('click', () => eliminaSpazio(s.id));
         container.appendChild(div);
       });
+    }
+
+    async function attivaDisattivaSpazio(id, attiva) {
+      const client = getSupabase(); if (!client) return;
+      if (!attiva && !confirm("Disattivare lo spazio? Non comparirà più nella ricerca né tra le postazioni prenotabili, ma resterà nel tuo profilo e potrai riattivarlo.")) return;
+      const { error } = await client.from('spaces').update({ active: !!attiva }).eq('id', id);
+      if (error) { mostraMessaggio("Impossibile aggiornare lo spazio. Hai eseguito lo script SQL?", 'err'); return; }
+      const sp = spazi.find(x => x.id === id); if (sp) sp.active = !!attiva;
+      renderizzaSpaziUtente(); cercaSpazi();
+      mostraMessaggio(attiva ? "Spazio riattivato." : "Spazio disattivato.");
     }
 
     async function eliminaSpazio(id) {
@@ -2923,20 +3031,29 @@
       // select saloni
       const sel = $('blSpace');
       const prec = sel.value;
-      sel.innerHTML = '<option value="">Scegli il salone…</option>' + spazi.filter(x => x.userId !== currentUser.id)
+      sel.innerHTML = '<option value="">Scegli il salone…</option>' + spazi.filter(x => x.userId !== currentUser.id && x.active !== false)
         .map(x => `<option value="${esc(x.id)}">${esc(x.name)}${x.city ? ' — ' + esc(x.city) : ''}</option>`).join('');
       if (prec) sel.value = prec;
       // blocchi
-      $('agBlocks').innerHTML = agBlocchi.length ? agBlocchi.map(b =>
-        `<div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2">
-          <div class="min-w-0"><p class="text-sm font-bold text-gray-900 truncate">${esc(nomeSalone(b.space_id))}</p><p class="text-[11px] text-gray-500">${esc(dataLunga(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</p></div>
-          ${(parteData(b.day).getTime() + minuti(oraBreve(b.start_time)) * 60000 - Date.now()) > 86400000
-            ? `<button type="button" data-del-bl="${esc(b.id)}" class="text-xs font-bold text-red-600 hover:underline shrink-0">Cancella Prenotazione Postazione</button>`
-            : `<span class="text-[10px] text-gray-400 shrink-0 text-right">Non cancellabile<br>entro 24 ore</span>`}
-        </div>`).join('') : '<p class="text-[11px] text-gray-400">Nessuna postazione bloccata.</p>';
+      $('agBlocks').innerHTML = agBlocchi.length ? agBlocchi.map(b => {
+        const ct = contatti[b.space_id] || sbloccati[b.space_id];
+        const sp = spazi.find(x => x.id === b.space_id);
+        const indirizzo = (ct && ct.address ? ct.address + ', ' : '') + (sp ? sp.city : '');
+        const cancellabile = (parteData(b.day).getTime() + minuti(oraBreve(b.start_time)) * 60000 - Date.now()) > 86400000;
+        return `<div class="border border-gray-100 rounded-2xl p-3 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <span class="inline-block text-[11px] font-bold bg-pink-50 text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
+            <p class="text-sm font-bold text-gray-900 truncate mt-1">${esc(sp ? sp.name : 'Salone')}</p>
+            <p class="text-[11px] text-gray-500 truncate">📍 ${esc(indirizzo)}</p>
+          </div>
+          ${cancellabile
+            ? `<button type="button" data-del-bl="${esc(b.id)}" class="text-[11px] font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-full px-3 py-1.5 shrink-0">Annulla Postazione</button>`
+            : `<span class="text-[10px] text-gray-400 shrink-0 text-right">Non annullabile<br>entro 24 ore</span>`}
+        </div>`; }).join('') : '<p class="text-[11px] text-gray-400">Nessuna postazione bloccata.</p>';
       // link
       const blocchiSaloni = agBlocchi.filter(b => { const sp = spazi.find(x => x.id === b.space_id); return !(sp && TIPI_UFFICIO.includes(sp.type)); });
       const ok = agServizi.length > 0 && blocchiSaloni.length > 0;
+      $('agLinkBox').classList.toggle('hidden', agBlocchi.length > 0 && blocchiSaloni.length === 0);
       $('agLink').value = linkPrenotazione();
       $('agLinkHint').textContent = ok ? "Mandalo ai tuoi clienti: vedranno il tuo listino e gli orari liberi nelle fasce che hai bloccato in saloni e studi. Scrivanie, uffici e coworking non compaiono nel link."
         : "Il link funziona quando hai almeno un servizio nel listino e una postazione bloccata in un salone o studio (le scrivanie e gli uffici non contano).";
@@ -2946,24 +3063,29 @@
       const blk = {}; agBlocchi.forEach(b => blk[b.id] = b);
       const lista = agAppunt;
       const stati = { confirmed: '', completed: '✅ Completato', cancelled: '✖ Annullato' };
-      $('agAppts').innerHTML = lista.length ? lista.map(a => {
-        const attivo = a.status === 'confirmed';
-        const wa = normalizzaTelefono(a.client_phone);
-        const testo = `Ciao ${a.client_name.split(' ')[0]}, ti confermo l'appuntamento di ${dataLunga(a.day)} alle ${oraBreve(a.start_time)} (${a.service_name}, ${euro(a.service_price)}). A presto!`;
-        return `<div class="border ${attivo ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50 opacity-70'} rounded-xl px-3 py-3 space-y-2">
-          <div class="flex justify-between gap-2">
-            <div class="min-w-0"><p class="text-sm font-bold text-gray-900">${esc(dataLunga(a.day))} · ${oraBreve(a.start_time)} - ${oraBreve(a.end_time)}</p>
-              <p class="text-xs text-gray-600">${esc(a.client_name)} · ${esc(a.service_name)} · ${euro(a.service_price)}</p>
-              <p class="text-[11px] text-gray-400">${esc(a.client_phone)}</p></div>
-            <span class="text-[11px] font-bold text-gray-500 shrink-0">${stati[a.status] || ''}</span>
-          </div>
-          ${attivo ? `<div class="flex flex-wrap gap-2">
-            ${wa ? `<a target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(testo)}" class="text-[11px] font-bold bg-green-600 text-white px-3 py-1.5 rounded-full">💬 WhatsApp al cliente</a>` : ''}
-            <button type="button" data-ap="${esc(a.id)}" data-st="completed" class="text-[11px] font-bold bg-gray-900 text-white px-3 py-1.5 rounded-full">Completato</button>
-            <button type="button" data-ap="${esc(a.id)}" data-st="cancelled" class="text-[11px] font-bold bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-full">Annulla</button>
-          </div>` : ''}
-        </div>`;
-      }).join('') : '<p class="text-[11px] text-gray-400">Ancora nessun appuntamento.</p>';
+      const giorni = {};
+      lista.forEach(a => (giorni[a.day] = giorni[a.day] || []).push(a));
+      $('agAppts').innerHTML = lista.length ? Object.keys(giorni).sort().map(d => `
+        <div>
+          <p class="text-[11px] font-extrabold uppercase tracking-wider text-gray-400 mb-1.5">${esc(dataLunga(d))}</p>
+          <div class="space-y-2 border-l-2 border-gray-100 pl-3">${giorni[d].map(a => {
+            const attivo = a.status === 'confirmed';
+            const wa = normalizzaTelefono(a.client_phone);
+            const testo = `Ciao ${a.client_name.split(' ')[0]}, ti confermo l'appuntamento di ${dataLunga(a.day)} alle ${oraBreve(a.start_time)} (${a.service_name}, ${euro(a.service_price)}). A presto!`;
+            return `<div class="rounded-2xl ${attivo ? 'bg-white border border-gray-100' : 'bg-gray-50 opacity-70'} p-3 space-y-2">
+              <div class="flex items-start gap-3">
+                <span class="text-lg font-black text-gray-900 leading-6 shrink-0">${oraBreve(a.start_time)}</span>
+                <div class="min-w-0 flex-1"><p class="text-sm font-bold text-gray-900 truncate">${esc(a.client_name)}</p>
+                  <p class="text-xs text-gray-600">${esc(a.service_name)} · <strong>${euro(a.service_price)}</strong></p></div>
+                <span class="text-[11px] font-bold text-gray-500 shrink-0">${stati[a.status] || ''}</span>
+              </div>
+              ${attivo ? `<div class="flex flex-wrap gap-2">
+                ${wa ? `<a target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(testo)}" class="text-[11px] font-bold bg-green-600 text-white px-3 py-1.5 rounded-full">💬 WhatsApp Cliente</a>` : ''}
+                <button type="button" data-ap="${esc(a.id)}" data-st="completed" class="text-[11px] font-bold bg-gray-900 text-white px-3 py-1.5 rounded-full">Completato</button>
+                <button type="button" data-ap="${esc(a.id)}" data-st="cancelled" class="text-[11px] font-bold bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-full">Annulla</button>
+              </div>` : ''}
+            </div>`; }).join('')}</div>
+        </div>`).join('') : '<p class="text-[11px] text-gray-400">Ancora nessun appuntamento.</p>';
     }
 
     async function salvaTelefonoAgenda() {
@@ -2972,7 +3094,7 @@
       if (v && !normalizzaTelefono(v)) { mostraMessaggio("Numero non valido.", 'err'); return; }
       const { error } = await c.from('profiles').update({ phone: v || null }).eq('id', currentUser.id);
       if (error) { mostraMessaggio("Impossibile salvare il numero.", 'err'); return; }
-      agTelefono = v;
+      agTelefono = v; telefonoUtente = v; aggiornaTelefonoHeader();
       mostraMessaggio("Numero salvato.");
     }
 
@@ -3113,8 +3235,12 @@
       ['blSpace', 'blDay', 'blStart', 'blEnd'].forEach(id => $(id).addEventListener('change', aggiornaDispBlocco));
       $('btnAgCopy').addEventListener('click', async () => {
         const v = $('agLink').value;
-        try { await navigator.clipboard.writeText(v); mostraMessaggio("Link copiato."); }
-        catch (e) { $('agLink').select(); mostraMessaggio("Seleziona e copia il link."); }
+        const btn = $('btnAgCopy');
+        try {
+          await navigator.clipboard.writeText(v);
+          btn.textContent = 'Copiato! ✓'; btn.classList.add('bg-green-600');
+          setTimeout(() => { btn.textContent = 'Copia Link'; btn.classList.remove('bg-green-600'); }, 2000);
+        } catch (e) { $('agLink').select(); mostraMessaggio("Seleziona e copia il link."); }
       });
       $('agendaSection').addEventListener('click', ev => {
         const t = ev.target.closest('button'); if (!t) return;
@@ -3385,6 +3511,8 @@
 
       initAgenda();
       initPrenota();
+      $('btnEditProfile').addEventListener('click', apriModificaProfilo);
+      $('formEditProfile').addEventListener('submit', salvaModificaProfilo);
       $('btnProfTaxId').addEventListener('click', salvaTaxIdProfilo);
       if (MODO_PRENOTA) {
         mostraPagina('bookPage');
