@@ -634,6 +634,16 @@
   </div>
 
   <!-- TERMINI E CONDIZIONI -->
+  <div id="cancelNoticeModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 relative shadow-2xl text-center space-y-3">
+      <p class="text-3xl">✅</p>
+      <h2 id="cancelNoticeTitle" class="text-lg font-extrabold text-gray-900"></h2>
+      <p id="cancelNoticeText" class="text-xs text-gray-600"></p>
+      <a id="cancelNoticeWa" target="_blank" rel="noopener" class="hidden block w-full bg-green-600 text-white font-extrabold text-sm py-3 rounded-xl"></a>
+      <button type="button" data-close-modal="cancelNoticeModal" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold text-xs py-2.5 rounded-xl">Chiudi</button>
+    </div>
+  </div>
+
   <div id="termsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button data-close-modal="termsModal" aria-label="Chiudi" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
@@ -2790,6 +2800,7 @@
         ORARIO_NON_VALIDO: "L'orario di fine deve essere dopo l'inizio (massimo 14 ore).",
         LIMITE_BLOCCHI: "Hai raggiunto il limite di postazioni bloccate.",
         LIMITE_SERVIZI: "Il listino può contenere al massimo 30 servizi.",
+        ANNULLO_TROPPO_TARDI: "Una postazione si può cancellare solo se mancano più di 24 ore: contatta direttamente l'Host.",
         BLOCCO_CON_APPUNTAMENTI: "Ci sono appuntamenti attivi in quella fascia: annullali prima di liberare la postazione.",
         SLOT_OCCUPATO: "Questo orario è stato appena prenotato da un altro cliente: scegline un altro.",
         FUORI_FASCIA: "Questo orario non è più disponibile: scegline un altro.",
@@ -2862,7 +2873,9 @@
       $('agBlocks').innerHTML = agBlocchi.length ? agBlocchi.map(b =>
         `<div class="flex items-center justify-between gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2">
           <div class="min-w-0"><p class="text-sm font-bold text-gray-900 truncate">${esc(nomeSalone(b.space_id))}</p><p class="text-[11px] text-gray-500">${esc(dataLunga(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</p></div>
-          <button type="button" data-del-bl="${esc(b.id)}" class="text-xs font-bold text-red-600 hover:underline shrink-0">Libera</button>
+          ${(parteData(b.day).getTime() + minuti(oraBreve(b.start_time)) * 60000 - Date.now()) > 86400000
+            ? `<button type="button" data-del-bl="${esc(b.id)}" class="text-xs font-bold text-red-600 hover:underline shrink-0">Cancella Prenotazione Postazione</button>`
+            : `<span class="text-[10px] text-gray-400 shrink-0 text-right">Non cancellabile<br>entro 24 ore</span>`}
         </div>`).join('') : '<p class="text-[11px] text-gray-400">Nessuna postazione bloccata.</p>';
       // link
       const ok = agServizi.length > 0 && agBlocchi.length > 0;
@@ -2965,17 +2978,50 @@
 
     async function liberaBlocco(id) {
       const c = getSupabase(); if (!c) return;
+      const b = agBlocchi.find(x => x.id === id);
+      if (!b) return;
+      if (!confirm("Cancellare questa prenotazione di postazione? La postazione tornerà libera per altri.")) return;
+      // recupero il numero dell'Host prima di cancellare (i recapiti sono già sbloccati)
+      let tel = null;
+      try {
+        const ct = contatti[b.space_id] || sbloccati[b.space_id] || await sbloccaContatti(b.space_id);
+        tel = normalizzaTelefono(ct && ct.phone);
+      } catch (e) { tel = null; }
       const { error } = await c.rpc('delete_chair_block', { p_block: id });
       if (error) { mostraMessaggio(erroreAgenda(error), 'err'); return; }
+      blDisp = null;
       await caricaAgenda();
+      const sp = spazi.find(x => x.id === b.space_id);
+      const msg = `Ciao! Ti avviso tramite ChairShare che ho dovuto annullare la prenotazione della postazione presso ${sp ? sp.name : 'il tuo spazio'} per il giorno ${dataLunga(b.day)} fascia ${oraBreve(b.start_time)}-${oraBreve(b.end_time)}. La postazione è ora di nuovo libera sulla piattaforma.`;
+      mostraAvvisoAnnullo('Prenotazione postazione cancellata', 'La postazione è tornata libera.', "Notifica cancellazione all'Host su WhatsApp", tel, msg);
+    }
+
+    function mostraAvvisoAnnullo(titolo, testo, etichettaWa, waNumero, messaggio) {
+      $('cancelNoticeTitle').textContent = titolo;
+      $('cancelNoticeText').textContent = testo;
+      const a = $('cancelNoticeWa');
+      if (waNumero) {
+        a.href = 'https://wa.me/' + waNumero + '?text=' + encodeURIComponent(messaggio);
+        a.textContent = '💬 ' + etichettaWa;
+        a.classList.remove('hidden');
+      } else {
+        a.classList.add('hidden');
+        $('cancelNoticeText').textContent = testo + ' Numero WhatsApp non disponibile: avvisa la controparte in altro modo.';
+      }
+      toggleModal('cancelNoticeModal', true);
     }
 
     async function cambiaStatoAppuntamento(id, stato) {
       const c = getSupabase(); if (!c) return;
       if (stato === 'cancelled' && !confirm("Annullare questo appuntamento? Ricordati di avvisare il cliente.")) return;
+      const ap = agAppunt.find(x => x.id === id);
       const { error } = await c.from('client_appointments').update({ status: stato }).eq('id', id);
       if (error) { mostraMessaggio("Impossibile aggiornare l'appuntamento.", 'err'); return; }
       await caricaAgenda();
+      if (stato === 'cancelled' && ap) {
+        const msg = `Ciao ${ap.client_name}, ti informo che per un imprevisto ho dovuto annullare il nostro appuntamento per ${ap.service_name} fissato per il ${dataLunga(ap.day)} alle ${oraBreve(ap.start_time)}. Ti ricontatto a breve per concordare un nuovo orario! Ci scusiamo per il disagio.`;
+        mostraAvvisoAnnullo('Appuntamento annullato', "L'orario è tornato libero sul tuo link di prenotazione.", 'Avvisa il cliente su WhatsApp', normalizzaTelefono(ap.client_phone), msg);
+      }
     }
 
     function initAgenda() {
