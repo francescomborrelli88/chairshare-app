@@ -2939,10 +2939,18 @@
     const PARAM_PRENOTA = (() => {
       try {
         const v = new URLSearchParams(window.location.search).get('book');
-        return v && /^[0-9a-fA-F-]{36}$/.test(v) ? v.toLowerCase() : (v ? 'invalido' : null);
+        if (!v) return v === null ? null : 'invalido';
+        if (/^[0-9a-fA-F-]{36}$/.test(v)) return v.toLowerCase();            // vecchio link con ID
+        return /^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$/.test(v) && v.length >= 2 && v.length <= 60 ? v.toLowerCase() : 'invalido'; // link col nome
       } catch (e) { return null; }
     })();
     const MODO_PRENOTA = PARAM_PRENOTA !== null;
+    // Carica la pagina di prenotazione: accetta sia il vecchio ID sia il nome nel link
+    function rpcPaginaPrenota(c) {
+      return /^[0-9a-f-]{36}$/.test(PARAM_PRENOTA)
+        ? c.rpc('get_booking_page', { p_freelance: PARAM_PRENOTA })
+        : c.rpc('get_booking_page_by_slug', { p_slug: PARAM_PRENOTA });
+    }
     if (MODO_PRENOTA) document.body.classList.add('book-mode');
 
     const MESI = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
@@ -2986,7 +2994,8 @@
     let agServizi = [], agBlocchi = [], agAppunt = [], agTelefono = '';
     let agCaricamento = null;
 
-    function linkPrenotazione() { return 'https://chairshare.it/?book=' + currentUser.id; }
+    let agSlug = '', agSlugUid = null;
+    function linkPrenotazione() { return 'https://chairshare.it/?book=' + (agSlugUid === currentUser.id && agSlug ? agSlug : currentUser.id); }
 
     async function caricaAgenda() {
       if (ruoloUtente !== 'guest' || !currentUser) return;
@@ -2998,16 +3007,18 @@
         try {
           const ieri = new Date(Date.now() - 7 * 86400000);
           const da = ieri.getFullYear() + '-' + String(ieri.getMonth() + 1).padStart(2, '0') + '-' + String(ieri.getDate()).padStart(2, '0');
-          const [sv, bl, ap, pr] = await Promise.all([
+          const [sv, bl, ap, pr, sl] = await Promise.all([
             c.from('freelance_services').select('id,name,duration_min,price').order('created_at'),
             c.from('chair_blocks').select('id,space_id,day,start_time,end_time').gte('day', isoOggi()).order('day').order('start_time'),
             c.from('client_appointments').select('id,block_id,service_name,service_duration,service_price,client_name,client_phone,day,start_time,end_time,status')
               .gte('day', da).order('day').order('start_time'),
-            c.from('profiles').select('phone').eq('id', mio).maybeSingle()
+            c.from('profiles').select('phone').eq('id', mio).maybeSingle(),
+            c.rpc('ensure_my_slug')
           ]);
           if (currentUser?.id !== mio) return;
           agServizi = sv.data || []; agBlocchi = bl.data || []; agAppunt = ap.data || [];
           agTelefono = pr.data?.phone || '';
+          if (!sl.error && typeof sl.data === 'string' && sl.data) { agSlug = sl.data; agSlugUid = mio; } else { agSlug = ''; agSlugUid = null; }
           if (sv.error || bl.error || ap.error) mostraMessaggio("Impossibile caricare l'agenda. Hai eseguito lo script SQL dell'agenda?", 'err');
         } catch (e) { console.warn('Errore agenda:', e); }
         finally { agCaricamento = null; }
@@ -3308,7 +3319,7 @@
       const c = getSupabase();
       let dati = null;
       if (c && PARAM_PRENOTA !== 'invalido') {
-        const { data, error } = await c.rpc('get_booking_page', { p_freelance: PARAM_PRENOTA });
+        const { data, error } = await rpcPaginaPrenota(c);
         if (!error) dati = data;
       }
       $('bookLoading').classList.add('hidden');
@@ -3340,7 +3351,7 @@
         if (error) {
           mostraMessaggio(erroreAgenda(error), 'err');
           if (/SLOT_OCCUPATO|FUORI_FASCIA|ORARIO_PASSATO|SLOT_NON_DISPONIBILE/.test(error.message || '')) {
-            const r = await c.rpc('get_booking_page', { p_freelance: PARAM_PRENOTA });
+            const r = await rpcPaginaPrenota(c);
             if (r.data) { bk.data = r.data; disegnaGiorniPrenota(); }
           }
           return;
