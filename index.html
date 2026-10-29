@@ -7,7 +7,7 @@
   <title>ChairShare - Trova e Contatta Spazi e Postazioni</title>
   <meta name="description" content="Trova o pubblica spazi e postazioni di lavoro per professionisti: studi di psicoterapia, cabine massaggi, postazioni barber, estetica, studi foto e coworking. Contatta direttamente l'host." />
   <link rel="canonical" href="https://chairshare.it/" />
-  <meta name="theme-color" content="#1E3A2F" />
+  <meta name="theme-color" content="#3B1E34" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="ChairShare" />
   <meta property="og:locale" content="it_IT" />
@@ -19,7 +19,7 @@
   <meta name="twitter:image" content="https://chairshare.it/og-image.png" />
   <meta property="og:title" content="ChairShare - Trova e Contatta Spazi e Postazioni" />
   <meta property="og:description" content="Metti in mostra il tuo spazio o trova la postazione ideale: contatta direttamente l'host senza intermediari." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%201080%201080%27%3E%3Ccircle%20cx=%27540%27%20cy=%27540%27%20r=%27540%27%20fill=%27%231E3A2F%27/%3E%3Cpath%20d=%27M383%20236%20L413%20546%20L683%20546%20M413%20546%20L393%20806%20M683%20546%20L698%20806%27%20fill=%27none%27%20stroke=%27%23fff%27%20stroke-width=%2790%27%20stroke-linecap=%27round%27%20stroke-linejoin=%27round%27/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%201080%201080%27%3E%3Ccircle%20cx=%27540%27%20cy=%27540%27%20r=%27540%27%20fill=%27%233B1E34%27/%3E%3Cpath%20d=%27M383%20236%20L413%20546%20L683%20546%20M413%20546%20L393%20806%20M683%20546%20L698%20806%27%20fill=%27none%27%20stroke=%27%23fff%27%20stroke-width=%2790%27%20stroke-linecap=%27round%27%20stroke-linejoin=%27round%27/%3E%3C/svg%3E" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
   <!-- Tailwind CSS (CDN: ok per prototipo; per produzione conviene fare una build) -->
@@ -30,16 +30,16 @@
         extend: {
           colors: {
             brand: {
-              DEFAULT: '#1E3A2F',
-              hover: '#162E25',
-              dark: '#0F241B',
-              light: '#EBF2EE'
+              DEFAULT: '#3B1E34',
+              hover: '#2A1425',
+              dark: '#1F0F1B',
+              light: '#F5EEF3'
             },
-            sand: { DEFAULT: '#C59B27', light: '#D4A373' },
+            lilac: { DEFAULT: '#9D7A94', light: '#B08EA7' },
             slate: {
-              50: '#F7F8F5', 100: '#EEF2EF', 200: '#E6EBE7', 300: '#D9E3DC',
-              400: '#8A9A92', 500: '#52635B', 600: '#44544D', 700: '#33423B',
-              800: '#1B2B24', 900: '#0F1E19', 950: '#0A1511'
+              50: '#FAF7F9', 100: '#F5EEF3', 200: '#EDE4EB', 300: '#E0D0DC',
+              400: '#A790A0', 500: '#7A6374', 600: '#5F4A59', 700: '#47323F',
+              800: '#2E1B28', 900: '#1A0B17', 950: '#120610'
             }
           }
         }
@@ -90,8 +90,8 @@
     }
     .space-card:hover { transform: translateY(-3px); }
     .space-card.selected-card {
-      border-color: #1E3A2F !important;
-      box-shadow: 0 0 0 1px #1E3A2F, 0 10px 25px -5px rgba(30, 58, 47, 0.2) !important;
+      border-color: #3B1E34 !important;
+      box-shadow: 0 0 0 1px #3B1E34, 0 10px 25px -5px rgba(59, 30, 52, 0.2) !important;
     }
 
     .apple-map-container {
@@ -126,29 +126,29 @@
     .cs-pin { background: none; border: 0; }
     .cs-pin svg { display: block; filter: drop-shadow(0 5px 6px rgba(0,0,0,0.28)); transform-origin: 50% 100%; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
     .cs-pin:hover svg, .cs-pin.cs-pin-active svg { transform: scale(1.18); }
-    .cs-pin.cs-pin-active path:first-child { fill: #162E25; }
+    .cs-pin.cs-pin-active path:first-child { fill: #2A1425; }
     .leaflet-container { font-family: inherit; background: #eef1f5; }
     .leaflet-bar { border: none !important; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); box-shadow: 0 6px 18px rgba(0,0,0,0.14) !important; }
     .leaflet-bar a, .leaflet-bar a:hover { width: 36px; height: 36px; line-height: 36px; background: transparent; color: #1f2937; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.06); }
     .leaflet-bar a:last-child { border-bottom: 0; }
-    .leaflet-bar a:hover { background: rgba(255,255,255,0.95); color: #1E3A2F; }
+    .leaflet-bar a:hover { background: rgba(255,255,255,0.95); color: #3B1E34; }
     .leaflet-control-attribution { background: rgba(255,255,255,0.7) !important; backdrop-filter: blur(8px); border-radius: 10px 0 0 0; font-size: 10px; color: #6b7280; }
     .leaflet-control-attribution a { color: #6b7280; }
   .cs-tiles { filter: saturate(.7) contrast(.94) brightness(1.05); }
   </style>
 </head>
-<body class="bg-[#F7F8F5] text-slate-800 font-sans antialiased min-h-screen flex flex-col pb-20 lg:pb-0 selection:bg-brand selection:text-white">
+<body class="bg-[#FAF7F9] text-slate-800 font-sans antialiased min-h-screen flex flex-col pb-20 lg:pb-0 selection:bg-brand selection:text-white">
 
   <!-- NOTIFICHE -->
   <div id="toast" class="hidden" role="status" aria-live="polite"></div>
 
   <!-- HEADER -->
-  <header class="sticky top-0 z-50 bg-[#F7F8F5]/85 backdrop-blur-md border-b border-[#E6EBE7] px-4 py-3.5 md:px-8 navbar">
+  <header class="sticky top-0 z-50 bg-[#FAF7F9]/85 backdrop-blur-md border-b border-[#EDE4EB] px-4 py-3.5 md:px-8 navbar">
     <div class="max-w-7xl mx-auto flex justify-between items-center gap-2 md:gap-4">
 
       <!-- LOGO -->
       <div id="logoHome" class="flex items-center gap-2 cursor-pointer shrink-0 logo">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" class="w-9 h-9 shrink-0 rounded-full shadow-md" viewBox="0 0 1080 1080" role="img" aria-label="ChairShare"><circle cx="540" cy="540" r="540" fill="#1E3A2F"/><g transform="translate(0 4)"><path d="M383 232 L413 542 L683 542 M413 542 L393 802 M683 542 L698 802" fill="none" stroke="#fff" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" class="w-9 h-9 shrink-0 rounded-full shadow-md" viewBox="0 0 1080 1080" role="img" aria-label="ChairShare"><circle cx="540" cy="540" r="540" fill="#3B1E34"/><g transform="translate(0 4)"><path d="M383 232 L413 542 L683 542 M413 542 L393 802 M683 542 L698 802" fill="none" stroke="#fff" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
         <span class="text-lg md:text-xl font-extrabold tracking-tight text-brand block">Chair<span class="text-slate-800">Share</span></span>
       </div>
 
@@ -254,14 +254,14 @@
     <!-- CATEGORY BAR -->
     <div class="bg-white border-b border-slate-200 py-3 px-4 shadow-sm sticky top-[150px] md:top-[61px] z-20">
       <div class="max-w-7xl mx-auto flex justify-center mb-3">
-        <div class="inline-flex bg-[#EAEFEA] p-1 rounded-full border border-[#D9E3DC] text-xs font-semibold" id="macroTabs" role="tablist">
-          <button type="button" id="tabBeauty" data-macro-tab="benessere" role="tab" class="macro-tab active bg-white text-[#0F1E19] shadow-sm font-bold rounded-full px-4 py-1.5 transition-all flex items-center gap-1.5"><span>✂️</span> <span>Saloni &amp; Benessere</span></button>
-          <button type="button" id="tabOffice" data-macro-tab="uffici" role="tab" class="macro-tab text-[#52635B] hover:text-[#0F1E19] rounded-full px-4 py-1.5 transition-all font-medium flex items-center gap-1.5"><span>💼</span> <span>Uffici &amp; Desk</span></button>
+        <div class="inline-flex bg-[#F2E8F0] p-1 rounded-full border border-[#E4D5E0] text-xs font-semibold" id="macroTabs" role="tablist">
+          <button type="button" id="tabBeauty" data-macro-tab="benessere" role="tab" class="macro-tab active bg-white text-[#1A0B17] shadow-sm font-bold rounded-full px-4 py-1.5 transition-all flex items-center gap-1.5"><span>✂️</span> <span>Saloni &amp; Benessere</span></button>
+          <button type="button" id="tabOffice" data-macro-tab="uffici" role="tab" class="macro-tab text-[#7A6374] hover:text-[#1A0B17] rounded-full px-4 py-1.5 transition-all font-medium flex items-center gap-1.5"><span>💼</span> <span>Uffici &amp; Desk</span></button>
         </div>
       </div>
       <div class="max-w-7xl mx-auto flex items-center gap-2.5 overflow-x-auto no-scrollbar scroll-smooth" id="categoryPills">
 
-        <button data-cat="" data-macro="all" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border-2 border-brand bg-[#EBF2EE] text-brand text-xs font-bold transition-all">
+        <button data-cat="" data-macro="all" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border-2 border-brand bg-[#F5EEF3] text-brand text-xs font-bold transition-all">
           <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
             <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
@@ -325,11 +325,11 @@
     </div>
 
     <!-- BENVENUTO: spiega subito cos'è il sito -->
-    <section id="heroIntro" class="bg-gradient-to-b from-white to-[#F7F8F5] border-b border-slate-100 px-4 py-5 md:py-6 hidden">
+    <section id="heroIntro" class="bg-gradient-to-b from-white to-[#FAF7F9] border-b border-slate-100 px-4 py-5 md:py-6 hidden">
       <div class="max-w-7xl mx-auto relative">
         <button id="btnHeroClose" type="button" aria-label="Chiudi" class="absolute -top-1 right-0 text-slate-400 hover:text-slate-700 text-lg leading-none px-2">&times;</button>
-        <span class="inline-block bg-[#1E3A2F]/10 text-[#1E3A2F] border border-[#1E3A2F]/20 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-3">⚡ Condivisione Spazi &amp; Postazioni Professionali</span>
-        <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight pr-8 max-w-3xl tracking-tight" style="text-wrap:balance">Lavora dove vuoi, <span class="text-[#1E3A2F]">solo quando ti serve.</span></h1>
+        <span class="inline-block bg-[#3B1E34]/10 text-[#3B1E34] border border-[#3B1E34]/20 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-3">⚡ Condivisione Spazi &amp; Postazioni Professionali</span>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight pr-8 max-w-3xl tracking-tight" style="text-wrap:balance">Lavora dove vuoi, <span class="text-[#3B1E34]">solo quando ti serve.</span></h1>
         <p class="text-base md:text-lg text-slate-500 mt-3 max-w-2xl" style="text-wrap:balance">Prenota poltrone, cabine e scrivanie a ore o a giornata. Nessun costo fisso, massima autonomia.</p>
         <div class="flex flex-wrap items-center gap-2 mt-5">
           <button id="btnHeroSearch" type="button" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-2.5 rounded-full">Cerca uno spazio</button>
@@ -367,7 +367,7 @@
   </div>
 
   <!-- AREA PERSONALE -->
-  <div id="profilePage" class="hidden flex-1 w-full bg-[#F7F8F5]">
+  <div id="profilePage" class="hidden flex-1 w-full bg-[#FAF7F9]">
     <div class="max-w-6xl mx-auto px-4 py-8 space-y-5">
 
       <!-- HEADER UTENTE -->
@@ -377,7 +377,7 @@
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-2">
               <h2 id="profileUserFullName" class="text-xl font-extrabold text-slate-900 truncate"></h2>
-              <span id="userRoleBadge" class="hidden text-[11px] px-3 py-1 rounded-full font-bold bg-[#EBF2EE] text-brand"></span>
+              <span id="userRoleBadge" class="hidden text-[11px] px-3 py-1 rounded-full font-bold bg-[#F5EEF3] text-brand"></span>
             </div>
             <p class="text-xs text-slate-500 mt-0.5"><span id="profileUserEmail"></span><span id="profileUserPhoneWrap" class="hidden"> · 📞 <span id="profileUserPhone"></span></span></p>
             <span id="roleSupportNote" class="hidden text-[11px] text-slate-400">(Vuoi cambiare tipologia di profilo? <a href="mailto:info@chairshare.it" class="underline hover:text-brand">Contatta l'assistenza</a>)</span>
@@ -431,7 +431,7 @@
       <!-- ===== FREELANCE ===== -->
       <div id="agendaSection" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-        <div id="agLinkBox" class="lg:col-span-2 rounded-3xl p-5 border border-white/60 bg-gradient-to-br from-[#EBF2EE]/80 to-white/80 backdrop-blur-md shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)] space-y-3">
+        <div id="agLinkBox" class="lg:col-span-2 rounded-3xl p-5 border border-white/60 bg-gradient-to-br from-[#F5EEF3]/80 to-white/80 backdrop-blur-md shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)] space-y-3">
           <h3 class="text-base font-extrabold text-slate-900">🔗 Il tuo Link Personale di Prenotazione</h3>
           <p id="agLinkHint" class="text-[11px] text-slate-600"></p>
           <div class="flex flex-col sm:flex-row gap-2">
@@ -439,7 +439,7 @@
             <button type="button" id="btnAgCopy" class="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Copia Link</button>
             <a id="btnAgShare" target="_blank" rel="noopener" class="bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-xl text-center">💬 Condividi su WhatsApp</a>
           </div>
-          <div class="pt-2 border-t border-[#1E3A2F]/20">
+          <div class="pt-2 border-t border-[#3B1E34]/20">
             <p class="text-[11px] font-bold text-slate-700">Il tuo numero WhatsApp <span class="font-normal text-slate-500">(lo vedono i clienti solo dopo aver prenotato)</span></p>
             <div class="flex gap-2 mt-1">
               <input id="agPhone" type="tel" inputmode="tel" maxlength="20" placeholder="es. 333 1234567" class="flex-1 sm:max-w-xs px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand bg-white">
@@ -499,11 +499,11 @@
           <div id="toReviewList" class="space-y-2"></div>
         </div>
         <div id="myHostReviewsBox">
-          <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider mb-2">Ricevute come Host <span id="myHostRating" class="text-[#C59B27] normal-case"></span></h4>
+          <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider mb-2">Ricevute come Host <span id="myHostRating" class="text-[#9D7A94] normal-case"></span></h4>
           <div id="myHostReviews" class="space-y-2 text-xs"></div>
         </div>
         <div>
-          <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider mb-2">Ricevute come Freelance <span id="myFreeRating" class="text-[#C59B27] normal-case"></span></h4>
+          <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider mb-2">Ricevute come Freelance <span id="myFreeRating" class="text-[#9D7A94] normal-case"></span></h4>
           <div id="myFreeReviews" class="space-y-2 text-xs"></div>
         </div>
       </div>
@@ -844,11 +844,11 @@
         <fieldset class="space-y-1.5">
           <legend class="text-xs text-slate-500 uppercase font-bold">Seleziona il tuo profilo</legend>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <label class="flex items-start gap-2 p-3 border border-slate-300 rounded-xl cursor-pointer text-xs font-bold text-slate-800 hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-[#EBF2EE]">
+            <label class="flex items-start gap-2 p-3 border border-slate-300 rounded-xl cursor-pointer text-xs font-bold text-slate-800 hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-[#F5EEF3]">
               <input type="radio" name="reg-role" value="host" required class="mt-0.5 text-brand focus:ring-brand" />
               <span>🏢 Host / Proprietario di Salone<span class="block font-normal text-[11px] text-slate-500 mt-0.5">Ho uno spazio da condividere</span></span>
             </label>
-            <label class="flex items-start gap-2 p-3 border border-slate-300 rounded-xl cursor-pointer text-xs font-bold text-slate-800 hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-[#EBF2EE]">
+            <label class="flex items-start gap-2 p-3 border border-slate-300 rounded-xl cursor-pointer text-xs font-bold text-slate-800 hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-[#F5EEF3]">
               <input type="radio" name="reg-role" value="guest" checked required class="mt-0.5 text-brand focus:ring-brand" />
               <span>✂️ Freelance / Professionista<span class="block font-normal text-[11px] text-slate-500 mt-0.5">Cerco una postazione</span></span>
             </label>
@@ -912,13 +912,13 @@
 
       <div>
         <div class="flex items-center justify-between gap-2 mb-2">
-          <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Recensioni dell'Host <span id="detailRatingSummary" class="text-[#C59B27] normal-case"></span></h4>
+          <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Recensioni dell'Host <span id="detailRatingSummary" class="text-[#9D7A94] normal-case"></span></h4>
           <button type="button" id="btnWriteReview" class="hidden text-xs font-bold text-brand underline">Scrivi una recensione</button>
         </div>
         <div id="detailReviewsList" class="space-y-2 text-xs"></div>
       </div>
 
-      <div id="contactLockNotice" class="bg-[#EBF2EE] border border-[#1E3A2F]/25 rounded-2xl p-4 flex items-center justify-between gap-3 text-xs transition-all">
+      <div id="contactLockNotice" class="bg-[#F5EEF3] border border-[#3B1E34]/25 rounded-2xl p-4 flex items-center justify-between gap-3 text-xs transition-all">
         <div>
           <strong class="text-brand font-bold block text-sm">Contatta l'Host</strong>
           <p class="text-slate-600 mt-0.5" id="detailPhoneText">Accedi ai recapiti telefonici e WhatsApp diretti.</p>
@@ -1342,7 +1342,7 @@
 
     // Pin personalizzato (sostituisce il segnaposto blu standard di Leaflet)
     const PIN_SVG = '<svg viewBox="0 0 36 46" width="36" height="46" aria-hidden="true">' +
-      '<path d="M18 2C9.2 2 2.5 8.7 2.5 17.2c0 11.2 11.6 21.9 14.6 26.2.4.6 1.4.6 1.8 0 3-4.3 14.6-15 14.6-26.2C33.5 8.7 26.8 2 18 2z" fill="#1E3A2F" stroke="#fff" stroke-width="2.5"/>' +
+      '<path d="M18 2C9.2 2 2.5 8.7 2.5 17.2c0 11.2 11.6 21.9 14.6 26.2.4.6 1.4.6 1.8 0 3-4.3 14.6-15 14.6-26.2C33.5 8.7 26.8 2 18 2z" fill="#3B1E34" stroke="#fff" stroke-width="2.5"/>' +
       '<g transform="translate(4.5 4.3) scale(0.025)"><path d="M383 232 L413 542 L683 542 M413 542 L393 802 M683 542 L698 802" fill="none" stroke="#fff" stroke-width="95" stroke-linecap="round" stroke-linejoin="round"/></g></svg>';
     const pinIcon = L.divIcon({ className: 'cs-pin', html: PIN_SVG, iconSize: [36, 46], iconAnchor: [18, 44], popupAnchor: [0, -40] });
 
@@ -1752,7 +1752,7 @@
         const msg = `Ciao ${String(b.freelance_name).split(' ')[0]}, ti scrivo per la postazione di ${b.space_name} che hai segnato per ${quando}. Ti scrivo per organizzarci: va bene?`;
         return `<div class="border border-slate-100 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div class="min-w-0">
-            <span class="inline-block text-[11px] font-bold bg-[#EBF2EE] text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
+            <span class="inline-block text-[11px] font-bold bg-[#F5EEF3] text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
             <p class="text-sm font-bold text-slate-900 truncate mt-1">${esc(b.space_name)}</p>
             <p class="text-xs text-slate-600 truncate">${esc(b.freelance_name)}${b.freelance_phone ? ' · ' + esc(b.freelance_phone) : ''}</p>
           </div>
@@ -1933,19 +1933,19 @@
         const nChairs = space.availableChairs || 1;
         const foto = space.images && space.images.length
           ? `<img src="${esc(urlFoto(space.images[0]))}" alt="Foto di ${esc(nomeCard)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />`
-          : `<div class="w-full h-full flex items-center justify-center text-5xl bg-gradient-to-br from-[#EBF2EE] to-slate-100" aria-hidden="true">${ICONE_TIPO[space.type] || '📍'}</div>`;
-        const tags = (space.services || []).slice(0, 3).map(t => `<span class="bg-slate-50 text-slate-600 text-[10px] font-medium px-2.5 py-1 rounded-lg border border-slate-100">${esc(t)}</span>`).join('');
+          : `<div class="w-full h-full flex items-center justify-center text-5xl bg-gradient-to-br from-[#F5EEF3] to-slate-100" aria-hidden="true">${ICONE_TIPO[space.type] || '📍'}</div>`;
+        const tags = (space.services || []).slice(0, 3).map(t => `<span class="bg-[#F5EEF3] text-[#3B1E34] text-[10px] font-medium px-2.5 py-1 rounded-lg border border-[#EDE4EB]">${esc(t)}</span>`).join('');
         const unitaTxt = NOMI_UNITA[space.priceUnit] || 'giorno';
         const minTxt = (space.priceUnit === 'ora' && space.minHours > 1) ? ` · min. ${space.minHours} ore` : '';
         card.innerHTML = `
           <div class="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
             ${foto}
             <span class="absolute top-3.5 left-3.5 bg-slate-950/70 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">${ICONE_TIPO[space.type] || ''} ${esc(TIPI[space.type] || space.type)}</span>
-            <span class="absolute top-3.5 right-3.5 bg-white/95 backdrop-blur-md text-[#1E3A2F] text-[11px] font-bold border border-[#E6EBE7] px-3 py-1 rounded-full shadow-sm">${nChairs} postazion${nChairs > 1 ? 'i' : 'e'}</span>
+            <span class="absolute top-3.5 right-3.5 bg-white/95 backdrop-blur-md text-[#3B1E34] text-[11px] font-bold border border-[#EDE4EB] px-3 py-1 rounded-full shadow-sm">${nChairs} postazion${nChairs > 1 ? 'i' : 'e'}</span>
           </div>
           <div class="p-5 flex flex-col flex-1 justify-between gap-4">
             <div>
-              <h3 class="font-bold text-slate-900 text-base tracking-tight truncate group-hover:text-[#1E3A2F] transition-colors">${esc(nomeCard)}</h3>
+              <h3 class="font-bold text-slate-900 text-base tracking-tight truncate group-hover:text-[#3B1E34] transition-colors">${esc(nomeCard)}</h3>
               ${currentUser ? '' : BADGE_NOME_BLOCCATO}
               ${badgeReputazione(space.userId)}
               <p class="text-xs text-slate-500 mt-0.5">${locationText}</p>
@@ -1955,7 +1955,7 @@
             </div>
             <div class="pt-4 border-t border-slate-100/80 flex items-center justify-between gap-2">
               <div><span class="text-lg font-black text-slate-900">€${esc(space.price)}</span><span class="text-xs text-slate-400 font-normal"> / ${esc(unitaTxt)}${esc(minTxt)}</span></div>
-              <button type="button" data-action="dettagli" class="bg-[#1E3A2F] hover:bg-[#162E25] text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm shadow-[#1E3A2F]/20 transition-all active:scale-95">${isLoggedIn ? 'Contatta' : 'Sblocca contatti'}</button>
+              <button type="button" data-action="dettagli" class="bg-[#3B1E34] hover:bg-[#2A1425] text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm shadow-[#3B1E34]/20 transition-all active:scale-95">${isLoggedIn ? 'Contatta' : 'Sblocca contatti'}</button>
             </div>
           </div>`;
         card.addEventListener('click', () => mostraDettagliSpazio(space.id));
@@ -2001,8 +2001,8 @@
       }
     }
 
-    const TAB_ON = "macro-tab active bg-white text-[#0F1E19] shadow-sm font-bold rounded-full px-4 py-1.5 transition-all flex items-center gap-1.5";
-    const TAB_OFF = "macro-tab text-[#52635B] hover:text-[#0F1E19] rounded-full px-4 py-1.5 transition-all font-medium flex items-center gap-1.5";
+    const TAB_ON = "macro-tab active bg-white text-[#1A0B17] shadow-sm font-bold rounded-full px-4 py-1.5 transition-all flex items-center gap-1.5";
+    const TAB_OFF = "macro-tab text-[#7A6374] hover:text-[#1A0B17] rounded-full px-4 py-1.5 transition-all font-medium flex items-center gap-1.5";
     function aggiornaMacroUI() {
       document.querySelectorAll('#macroTabs .macro-tab').forEach(t => { t.className = t.getAttribute('data-macro-tab') === macroSettore ? TAB_ON : TAB_OFF; });
       aggiornaVisibilitaPill();
@@ -2024,7 +2024,7 @@
       if (selectedCategory && macroDi(selectedCategory) !== macroSettore) { macroSettore = macroDi(selectedCategory); aggiornaMacroUI(); }
       document.querySelectorAll('#categoryPills .cat-pill').forEach(pill => {
         if (pill.getAttribute('data-cat') === selectedCategory) {
-          pill.className = "cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border-2 border-brand bg-[#EBF2EE] text-brand text-xs font-bold transition-all";
+          pill.className = "cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border-2 border-brand bg-[#F5EEF3] text-brand text-xs font-bold transition-all";
         } else {
           pill.className = "cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-slate-200 bg-white text-slate-600 hover:border-slate-400 text-xs font-semibold transition-all";
         }
@@ -2282,7 +2282,7 @@
       const rep = testoReputazione(userId, 'host');
       const ver = hostVerificati.has(userId);
       if (!rep && !ver) return '';
-      return `<p class="text-[11px] mt-0.5 flex items-center gap-2">${rep ? `<span class="font-bold text-[#C59B27]">${esc(rep)}</span>` : ''}${ver ? '<span class="font-bold text-emerald-600">✔ Verificato</span>' : ''}</p>`;
+      return `<p class="text-[11px] mt-0.5 flex items-center gap-2">${rep ? `<span class="font-bold text-[#9D7A94]">${esc(rep)}</span>` : ''}${ver ? '<span class="font-bold text-emerald-600">✔ Verificato</span>' : ''}</p>`;
     }
 
     function stelleTesto(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
@@ -2309,7 +2309,7 @@
         nome.className = 'text-slate-800';
         nome.textContent = r.reviewer_name || 'Utente';
         const st = document.createElement('span');
-        st.className = 'text-[#C59B27] font-bold';
+        st.className = 'text-[#9D7A94] font-bold';
         st.textContent = stelleTesto(r.rating);
         st.setAttribute('aria-label', r.rating + ' stelle su 5');
         top.append(nome, st);
@@ -2763,7 +2763,7 @@
         div.innerHTML = `
           <div>
             <div class="flex items-center justify-between gap-2"><h4 class="font-bold text-sm text-slate-900 truncate">${esc(s.name)}</h4>${s.active === false ? '<span class="text-[10px] font-bold bg-slate-200 text-slate-600 rounded-full px-2 py-0.5 shrink-0">Disattivato</span>' : ''}</div>
-            <span class="inline-block text-[10px] font-bold bg-[#EBF2EE] text-brand rounded-full px-2 py-0.5 mt-1">${s.availableChairs || 1} postazion${(s.availableChairs || 1) > 1 ? 'i' : 'e'} in contemporanea</span>
+            <span class="inline-block text-[10px] font-bold bg-[#F5EEF3] text-brand rounded-full px-2 py-0.5 mt-1">${s.availableChairs || 1} postazion${(s.availableChairs || 1) > 1 ? 'i' : 'e'} in contemporanea</span>
             <p class="text-xs text-slate-500 mt-0.5">📍 ${c ? esc(c.address) + ', ' : ''}${esc(s.city)}</p>
             <p class="text-xs font-bold text-brand mt-1">${esc(etichettaTariffa(s))}</p>
             <p class="text-[11px] text-slate-500 mt-1">📷 ${(s.images || []).length} foto • 👁 ${statRichieste[s.id] || 0} ${(statRichieste[s.id] || 0) === 1 ? 'richiesta' : 'richieste'} di contatto</p>
@@ -3049,7 +3049,7 @@
         const cancellabile = (parteData(b.day).getTime() + minuti(oraBreve(b.start_time)) * 60000 - Date.now()) > 86400000;
         return `<div class="border border-slate-100 rounded-2xl p-3 flex items-center justify-between gap-3">
           <div class="min-w-0">
-            <span class="inline-block text-[11px] font-bold bg-[#EBF2EE] text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
+            <span class="inline-block text-[11px] font-bold bg-[#F5EEF3] text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
             <p class="text-sm font-bold text-slate-900 truncate mt-1">${esc(sp ? sp.name : 'Salone')}</p>
             <p class="text-[11px] text-slate-500 truncate">📍 ${esc(indirizzo)}</p>
           </div>
@@ -3369,7 +3369,7 @@
       $('bookServices').addEventListener('click', ev => {
         const t = ev.target.closest('button[data-sv]'); if (!t) return;
         bk.servizio = bk.data.services.find(x => x.id === t.dataset.sv);
-        document.querySelectorAll('#bookServices button').forEach(x => { const on = x === t; x.classList.toggle('border-brand', on); x.classList.toggle('bg-[#EBF2EE]', on); });
+        document.querySelectorAll('#bookServices button').forEach(x => { const on = x === t; x.classList.toggle('border-brand', on); x.classList.toggle('bg-[#F5EEF3]', on); });
         $('bookStep2').classList.remove('hidden');
         disegnaGiorniPrenota();
         $('bookStep2').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
