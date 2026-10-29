@@ -156,6 +156,9 @@
           <option value="barbiere">Hair & Barber</option>
           <option value="estetica">Estetica</option>
           <option value="fotografia">Foto/Video</option>
+          <option value="scrivania">Scrivania singola</option>
+          <option value="ufficio">Ufficio riservato</option>
+          <option value="sala_riunioni">Sala riunioni</option>
           <option value="coworking">Coworking</option>
         </select>
         <span class="text-gray-300">|</span>
@@ -243,16 +246,72 @@
 
     <!-- CATEGORY BAR -->
     <div class="bg-white border-b border-gray-200 py-3 px-4 shadow-sm sticky top-[150px] md:top-[61px] z-20">
-      <div class="max-w-7xl mx-auto flex items-center gap-2.5 overflow-x-auto no-scrollbar scroll-smooth" id="categoryPills" style="-webkit-overflow-scrolling:touch">
-        <button data-cat="" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-brand bg-brand text-white text-sm font-bold shadow-sm transition-all"><span class="text-lg leading-none" aria-hidden="true">🔎</span><span>Tutti gli Spazi</span></button>
-        <button data-cat="barbiere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-800 hover:border-gray-900 text-sm font-semibold transition-all"><span class="text-lg leading-none" aria-hidden="true">✂️</span><span>Hair &amp; Barber</span></button>
-        <button data-cat="estetica" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-800 hover:border-gray-900 text-sm font-semibold transition-all"><span class="text-lg leading-none" aria-hidden="true">💅</span><span>Nails &amp; Estetica</span></button>
-        <button data-cat="massaggi" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-800 hover:border-gray-900 text-sm font-semibold transition-all"><span class="text-lg leading-none" aria-hidden="true">💆</span><span>Cabina Massaggi</span></button>
-        <button data-cat="psicoterapia" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-800 hover:border-gray-900 text-sm font-semibold transition-all"><span class="text-lg leading-none" aria-hidden="true">🛋️</span><span>Studio Psicoterapia</span></button>
-        <span class="shrink-0 w-px h-7 bg-gray-300 mx-1" aria-hidden="true"></span>
-        <span class="shrink-0 text-[11px] font-bold uppercase tracking-wide text-gray-400">Altre postazioni</span>
-        <button data-cat="fotografia" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-800 hover:border-gray-900 text-sm font-semibold transition-all"><span class="text-lg leading-none" aria-hidden="true">📷</span><span>Foto &amp; Video</span></button>
-        <button data-cat="coworking" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-800 hover:border-gray-900 text-sm font-semibold transition-all"><span class="text-lg leading-none" aria-hidden="true">💻</span><span>Coworking</span></button>
+      <div class="max-w-7xl mx-auto flex gap-2 mb-3" id="macroTabs" role="tablist">
+        <button type="button" data-macro-tab="benessere" role="tab" class="macro-tab flex-1 sm:flex-none px-5 py-2.5 rounded-full text-sm font-extrabold border bg-gray-900 text-white border-gray-900 transition-all">✂️ Saloni &amp; Benessere</button>
+        <button type="button" data-macro-tab="uffici" role="tab" class="macro-tab flex-1 sm:flex-none px-5 py-2.5 rounded-full text-sm font-extrabold border bg-white text-gray-800 border-gray-300 hover:border-gray-900 transition-all">💼 Uffici &amp; Coworking</button>
+      </div>
+      <div class="max-w-7xl mx-auto flex items-center gap-8 overflow-x-auto no-scrollbar" id="categoryPills">
+
+        <button data-cat="" data-macro="all" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all">
+          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
+            <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
+            <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" />
+            <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
+          </svg>
+          <span>Tutti gli Spazi</span>
+        </button>
+
+        <button data-cat="psicoterapia" data-macro="benessere" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/></svg>
+          <span>Psicoterapia</span>
+        </button>
+
+        <button data-cat="massaggi" data-macro="benessere" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+          <span>Massaggi</span>
+        </button>
+
+        <button data-cat="barbiere" data-macro="benessere" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="7.5" cy="17.5" r="3" />
+            <circle cx="16.5" cy="17.5" r="3" />
+            <line x1="9.5" y1="15.5" x2="18.5" y2="4.5" />
+            <line x1="14.5" y1="15.5" x2="5.5" y2="4.5" />
+            <circle cx="12" cy="11.5" r="1" fill="currentColor" />
+          </svg>
+          <span>Hair & Barber</span>
+        </button>
+
+        <button data-cat="estetica" data-macro="benessere" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
+          <span>Estetica & Nails</span>
+        </button>
+
+        <button data-cat="fotografia" data-macro="benessere" class="cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
+          <span>Foto & Video</span>
+        </button>
+
+        <button data-cat="scrivania" data-macro="uffici" class="cat-pill hidden flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <span class="text-2xl leading-6" aria-hidden="true">🪑</span>
+          <span>Scrivania Singola</span>
+        </button>
+
+        <button data-cat="ufficio" data-macro="uffici" class="cat-pill hidden flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <span class="text-2xl leading-6" aria-hidden="true">🚪</span>
+          <span>Ufficio Riservato</span>
+        </button>
+
+        <button data-cat="sala_riunioni" data-macro="uffici" class="cat-pill hidden flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <span class="text-2xl leading-6" aria-hidden="true">👥</span>
+          <span>Sala Riunioni</span>
+        </button>
+
+        <button data-cat="coworking" data-macro="uffici" class="cat-pill hidden flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+          <span>Coworking</span>
+        </button>
       </div>
     </div>
 
@@ -260,10 +319,9 @@
     <section id="heroIntro" class="bg-gradient-to-br from-pink-50 to-white border-b border-pink-100 px-4 py-5 md:py-7 hidden">
       <div class="max-w-7xl mx-auto relative">
         <button id="btnHeroClose" type="button" aria-label="Chiudi" class="absolute -top-1 right-0 text-gray-400 hover:text-gray-700 text-lg leading-none px-2">&times;</button>
-        <span class="inline-block text-[10px] md:text-xs font-extrabold tracking-wide text-brand bg-white border border-pink-200 rounded-full px-3 py-1 mb-3">⚡ LA PIATTAFORMA PER ACCONCIATORI, ESTETISTE E TERAPISTI INDIPENDENTI</span>
-        <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight pr-8 max-w-4xl" style="text-wrap:balance">Lavora nei migliori saloni della tua città, <span class="text-brand">solo quando ti serve.</span></h1>
-        <p class="text-base md:text-lg text-gray-700 mt-3 max-w-3xl" style="text-wrap:balance">Affitta poltrone, cabine estetiche e studi professionali a ore o a giornata. Gestisci i tuoi appuntamenti con un'agenda personale e azzera i costi fissi.</p>
-        <p class="text-sm md:text-base text-gray-500 mt-1 max-w-3xl">Hai una poltrona o una cabina libera? <strong class="text-gray-700">Mettila a reddito</strong>: pubblicala gratis e ricevi i professionisti direttamente.</p>
+        <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 leading-tight pr-8 max-w-4xl" style="text-wrap:balance">Affitta una poltrona o una postazione di lavoro<span class="block text-brand">a ore o a giornata</span></h1>
+        <p class="text-base md:text-lg text-gray-800 font-semibold mt-3 max-w-3xl" style="text-wrap:balance">ChairShare mette in contatto chi ha uno spazio libero con chi cerca dove lavorare.</p>
+        <p class="text-sm md:text-base text-gray-500 mt-1 max-w-3xl">Per parrucchieri, barber, estetiste, psicologi, massaggiatori e fotografi. Gratis, senza intermediari.</p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5 max-w-4xl">
           <div class="bg-white border border-gray-200 rounded-2xl p-4 flex items-start gap-3">
             <span class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
@@ -279,8 +337,8 @@
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-2 mt-5">
-          <button id="btnHeroSearch" type="button" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-2.5 rounded-full">Cerca una postazione</button>
-          <button id="btnHeroPublish" type="button" class="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 text-xs font-bold px-5 py-2.5 rounded-full">Metti a reddito la tua poltrona</button>
+          <button id="btnHeroSearch" type="button" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-2.5 rounded-full">Cerca uno spazio</button>
+          <button id="btnHeroPublish" type="button" class="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 text-xs font-bold px-5 py-2.5 rounded-full">+ Pubblica il tuo spazio</button>
           <button id="btnHeroHow" type="button" class="text-xs font-bold text-gray-500 hover:text-brand underline px-2 py-2.5">Come funziona</button>
         </div>
       </div>
@@ -418,9 +476,9 @@
 
       <div id="legalToolsSection" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
         <div>
-          <h3 class="text-lg font-bold text-gray-900">🛡️ Tutela la tua autonomia: modello di concessione postazione</h3>
-          <p class="text-xs text-gray-500 mt-1">Accedi al modello precompilato di concessione postazione per documentare la tua autonomia lavorativa: da compilare, stampare e firmare tra Host e Freelance. È uno schema orientativo, da adattare e far verificare da un professionista prima dell'uso.</p>
-          <a href="/contratto-affitto-poltrona.html" target="_blank" rel="noopener" class="inline-block mt-3 bg-gray-900 hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-full">📄 Consulta / Stampa Contratto</a>
+          <h3 class="text-lg font-bold text-gray-900">📄 Modulistica e Tutela Legale</h3>
+          <p class="text-xs text-gray-500 mt-1">Contratto Standard di Concessione Spazio &amp; Postazione: modello universale per studi, cabine, poltrone e scrivanie, da compilare, stampare e firmare tra Host e Freelance. È uno schema orientativo da adattare e far verificare da un professionista.</p>
+          <a href="/contratto-affitto-poltrona.html" target="_blank" rel="noopener" class="inline-block mt-3 bg-gray-900 hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-full">Apri e Stampa Contratto ↗</a>
         </div>
         <div class="border-t border-gray-100 pt-4">
           <label for="profTaxId" class="text-xs text-gray-500 uppercase font-bold">Partita IVA o Codice Fiscale</label>
@@ -932,6 +990,9 @@
                 <option value="barbiere">Barbiere / Parrucchiere</option>
                 <option value="estetica">Centro Estetico / Tatuaggi</option>
                 <option value="fotografia">Studio Fotografico</option>
+                <option value="scrivania">Scrivania singola (Ufficio / Desk)</option>
+                <option value="ufficio">Ufficio riservato</option>
+                <option value="sala_riunioni">Sala riunioni</option>
                 <option value="coworking">Postazione Coworking</option>
               </select>
             </div>
@@ -1092,18 +1153,31 @@
     // Pulizia di una vecchia cache locale che conteneva anche indirizzi e telefoni
     try { localStorage.removeItem('chairshare_spaces'); } catch (e) {}
 
+    const DOTAZIONI_UFFICIO = ["Connessione Wi-Fi Fibra", "Uso Stampante / Scanner", "Presa corrente dedicata", "Area Caffè / Ristoro", "Climatizzazione autonoma"];
     const SERVIZI_PER_CATEGORIA = {
       psicoterapia: ["Insonorizzazione acustica", "Poltrone ergonomiche", "Sala d'attesa clienti", "Wi-Fi ad alta velocità", "Aria condizionata"],
       massaggi: ["Lettino professionale", "Scaldawater / Oli", "Cassa Bluetooth", "Lavatesta / Doccia", "Aria condizionata"],
       barbiere: ["Poltrona da barbiere idraulica", "Lavatesta professionale", "Sterilizzatore strumenti", "Specchio con luce LED", "Aria condizionata"],
       estetica: ["Lettino estetica elettrico", "Lampada d'ingrandimento", "Autoclave / Sterilizzatore", "Postazione Nails", "Aria condizionata"],
       fotografia: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Softbox & Modificatori", "Camerino / area trucco", "Wi-Fi per Tethering"],
-      coworking: ["Scrivania dedicata", "Seduta ergonomica", "Prese di corrente dedicate", "Wi-Fi Fibra 1Gbps", "Servizio Stampa / Scanner"]
+      coworking: ["Scrivania dedicata", "Seduta ergonomica", "Prese di corrente dedicate", "Wi-Fi Fibra 1Gbps", "Servizio Stampa / Scanner"],
+      scrivania: DOTAZIONI_UFFICIO,
+      ufficio: DOTAZIONI_UFFICIO,
+      sala_riunioni: DOTAZIONI_UFFICIO
     };
     const TIPI = {
       psicoterapia: 'Psicoterapia', massaggi: 'Massaggi', barbiere: 'Hair & Barber',
-      estetica: 'Estetica & Nails', fotografia: 'Foto & Video', coworking: 'Coworking'
+      estetica: 'Estetica & Nails', fotografia: 'Foto & Video', coworking: 'Coworking',
+      scrivania: 'Scrivania singola', ufficio: 'Ufficio riservato', sala_riunioni: 'Sala riunioni'
     };
+    // Macro-settori della home
+    const MACRO = {
+      benessere: ['barbiere', 'estetica', 'massaggi', 'psicoterapia', 'fotografia'],
+      uffici: ['scrivania', 'ufficio', 'sala_riunioni', 'coworking']
+    };
+    const TIPI_UFFICIO = MACRO.uffici;
+    let macroSettore = 'benessere';
+    function macroDi(tipo) { return MACRO.uffici.includes(tipo) ? 'uffici' : 'benessere'; }
     const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 
     const TIPI_MIN_2_ORE = ['barbiere', 'estetica'];
@@ -1809,6 +1883,7 @@
       const max = prezzoMassimo();
       const res = spazi.filter(s => {
         if (q && !((s.city || '').toLowerCase().includes(q) || (s.zone || '').toLowerCase().includes(q))) return false;
+        if (!(MACRO[macroSettore] || []).includes(s.type)) return false;
         if (selectedCategory && s.type !== selectedCategory) return false;
         if (max !== null && Number(s.price) > max) return false;
         return true;
@@ -1826,15 +1901,35 @@
       }
     }
 
+    const TAB_ON = "macro-tab flex-1 sm:flex-none px-5 py-2.5 rounded-full text-sm font-extrabold border bg-gray-900 text-white border-gray-900 transition-all";
+    const TAB_OFF = "macro-tab flex-1 sm:flex-none px-5 py-2.5 rounded-full text-sm font-extrabold border bg-white text-gray-800 border-gray-300 hover:border-gray-900 transition-all";
+    function aggiornaMacroUI() {
+      document.querySelectorAll('#macroTabs .macro-tab').forEach(t => { t.className = t.getAttribute('data-macro-tab') === macroSettore ? TAB_ON : TAB_OFF; });
+      aggiornaVisibilitaPill();
+    }
+    function aggiornaVisibilitaPill() {
+      document.querySelectorAll('#categoryPills .cat-pill').forEach(p => {
+        const m = p.getAttribute('data-macro');
+        p.classList.toggle('hidden', m !== 'all' && m !== macroSettore);
+      });
+    }
+    function impostaMacro(m) {
+      macroSettore = m === 'uffici' ? 'uffici' : 'benessere';
+      selectedCategory = '';
+      aggiornaMacroUI();
+      selectCategory('');
+    }
     function selectCategory(cat) {
       selectedCategory = cat || '';
+      if (selectedCategory && macroDi(selectedCategory) !== macroSettore) { macroSettore = macroDi(selectedCategory); aggiornaMacroUI(); }
       document.querySelectorAll('#categoryPills .cat-pill').forEach(pill => {
         if (pill.getAttribute('data-cat') === selectedCategory) {
-          pill.className = "cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-brand bg-brand text-white text-sm font-bold shadow-sm transition-all";
+          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-brand border-b-2 border-brand pb-1.5 text-xs font-bold transition-all";
         } else {
-          pill.className = "cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-800 hover:border-gray-900 text-sm font-semibold transition-all";
+          pill.className = "cat-pill flex flex-col items-center gap-1.5 shrink-0 text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-1.5 text-xs font-medium transition-all";
         }
       });
+      aggiornaVisibilitaPill();
       $('typeSelect').value = selectedCategory;
       cercaSpazi();
     }
@@ -2842,10 +2937,11 @@
             : `<span class="text-[10px] text-gray-400 shrink-0 text-right">Non cancellabile<br>entro 24 ore</span>`}
         </div>`).join('') : '<p class="text-[11px] text-gray-400">Nessuna postazione bloccata.</p>';
       // link
-      const ok = agServizi.length > 0 && agBlocchi.length > 0;
+      const blocchiSaloni = agBlocchi.filter(b => { const sp = spazi.find(x => x.id === b.space_id); return !(sp && TIPI_UFFICIO.includes(sp.type)); });
+      const ok = agServizi.length > 0 && blocchiSaloni.length > 0;
       $('agLink').value = linkPrenotazione();
-      $('agLinkHint').textContent = ok ? "Mandalo ai tuoi clienti: vedranno il tuo listino e gli orari liberi nelle fasce che hai bloccato."
-        : "Il link funziona quando hai almeno un servizio nel listino e una postazione bloccata.";
+      $('agLinkHint').textContent = ok ? "Mandalo ai tuoi clienti: vedranno il tuo listino e gli orari liberi nelle fasce che hai bloccato in saloni e studi. Scrivanie, uffici e coworking non compaiono nel link."
+        : "Il link funziona quando hai almeno un servizio nel listino e una postazione bloccata in un salone o studio (le scrivanie e gli uffici non contano).";
       const msg = "Ciao! Puoi prenotare un appuntamento con me da qui: " + linkPrenotazione();
       $('btnAgShare').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
       // appuntamenti
@@ -2934,10 +3030,31 @@
       if (b <= a) { mostraMessaggio("L'orario di fine deve essere dopo l'inizio.", 'err'); return; }
       const { error } = await c.rpc('create_chair_block', { p_space: sp, p_day: day, p_start: a, p_end: b });
       if (error) { mostraMessaggio(erroreAgenda(error), 'err'); blDisp = null; aggiornaDispBlocco(); return; }
-      mostraMessaggio("Postazione bloccata.");
       blDisp = null;
       await caricaAgenda();
       aggiornaDispBlocco();
+      const spz = spazi.find(x => x.id === sp);
+      if (spz && TIPI_UFFICIO.includes(spz.type)) { await riepilogoAccessoUfficio(spz, day, a, b); }
+      else mostraMessaggio("Postazione bloccata.");
+    }
+
+    // Scrivania/ufficio: solo blocco sul calendario + riepilogo di accesso (niente listino per clienti esterni)
+    async function riepilogoAccessoUfficio(spz, day, a, b) {
+      let ct = contatti[spz.id] || sbloccati[spz.id];
+      if (!ct) { try { ct = await sbloccaContatti(spz.id); } catch (e) { ct = null; } }
+      const wifi = (spz.services || []).filter(x => /wi-?fi/i.test(x));
+      const altre = (spz.services || []).filter(x => !/wi-?fi/i.test(x));
+      const righe = [
+        '🗓 ' + dataLunga(day) + ', ' + a + ' - ' + b,
+        '📍 ' + spz.name + (ct && ct.address ? ' — ' + ct.address : '') + (spz.city ? ', ' + spz.city : ''),
+        '📶 Wi-Fi: ' + (wifi.length ? wifi.join(', ') : 'non indicato'),
+        altre.length ? '🧰 Dotazioni: ' + altre.join(', ') : '',
+        '📞 Contatto Host: ' + (ct && ct.phone ? ct.phone : 'non disponibile')
+      ].filter(Boolean).join('\n');
+      const msg = `Ciao! Ho segnato su ChairShare la ${(TIPI[spz.type] || 'postazione').toLowerCase()} presso ${spz.name} per ${dataLunga(day)} dalle ${a} alle ${b}. Ti scrivo per organizzare l'accesso: va bene?`;
+      mostraAvvisoAnnullo('Postazione segnata sul calendario', righe, "Scrivi all'Host su WhatsApp", normalizzaTelefono(ct && ct.phone), msg);
+      $('cancelNoticeText').style.whiteSpace = 'pre-line';
+      $('cancelNoticeText').className = 'text-xs text-gray-700 text-left bg-gray-50 border border-gray-200 rounded-xl p-3';
     }
 
     async function liberaBlocco(id) {
@@ -2962,6 +3079,8 @@
 
     function mostraAvvisoAnnullo(titolo, testo, etichettaWa, waNumero, messaggio) {
       $('cancelNoticeTitle').textContent = titolo;
+      $('cancelNoticeText').style.whiteSpace = '';
+      $('cancelNoticeText').className = 'text-xs text-gray-600';
       $('cancelNoticeText').textContent = testo;
       const a = $('cancelNoticeWa');
       if (waNumero) {
@@ -3194,6 +3313,8 @@
       $('searchBtnMobile').addEventListener('click', cercaSpazi);
       $('btnResetFilters').addEventListener('click', resetFilters);
       $('typeSelect').addEventListener('change', e => selectCategory(e.target.value));
+      document.querySelectorAll('#macroTabs .macro-tab').forEach(t => t.addEventListener('click', () => impostaMacro(t.getAttribute('data-macro-tab'))));
+      aggiornaMacroUI();
       $('priceSelect').addEventListener('change', () => toggleCustomPrice('priceSelect', 'priceInput'));
       $('mobilePriceSelect').addEventListener('change', () => toggleCustomPrice('mobilePriceSelect', 'mobilePriceInput'));
       $('priceInput').addEventListener('keyup', e => { if (e.key === 'Enter') cercaSpazi(); });
