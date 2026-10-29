@@ -574,6 +574,11 @@
         <p id="bookDoneText" class="text-sm text-gray-600"></p>
         <a id="bookWa" target="_blank" rel="noopener" class="hidden block w-full bg-green-600 text-white font-extrabold text-sm py-3.5 rounded-xl">Invia conferma su WhatsApp</a>
         <p class="text-[11px] text-gray-400">Il messaggio è già pronto: ti basta premere invio.</p>
+        <div class="pt-3 mt-1 border-t border-gray-100 space-y-2">
+          <p class="text-xs font-bold text-gray-700">Salva l'appuntamento nel tuo calendario</p>
+          <a id="bookCalGoogle" target="_blank" rel="noopener noreferrer" class="block w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 font-bold text-sm py-3 rounded-xl transition-all">📅 Salva in Google Calendar</a>
+          <button type="button" id="bookCalIcs" class="block w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 font-bold text-sm py-3 rounded-xl transition-all">🍏 Scarica per Apple Calendar (.ics)</button>
+        </div>
       </div>
     </div>
   </div>
@@ -3339,6 +3344,57 @@
           <span class="text-sm font-extrabold text-gray-900">${euro(x.price)}</span></button>`).join('');
     }
 
+    // ---------- Calendario: Google Calendar e file .ics ----------
+    function dataOraCal(day, hhmm) { return day.replace(/-/g, '') + 'T' + hhmm.replace(':', '') + '00'; }
+    function datiEvento(ev) {
+      const luogo = [ev.salon, ev.city].filter(Boolean).join(', ');
+      return {
+        titolo: ev.servizio + ' - ' + ev.cliente,
+        dettagli: 'Prenotazione ChairShare' + (ev.professionista ? ' con ' + ev.professionista : '') + ' - Tel: ' + ev.telefono,
+        luogo,
+        inizio: dataOraCal(ev.day, ev.start), fine: dataOraCal(ev.day, ev.end)
+      };
+    }
+    function googleCalUrl(ev) {
+      const d = datiEvento(ev);
+      return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text=' + encodeURIComponent(d.titolo)
+        + '&dates=' + d.inizio + '/' + d.fine
+        + '&ctz=Europe/Rome'
+        + '&details=' + encodeURIComponent(d.dettagli)
+        + '&location=' + encodeURIComponent(d.luogo);
+    }
+    function testoIcs(t) { return String(t).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+    function righeIcs(righe) { // righe max 75 caratteri come da standard
+      return righe.map(r => { const out = []; while (r.length > 74) { out.push(r.slice(0, 74)); r = ' ' + r.slice(74); } out.push(r); return out.join('\r\n'); }).join('\r\n') + '\r\n';
+    }
+    function contenutoIcs(ev) {
+      const d = datiEvento(ev);
+      const ora = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+      return righeIcs([
+        'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//ChairShare//Prenotazioni//IT', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        'UID:' + (ev.id || Date.now()) + '@chairshare.it',
+        'DTSTAMP:' + ora,
+        'DTSTART:' + d.inizio, 'DTEND:' + d.fine,
+        'SUMMARY:' + testoIcs(d.titolo),
+        'DESCRIPTION:' + testoIcs(d.dettagli),
+        d.luogo ? 'LOCATION:' + testoIcs(d.luogo) : null,
+        'STATUS:CONFIRMED',
+        'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Promemoria appuntamento', 'TRIGGER:-PT60M', 'END:VALARM',
+        'END:VEVENT', 'END:VCALENDAR'
+      ].filter(Boolean));
+    }
+    function scaricaIcs(ev) {
+      const blob = new Blob([contenutoIcs(ev)], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'appuntamento-chairshare.ics';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+    let eventoCorrente = null;
+
     async function confermaPrenotazione(e) {
       e.preventDefault();
       const c = getSupabase(); if (!c || !bk.slot) return;
@@ -3360,9 +3416,12 @@
         $('bookDone').classList.remove('hidden');
         const quando = `${dataLunga(data.day)} alle ${data.start}`;
         $('bookDoneText').textContent = `${bk.servizio.name} con ${bk.data.name}, ${quando}` + (data.salon ? ` — ${data.salon}${data.city ? ' (' + data.city + ')' : ''}` : '') + '.';
+        eventoCorrente = { id: data.id, servizio: bk.servizio.name, cliente: nome, telefono: tel, professionista: bk.data.name,
+                           salon: data.salon, city: data.city, day: data.day, start: data.start, end: data.end };
+        $('bookCalGoogle').href = googleCalUrl(eventoCorrente);
         const wa = normalizzaTelefono(data.freelance_phone);
         if (wa) {
-          const msg = `Ciao ${bk.data.name.split(' ')[0]}, sono ${nome}. Ho prenotato ${bk.servizio.name} per ${quando}${data.salon ? ' presso ' + data.salon : ''}. Confermi? Grazie!`;
+          const msg = `Ciao ${bk.data.name.split(' ')[0]}, sono ${nome}. Ho prenotato ${bk.servizio.name} per ${quando}${data.salon ? ' presso ' + data.salon : ''}. Confermi? Grazie!\n\n📅 Aggiungi all'agenda: ${googleCalUrl(eventoCorrente)}`;
           $('bookWa').href = 'https://wa.me/' + wa + '?text=' + encodeURIComponent(msg);
           $('bookWa').classList.remove('hidden');
         }
@@ -3384,6 +3443,7 @@
       $('bookDays').addEventListener('click', ev => { const t = ev.target.closest('button[data-day]'); if (t) { bk.giorno = t.dataset.day; disegnaGiorniPrenota(); } });
       $('bookSlots').addEventListener('click', ev => { const t = ev.target.closest('button[data-slot]'); if (t) selezionaSlot(t); });
       $('bookStep3').addEventListener('submit', confermaPrenotazione);
+      $('bookCalIcs').addEventListener('click', () => { if (eventoCorrente) scaricaIcs(eventoCorrente); });
       $('btnBookPrivacy').addEventListener('click', () => toggleModal('legalModal', true));
     }
 
