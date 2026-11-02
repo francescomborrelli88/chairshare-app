@@ -71,7 +71,7 @@
 
   <style>
     /* Viste esclusive: quando una vista è nascosta non deve mai comparire sotto l'altra */
-    #homePage.hidden, #profilePage.hidden, #bookPage.hidden { display: none !important; }
+    #homePage.hidden, #profilePage.hidden, #bookPage.hidden, #reviewPage.hidden { display: none !important; }
     body.book-mode #homePage, body.book-mode header, body.book-mode footer, body.book-mode #heroIntro { display: none !important; }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -150,7 +150,7 @@
 
       <!-- FORM DI RICERCA DESKTOP -->
       <div class="hidden md:flex items-center gap-2 border border-gray-300 rounded-full px-3 py-1.5 shadow-sm hover:shadow-md bg-white transition-all">
-        <input id="cityInput" type="text" placeholder="Città (es. Napoli)" aria-label="Città" class="text-xs font-semibold text-gray-800 bg-transparent focus:outline-none w-32 px-2" />
+        <input id="cityInput" type="text" placeholder="Città" aria-label="Città" class="text-xs font-semibold text-gray-800 bg-transparent focus:outline-none w-32 px-2" />
         <span class="text-gray-300">|</span>
         <select id="typeSelect" aria-label="Tipologia" class="text-xs font-semibold text-gray-600 bg-transparent focus:outline-none cursor-pointer">
           <option value="">Tutti i Tipi</option>
@@ -228,7 +228,7 @@
     <div class="md:hidden px-4 pt-3 pb-2 bg-white border-b border-gray-200 sticky top-[57px] z-30 shadow-sm space-y-2">
       <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-full p-2 shadow-sm search-pill-shadow">
         <svg class="w-4 h-4 text-gray-500 ml-1 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
-        <input id="mobileCityInput" type="text" placeholder="Città (es. Napoli)" aria-label="Città" class="w-full text-xs font-semibold text-gray-900 bg-transparent focus:outline-none" />
+        <input id="mobileCityInput" type="text" placeholder="Città" aria-label="Città" class="w-full text-xs font-semibold text-gray-900 bg-transparent focus:outline-none" />
         <button id="searchBtnMobile" class="bg-brand text-white text-xs font-bold px-3 py-1.5 rounded-full shrink-0">
           Cerca
         </button>
@@ -430,6 +430,7 @@
         <div id="agLinkBox" class="lg:col-span-2 rounded-3xl p-5 border border-white/60 bg-gradient-to-br from-pink-50/80 to-white/80 backdrop-blur-md shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)] space-y-3">
           <h3 class="text-base font-extrabold text-gray-900">🔗 Il tuo Link Personale di Prenotazione</h3>
           <p id="agLinkHint" class="text-[11px] text-gray-600"></p>
+          <p id="agReputation" class="hidden text-xs font-bold text-amber-700"></p>
           <div class="flex flex-col sm:flex-row gap-2">
             <input id="agLink" type="text" readonly class="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
             <button type="button" id="btnAgCopy" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Copia Link</button>
@@ -442,6 +443,19 @@
               <button type="button" id="btnAgPhone" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">Salva</button>
             </div>
           </div>
+        </div>
+
+        <div id="repBox" class="lg:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-base font-extrabold text-gray-900">📊 Riepilogo Mese Corrente <span id="repMese" class="text-sm font-bold text-gray-400"></span></h3>
+            <button type="button" id="btnRepCsv" class="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl">⬇️ Scarica Report CSV</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="rounded-2xl bg-gray-50 border border-gray-100 p-4"><p class="text-[11px] font-bold uppercase tracking-wide text-gray-400">Incasso Totale Servizi</p><p id="repIncasso" class="text-2xl font-black text-gray-900 mt-1">—</p><p id="repIncassoSub" class="text-[11px] text-gray-500 mt-0.5"></p></div>
+            <div class="rounded-2xl bg-gray-50 border border-gray-100 p-4"><p class="text-[11px] font-bold uppercase tracking-wide text-gray-400">Spese Postazioni (stima)</p><p id="repSpese" class="text-2xl font-black text-gray-900 mt-1">—</p><p id="repSpeseSub" class="text-[11px] text-gray-500 mt-0.5"></p></div>
+            <div class="rounded-2xl bg-gray-50 border border-gray-100 p-4"><p class="text-[11px] font-bold uppercase tracking-wide text-gray-400">Margine Operativo Lordo</p><p id="repMargine" class="text-2xl font-black text-gray-900 mt-1">—</p><p id="repMargineSub" class="text-[11px] text-gray-500 mt-0.5">Incasso meno spese</p></div>
+          </div>
+          <p class="text-[11px] text-gray-400">Stime indicative dai prezzi di listino degli annunci e dagli appuntamenti registrati in ChairShare: non sostituiscono la contabilità né una consulenza fiscale.</p>
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
@@ -543,9 +557,15 @@
     </div>
     <div id="bookMain" class="hidden space-y-5">
       <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Prenota con</p>
-        <h1 id="bookName" class="text-2xl font-extrabold text-gray-900"></h1>
-        <p id="bookWhere" class="text-xs text-gray-500 mt-1"></p>
+        <div class="flex items-center gap-4">
+          <span id="bookAvatar" class="w-14 h-14 rounded-full bg-brand text-white flex items-center justify-center text-xl font-extrabold shrink-0" aria-hidden="true"></span>
+          <div class="min-w-0">
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Prenota con</p>
+            <h1 id="bookName" class="text-2xl font-extrabold text-gray-900 leading-tight"></h1>
+            <p id="bookRating" class="hidden text-xs font-bold text-amber-600 mt-0.5"></p>
+          </div>
+        </div>
+        <p id="bookWhere" class="text-xs text-gray-500 mt-3"></p>
       </div>
       <div id="bookEmpty" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-800">Al momento non ci sono giorni disponibili per prenotare. Riprova più tardi o contatta direttamente il professionista.</div>
 
@@ -553,6 +573,10 @@
         <h2 class="text-sm font-extrabold text-gray-900 mb-3">1. Scegli il servizio</h2>
         <div id="bookServices" class="space-y-2"></div>
       </div>
+      <details id="bookReviewsBox" class="hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+        <summary id="bookReviewsSummary" class="text-sm font-extrabold text-gray-900 cursor-pointer select-none"></summary>
+        <div id="bookReviews" class="mt-3 space-y-3"></div>
+      </details>
       <div id="bookStep2" class="hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
         <h2 class="text-sm font-extrabold text-gray-900 mb-3">2. Scegli giorno e orario</h2>
         <div id="bookDays" class="flex gap-2 overflow-x-auto no-scrollbar pb-2"></div>
@@ -580,6 +604,48 @@
           <button type="button" id="bookCalIcs" class="block w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 font-bold text-sm py-3 rounded-xl transition-all">🍏 Scarica per Apple Calendar (.ics)</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- PAGINA PUBBLICA PER LASCIARE UNA RECENSIONE (?review=<nome>) -->
+  <div id="reviewPage" class="hidden flex-1 w-full max-w-lg mx-auto px-4 py-6">
+    <div class="flex items-center gap-2 mb-5">
+      <span class="text-lg font-extrabold"><span class="text-brand">Chair</span><span class="text-gray-900">Share</span></span>
+    </div>
+    <div id="rvLoading" class="text-center text-sm text-gray-500 py-16">Caricamento…</div>
+    <div id="rvError" class="hidden bg-white border border-gray-200 rounded-2xl p-6 text-center">
+      <p class="text-3xl mb-2">😕</p>
+      <p class="text-sm font-bold text-gray-900">Pagina non disponibile</p>
+      <p class="text-xs text-gray-500 mt-1">Il link potrebbe essere errato. Chiedi al professionista di inviartelo di nuovo.</p>
+    </div>
+    <form id="rvForm" class="hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm space-y-4">
+      <div>
+        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Recensione per</p>
+        <h1 id="rvName" class="text-2xl font-extrabold text-gray-900"></h1>
+      </div>
+      <div>
+        <p class="text-xs font-bold text-gray-700 mb-1.5">Il tuo voto</p>
+        <div id="rvStars" class="flex gap-1" role="radiogroup" aria-label="Voto da 1 a 5">
+          <button type="button" data-star="1" class="text-3xl text-gray-300" aria-label="1 stella">★</button>
+          <button type="button" data-star="2" class="text-3xl text-gray-300" aria-label="2 stelle">★</button>
+          <button type="button" data-star="3" class="text-3xl text-gray-300" aria-label="3 stelle">★</button>
+          <button type="button" data-star="4" class="text-3xl text-gray-300" aria-label="4 stelle">★</button>
+          <button type="button" data-star="5" class="text-3xl text-gray-300" aria-label="5 stelle">★</button>
+        </div>
+      </div>
+      <textarea id="rvComment" rows="3" maxlength="500" placeholder="Com'è andata? (facoltativo)" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand"></textarea>
+      <div class="grid grid-cols-2 gap-2">
+        <input id="rvNome" type="text" maxlength="80" required placeholder="Il tuo nome" autocomplete="given-name" class="px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+        <input id="rvTel" type="tel" inputmode="tel" maxlength="20" required placeholder="Il tuo cellulare" autocomplete="tel" class="px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+      </div>
+      <p class="text-[11px] text-gray-500">Usa lo stesso numero con cui hai prenotato: serve solo a verificare che l'appuntamento ci sia stato e non viene mostrato. Sulla pagina del professionista compariranno il tuo nome (abbreviato), il voto e il commento.</p>
+      <label class="flex items-start gap-2 text-[11px] text-gray-600"><input id="rvPrivacy" type="checkbox" required class="mt-0.5"><span>Ho letto l'<button type="button" id="btnRvPrivacy" class="underline font-bold">informativa privacy</button> e acconsento alla pubblicazione della recensione.</span></label>
+      <button type="submit" id="btnRvSubmit" class="w-full bg-brand hover:bg-brand-hover text-white font-extrabold text-sm py-3.5 rounded-xl">Pubblica recensione</button>
+    </form>
+    <div id="rvDone" class="hidden bg-white border border-green-200 rounded-2xl p-6 text-center shadow-sm space-y-2">
+      <p class="text-4xl">🙏</p>
+      <h2 class="text-lg font-extrabold text-gray-900">Grazie per la tua recensione!</h2>
+      <p class="text-sm text-gray-600">Ora è visibile sulla pagina del professionista.</p>
     </div>
   </div>
 
@@ -907,8 +973,8 @@
       </div>
 
       <div>
-        <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Servizi Inclusi nello Spazio</h4>
-        <div id="detailServicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
+        <h4 class="text-xs font-extrabold uppercase text-gray-400 tracking-wider mb-2">Dotazioni incluse nel prezzo</h4>
+        <ul id="detailServicesGrid" class="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-gray-700"></ul>
       </div>
 
       <div>
@@ -1044,7 +1110,7 @@
           </div>
 
           <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
-            <span class="text-xs text-gray-700 uppercase font-extrabold block">🛠️ Cosa è incluso nel prezzo</span>
+            <span class="text-xs text-gray-700 uppercase font-extrabold block">🛠️ Dotazioni incluse nel prezzo</span><span class="block text-[11px] text-gray-500 font-normal normal-case">Spunta solo ciò che c'è davvero: le voci cambiano in base alla categoria scelta.</span>
             <div id="categoryServicesCheckboxes" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
           </div>
 
@@ -1179,17 +1245,28 @@
     // Pulizia di una vecchia cache locale che conteneva anche indirizzi e telefoni
     try { localStorage.removeItem('chairshare_spaces'); } catch (e) {}
 
-    const DOTAZIONI_UFFICIO = ["Connessione Wi-Fi Fibra", "Uso Stampante / Scanner", "Presa corrente dedicata", "Area Caffè / Ristoro", "Climatizzazione autonoma"];
-    const SERVIZI_PER_CATEGORIA = {
-      psicoterapia: ["Insonorizzazione acustica", "Poltrone ergonomiche", "Sala d'attesa clienti", "Wi-Fi ad alta velocità", "Aria condizionata"],
+    // Dotazioni selezionabili dall'host, per categoria (salvate nel campo `services` dell'annuncio)
+    const AMENITIES_BY_CATEGORY = {
+      barber: ["Lavatesta compreso", "Poltrona idraulica", "Sterilizzatore strumenti", "Prese phon dedicate", "Specchio con luce frontale", "Area attesa clienti", "Wi-Fi & Climatizzazione"],
+      nails: ["Tavolo con aspiratore", "Lampada LED professionale", "Prese per micromotore/fornetto", "Seduta ergonomica cliente/operatore", "Zona disinfezione"],
+      estetica: ["Lettino professionale con foro viso", "Doccia privata in cabina", "Scaldacera / Scaldasalviette", "Luce dimmerabile / Cromoterapia", "Diffusore audio / Musica relax", "Lavabo interno cabina", "Wi-Fi & Climatizzazione"],
+      consulenza: ["Poltrone riservate per colloquio", "Ambiente insonorizzato / Privacy", "Scrivania studio", "Sala d'attesa separata", "Luce naturale", "Wi-Fi & Climatizzazione"],
+      office: ["Fibra FTTH 1Gbps", "Prese multiple dedicate sul desk", "Uso Stampante / Scanner", "Area Break & Caffè compreso", "Ambiente silenzioso", "Aria condizionata autonoma", "Facilità di parcheggio"],
+      // categorie senza elenco indicato: restano quelle di prima
       massaggi: ["Lettino professionale", "Scaldawater / Oli", "Cassa Bluetooth", "Lavatesta / Doccia", "Aria condizionata"],
-      barbiere: ["Poltrona da barbiere idraulica", "Lavatesta professionale", "Sterilizzatore strumenti", "Specchio con luce LED", "Aria condizionata"],
-      estetica: ["Lettino estetica elettrico", "Lampada d'ingrandimento", "Autoclave / Sterilizzatore", "Postazione Nails", "Aria condizionata"],
-      fotografia: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Softbox & Modificatori", "Camerino / area trucco", "Wi-Fi per Tethering"],
-      coworking: ["Scrivania dedicata", "Seduta ergonomica", "Prese di corrente dedicate", "Wi-Fi Fibra 1Gbps", "Servizio Stampa / Scanner"],
-      scrivania: DOTAZIONI_UFFICIO,
-      ufficio: DOTAZIONI_UFFICIO,
-      sala_riunioni: DOTAZIONI_UFFICIO
+      fotografia: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Softbox & Modificatori", "Camerino / area trucco", "Wi-Fi per Tethering"]
+    };
+    // "Estetica & Nails" è un'unica categoria nel sito: unisce cabina estetica e postazione unghie
+    const SERVIZI_PER_CATEGORIA = {
+      psicoterapia: AMENITIES_BY_CATEGORY.consulenza,
+      massaggi: AMENITIES_BY_CATEGORY.massaggi,
+      barbiere: AMENITIES_BY_CATEGORY.barber,
+      estetica: [...AMENITIES_BY_CATEGORY.estetica.slice(0, -1), ...AMENITIES_BY_CATEGORY.nails, "Wi-Fi & Climatizzazione"],
+      fotografia: AMENITIES_BY_CATEGORY.fotografia,
+      coworking: AMENITIES_BY_CATEGORY.office,
+      scrivania: AMENITIES_BY_CATEGORY.office,
+      ufficio: AMENITIES_BY_CATEGORY.office,
+      sala_riunioni: AMENITIES_BY_CATEGORY.office
     };
     const TIPI = {
       psicoterapia: 'Psicoterapia', massaggi: 'Massaggi', barbiere: 'Hair & Barber',
@@ -1935,7 +2012,9 @@
         const foto = space.images && space.images.length
           ? `<img src="${esc(urlFoto(space.images[0]))}" alt="Foto di ${esc(nomeCard)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />`
           : `<div class="w-full h-full flex items-center justify-center text-5xl bg-gradient-to-br from-pink-50 to-gray-100" aria-hidden="true">${ICONE_TIPO[space.type] || '📍'}</div>`;
-        const tags = (space.services || []).slice(0, 3).map(t => `<span class="text-[10px] text-gray-600 bg-gray-100 rounded-full px-2 py-0.5">${esc(t)}</span>`).join('');
+        const dot = space.services || [];
+        const tags = dot.slice(0, 3).map(t => `<span class="text-[10px] text-gray-600 bg-gray-100 rounded-full px-2 py-0.5">${esc(t)}</span>`).join('')
+          + (dot.length > 3 ? `<span class="text-[10px] text-gray-500 bg-gray-50 border border-gray-100 rounded-full px-2 py-0.5">+${dot.length - 3}</span>` : '');
         const unitaTxt = NOMI_UNITA[space.priceUnit] || 'giorno';
         const minTxt = (space.priceUnit === 'ora' && space.minHours > 1) ? ` · min. ${space.minHours} ore` : '';
         card.innerHTML = `
@@ -2043,7 +2122,8 @@
     }
 
     function mostraPagina(pageId) {
-      if (MODO_PRENOTA) pageId = 'bookPage';
+      if (MODO_PRENOTA) pageId = 'bookPage'; else if (MODO_RECENSIONE) pageId = 'reviewPage';
+      $('reviewPage').classList.toggle('hidden', pageId !== 'reviewPage');
       $('homePage').classList.toggle('hidden', pageId !== 'homePage');
       $('profilePage').classList.toggle('hidden', pageId !== 'profilePage');
       $('bookPage').classList.toggle('hidden', pageId !== 'bookPage');
@@ -2152,13 +2232,12 @@
       servicesGrid.replaceChildren();
       if (s.services && s.services.length > 0) {
         s.services.forEach(srv => {
-          const d = document.createElement('div');
-          d.className = 'p-2 bg-gray-50 rounded-xl border border-gray-200';
-          d.textContent = '✅ ' + srv;
-          servicesGrid.appendChild(d);
+          const li = document.createElement('li');
+          li.textContent = srv;
+          servicesGrid.appendChild(li);
         });
       } else {
-        servicesGrid.innerHTML = '<div class="text-gray-400">Nessun servizio specificato</div>';
+        servicesGrid.innerHTML = '<li class="list-none text-gray-400">Nessuna dotazione specificata</li>';
       }
 
       const actions = $('detailActionButtons');
@@ -2555,10 +2634,7 @@
       $('newDescription').value = s.description || '';
       aggiornaContatoreDescr();
 
-      aggiornaServiziInclusiForm();
-      document.querySelectorAll('.service-checkbox').forEach(cb => {
-        cb.checked = (s.services || []).includes(cb.value);
-      });
+      aggiornaServiziInclusiForm(s.services || []);
 
       generaCampiOrariGiornalieri();
       GIORNI_SETTIMANA.forEach(giorno => {
@@ -2879,18 +2955,23 @@
       box.classList.toggle('pointer-events-none', !chk);
     }
 
-    function aggiornaServiziInclusiForm() {
+    function aggiornaServiziInclusiForm(giaSelezionate) {
       const cat = $('newType').value;
       const container = $('categoryServicesCheckboxes');
       if (!container) return;
+      // voci già spuntate che esistono anche nella nuova categoria (es. "Wi-Fi & Climatizzazione") restano spuntate
+      const prima = giaSelezionate || Array.from(container.querySelectorAll('.service-checkbox:checked')).map(cb => cb.value);
       container.innerHTML = '';
-      (SERVIZI_PER_CATEGORIA[cat] || []).forEach(srv => {
+      const elenco = [...(SERVIZI_PER_CATEGORIA[cat] || [])];
+      // annunci già pubblicati: le dotazioni salvate con i vecchi nomi non devono sparire in silenzio
+      if (giaSelezionate) giaSelezionate.forEach(v => { if (!elenco.includes(v)) elenco.push(v); });
+      elenco.forEach(srv => {
         const label = document.createElement('label');
         label.className = "flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand";
         const cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.value = srv;
-        cb.checked = true;
+        cb.checked = prima.includes(srv);
         cb.className = 'service-checkbox rounded text-brand focus:ring-brand';
         const sp = document.createElement('span');
         sp.textContent = srv;
@@ -2956,7 +3037,18 @@
         ? c.rpc('get_booking_page', { p_freelance: PARAM_PRENOTA })
         : c.rpc('get_booking_page_by_slug', { p_slug: PARAM_PRENOTA });
     }
-    if (MODO_PRENOTA) document.body.classList.add('book-mode');
+    // Link per lasciare una recensione: ?review=<nome-del-professionista>
+    const PARAM_RECENSIONE = (() => {
+      try {
+        if (MODO_PRENOTA) return null;
+        const v = new URLSearchParams(window.location.search).get('review');
+        if (v === null) return null;
+        if (/^[0-9a-fA-F-]{36}$/.test(v)) return v.toLowerCase();
+        return /^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$/.test(v) && v.length >= 2 && v.length <= 60 ? v.toLowerCase() : 'invalido';
+      } catch (e) { return null; }
+    })();
+    const MODO_RECENSIONE = PARAM_RECENSIONE !== null;
+    if (MODO_PRENOTA || MODO_RECENSIONE) document.body.classList.add('book-mode');
 
     const MESI = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
     const GIORNI = ['dom','lun','mar','mer','gio','ven','sab'];
@@ -2999,7 +3091,8 @@
     let agServizi = [], agBlocchi = [], agAppunt = [], agTelefono = '';
     let agCaricamento = null;
 
-    let agSlug = '', agSlugUid = null;
+    let agSlug = '', agSlugUid = null, agRecensioni = null;
+    function linkRecensione() { return 'https://chairshare.it/?review=' + (agSlugUid === currentUser.id && agSlug ? agSlug : currentUser.id); }
     function linkPrenotazione() { return 'https://chairshare.it/?book=' + (agSlugUid === currentUser.id && agSlug ? agSlug : currentUser.id); }
 
     async function caricaAgenda() {
@@ -3012,17 +3105,19 @@
         try {
           const ieri = new Date(Date.now() - 7 * 86400000);
           const da = ieri.getFullYear() + '-' + String(ieri.getMonth() + 1).padStart(2, '0') + '-' + String(ieri.getDate()).padStart(2, '0');
-          const [sv, bl, ap, pr, sl] = await Promise.all([
+          const [sv, bl, ap, pr, sl, rv] = await Promise.all([
             c.from('freelance_services').select('id,name,duration_min,price').order('created_at'),
             c.from('chair_blocks').select('id,space_id,day,start_time,end_time').gte('day', isoOggi()).order('day').order('start_time'),
-            c.from('client_appointments').select('id,block_id,service_name,service_duration,service_price,client_name,client_phone,day,start_time,end_time,status')
+            c.from('client_appointments').select('id,block_id,service_name,service_duration,service_price,client_name,client_phone,day,start_time,end_time,status,private_notes')
               .gte('day', da).order('day').order('start_time'),
             c.from('profiles').select('phone').eq('id', mio).maybeSingle(),
-            c.rpc('ensure_my_slug')
+            c.rpc('ensure_my_slug'),
+            c.from('freelance_reviews').select('rating')
           ]);
           if (currentUser?.id !== mio) return;
           agServizi = sv.data || []; agBlocchi = bl.data || []; agAppunt = ap.data || [];
           agTelefono = pr.data?.phone || '';
+          agRecensioni = rv.error ? null : { n: (rv.data || []).length, media: (rv.data || []).length ? rv.data.reduce((t, x) => t + x.rating, 0) / rv.data.length : 0 };
           if (!sl.error && typeof sl.data === 'string' && sl.data) { agSlug = sl.data; agSlugUid = mio; } else { agSlug = ''; agSlugUid = null; }
           if (sv.error || bl.error || ap.error) mostraMessaggio("Impossibile caricare l'agenda. Hai eseguito lo script SQL dell'agenda?", 'err');
         } catch (e) { console.warn('Errore agenda:', e); }
@@ -3084,6 +3179,15 @@
       const stati = { confirmed: '', completed: '✅ Completato', cancelled: '✖ Annullato' };
       const giorni = {};
       lista.forEach(a => (giorni[a.day] = giorni[a.day] || []).push(a));
+      // conserva note in modifica e riquadri aperti quando l'agenda si ridisegna (es. aggiornamento in tempo reale)
+      const noteInCorso = {}; const aperti = new Set();
+      document.querySelectorAll('#agAppts textarea[data-note]').forEach(t => { if (t.value !== t.dataset.orig) noteInCorso[t.dataset.note] = t.value; });
+      document.querySelectorAll('#agAppts details[data-notedet][open]').forEach(d => aperti.add(d.dataset.notedet));
+      const rep = $('agReputation');
+      if (agRecensioni && agRecensioni.n > 0) {
+        rep.textContent = `⭐ ${mediaTesto(agRecensioni.media)} (${agRecensioni.n} ${agRecensioni.n === 1 ? 'recensione verificata' : 'recensioni verificate'}) — la vedono i clienti sul tuo link`;
+        rep.classList.remove('hidden');
+      } else rep.classList.add('hidden');
       $('agAppts').innerHTML = lista.length ? Object.keys(giorni).sort().map(d => `
         <div>
           <p class="text-[11px] font-extrabold uppercase tracking-wider text-gray-400 mb-1.5">${esc(dataLunga(d))}</p>
@@ -3098,13 +3202,21 @@
                   <p class="text-xs text-gray-600">${esc(a.service_name)} · <strong>${euro(a.service_price)}</strong></p></div>
                 <span class="text-[11px] font-bold text-gray-500 shrink-0">${stati[a.status] || ''}</span>
               </div>
+              ${a.status === 'completed' && wa ? `<div class="flex flex-wrap gap-2"><a target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(`Ciao ${a.client_name.split(' ')[0]}, grazie per essere venuto! Lasciami una recensione rapida qui: ${linkRecensione()}`)}" class="text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-full">⭐ Richiedi Recensione</a></div>` : ''}
               ${attivo ? `<div class="flex flex-wrap gap-2">
                 ${wa ? `<a target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(testo)}" class="text-[11px] font-bold bg-green-600 text-white px-3 py-1.5 rounded-full">💬 WhatsApp Cliente</a>` : ''}
                 <button type="button" data-ap="${esc(a.id)}" data-st="completed" class="text-[11px] font-bold bg-gray-900 text-white px-3 py-1.5 rounded-full">Completato</button>
                 <button type="button" data-ap="${esc(a.id)}" data-st="cancelled" class="text-[11px] font-bold bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-full">Annulla</button>
               </div>` : ''}
+              ${a.status !== 'cancelled' ? (() => { const v = noteInCorso[a.id] !== undefined ? noteInCorso[a.id] : (a.private_notes || ''); return `
+              <details data-notedet="${esc(a.id)}" ${aperti.has(a.id) || noteInCorso[a.id] !== undefined ? 'open' : ''}>
+                <summary class="text-[11px] font-bold text-gray-500 cursor-pointer select-none">📝 Note tecniche cliente (private)${a.private_notes ? ' · salvata' : ''}</summary>
+                <textarea data-note="${esc(a.id)}" data-orig="${esc(a.private_notes || '')}" maxlength="1000" rows="2" placeholder="Es. Formula colore, sensibilità cutanea, dettagli preferiti..." class="mt-1.5 w-full px-3 py-2 border border-gray-200 rounded-xl text-xs outline-none focus:border-brand bg-white resize-y">${esc(v)}</textarea>
+                <div class="flex items-center gap-2 mt-1"><button type="button" data-save-note="${esc(a.id)}" class="text-[11px] font-bold bg-gray-900 text-white px-3 py-1 rounded-full">Salva Nota</button><span data-note-msg="${esc(a.id)}" class="text-[10px] text-gray-400">Visibile solo a te. Evita dati sanitari dettagliati.</span></div>
+              </details>`; })() : ''}
             </div>`; }).join('')}</div>
         </div>`).join('') : '<p class="text-[11px] text-gray-400">Ancora nessun appuntamento.</p>';
+      caricaReportMese();
     }
 
     async function salvaTelefonoAgenda() {
@@ -3233,6 +3345,93 @@
       toggleModal('cancelNoticeModal', true);
     }
 
+    async function salvaNota(ta) {
+      const c = getSupabase(); if (!c) return;
+      const id = ta.dataset.note, val = ta.value.trim();
+      if (val === (ta.dataset.orig || '')) return;
+      const msg = document.querySelector(`#agAppts [data-note-msg="${id}"]`);
+      const { error } = await c.from('client_appointments').update({ private_notes: val || null }).eq('id', id);
+      if (error) { if (msg) { msg.textContent = 'Nota non salvata, riprova.'; msg.className = 'text-[10px] text-red-600'; } return; }
+      ta.dataset.orig = val;
+      const ap = agAppunt.find(x => x.id === id); if (ap) ap.private_notes = val || null;
+      if (msg) { msg.textContent = 'Nota salvata ✓'; msg.className = 'text-[10px] text-green-600'; }
+    }
+
+    // ---------- Riepilogo mese corrente + CSV ----------
+    const MESI_LUNGHI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+    let reportMese = null, reportToken = 0;
+    function costoBlocco(b, sp) {
+      if (!sp || !(Number(sp.price) >= 0) || sp.price === null || sp.price === undefined) return null;
+      const ore = Math.max(0, (minuti(oraBreve(b.end_time)) - minuti(oraBreve(b.start_time))) / 60);
+      return sp.priceUnit === 'ora' ? Number(sp.price) * ore : Number(sp.price);
+    }
+    async function caricaReportMese() {
+      const c = getSupabase(); if (!c || !currentUser || ruoloUtente !== 'guest') return;
+      const mio = currentUser.id, tk = ++reportToken;
+      const oggi = new Date(), y = oggi.getFullYear(), m = oggi.getMonth();
+      const pad = n => String(n).padStart(2, '0');
+      const primo = `${y}-${pad(m + 1)}-01`, ultimo = `${y}-${pad(m + 1)}-${pad(new Date(y, m + 1, 0).getDate())}`;
+      $('repMese').textContent = MESI_LUNGHI[m] + ' ' + y;
+      try {
+        const [ap, bl] = await Promise.all([
+          c.from('client_appointments').select('id,day,start_time,client_name,service_name,service_price,status').gte('day', primo).lte('day', ultimo).in('status', ['confirmed', 'completed']).order('day').order('start_time'),
+          c.from('chair_blocks').select('id,space_id,day,start_time,end_time').gte('day', primo).lte('day', ultimo).order('day').order('start_time')
+        ]);
+        if (tk !== reportToken || currentUser?.id !== mio) return;
+        if (ap.error || bl.error) { $('repIncassoSub').textContent = 'Dati non disponibili'; return; }
+        const appunt = ap.data || [], blocchi = bl.data || [];
+        // prezzi degli spazi: prima quelli già in memoria, poi (se servono) dal database
+        const mancanti = [...new Set(blocchi.map(b => b.space_id))].filter(id => !spazi.find(x => x.id === id));
+        const extra = {};
+        if (mancanti.length) {
+          const r = await c.from('spaces').select('id,name,city,price,price_unit').in('id', mancanti);
+          (r.data || []).forEach(x => { extra[x.id] = { id: x.id, name: x.name, city: x.city, price: x.price, priceUnit: x.price_unit || 'giorno' }; });
+          if (tk !== reportToken) return;
+        }
+        let spese = 0, senzaPrezzo = 0;
+        const righeBlocchi = blocchi.map(b => {
+          const sp = spazi.find(x => x.id === b.space_id) || extra[b.space_id];
+          const costo = costoBlocco(b, sp);
+          if (costo === null) senzaPrezzo++; else spese += costo;
+          return { day: b.day, start: oraBreve(b.start_time), end: oraBreve(b.end_time), salone: sp ? sp.name : 'Salone', costo };
+        });
+        const incasso = appunt.reduce((t, a) => t + Number(a.service_price || 0), 0);
+        reportMese = { mese: MESI_LUNGHI[m] + ' ' + y, appunt, blocchi: righeBlocchi, incasso, spese };
+        $('repIncasso').textContent = euro(incasso);
+        $('repIncassoSub').textContent = `${appunt.length} appuntament${appunt.length === 1 ? 'o' : 'i'} (confermati e completati)`;
+        $('repSpese').textContent = euro(spese);
+        $('repSpeseSub').textContent = `${blocchi.length} postazion${blocchi.length === 1 ? 'e' : 'i'} bloccat${blocchi.length === 1 ? 'a' : 'e'}` + (senzaPrezzo ? ` · ${senzaPrezzo} senza prezzo` : '');
+        const marg = incasso - spese;
+        $('repMargine').textContent = euro(marg);
+        $('repMargine').className = 'text-2xl font-black mt-1 ' + (marg < 0 ? 'text-red-600' : 'text-green-700');
+      } catch (e) { console.warn('Errore report:', e); }
+    }
+    function cellaCsv(v) {
+      let t = String(v === null || v === undefined ? '' : v);
+      if (/^[=+\-@\t\r]/.test(t)) t = "'" + t; // evita che Excel/Fogli interpretino il testo come formula
+      return '"' + t.replace(/"/g, '""') + '"';
+    }
+    function numCsv(n) { return Number(n).toFixed(2).replace('.', ','); }
+    function dataCsv(iso) { const [y, m, d] = iso.split('-'); return d + '/' + m + '/' + y; }
+    function scaricaReportCsv() {
+      if (!reportMese) { mostraMessaggio("Il riepilogo non è ancora pronto, riprova tra un attimo.", 'err'); return; }
+      const r = reportMese;
+      const righe = [];
+      r.appunt.forEach(a => righe.push({ day: a.day, ora: oraBreve(a.start_time), cols: [dataCsv(a.day), a.client_name, a.service_name, numCsv(a.service_price), ''] }));
+      r.blocchi.forEach(b => righe.push({ day: b.day, ora: b.start, cols: [dataCsv(b.day), '', `Postazione presso ${b.salone} (${b.start}-${b.end})`, '', b.costo === null ? 'Prezzo non disponibile' : 'Spesa stimata ' + numCsv(b.costo) + ' €'] }));
+      righe.sort((x, y) => (x.day + x.ora).localeCompare(y.day + y.ora));
+      const out = [['Data', 'Cliente', 'Servizio Svolto', 'Incasso (€)', 'Note Spese']];
+      righe.forEach(x => out.push(x.cols));
+      out.push(['TOTALE ' + r.mese, '', '', numCsv(r.incasso), `Spese stimate ${numCsv(r.spese)} € · Margine lordo ${numCsv(r.incasso - r.spese)} €`]);
+      const csv = '﻿' + out.map(riga => riga.map(cellaCsv).join(';')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'report-chairshare-' + r.mese.replace(' ', '-') + '.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+
     async function cambiaStatoAppuntamento(id, stato) {
       const c = getSupabase(); if (!c) return;
       if (stato === 'cancelled' && !confirm("Annullare questo appuntamento? Ricordati di avvisare il cliente.")) return;
@@ -3266,7 +3465,10 @@
         if (t.dataset.delSv) eliminaServizio(t.dataset.delSv);
         else if (t.dataset.delBl) liberaBlocco(t.dataset.delBl);
         else if (t.dataset.ap) cambiaStatoAppuntamento(t.dataset.ap, t.dataset.st);
+        else if (t.dataset.saveNote) { const ta = document.querySelector(`#agAppts textarea[data-note="${t.dataset.saveNote}"]`); if (ta) salvaNota(ta); }
       });
+      $('agAppts').addEventListener('focusout', ev => { const t = ev.target; if (t && t.matches && t.matches('textarea[data-note]') && t.value !== t.dataset.orig) salvaNota(t); });
+      $('btnRepCsv').addEventListener('click', scaricaReportCsv);
     }
 
     // ---------- Pagina pubblica di prenotazione ----------
@@ -3319,6 +3521,80 @@
       $('bookStep3').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
+    function stelleTestoRec(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
+    function mediaTesto(m) { return Number(m).toFixed(1).replace('.', ','); }
+    function disegnaReputazionePubblica(dati) {
+      const n = Number(dati.reviews_count || 0);
+      const r = $('bookRating'), box = $('bookReviewsBox');
+      if (!n) { r.classList.add('hidden'); box.classList.add('hidden'); return; }
+      r.textContent = `⭐ ${mediaTesto(dati.rating)} (${n} ${n === 1 ? 'recensione verificata' : 'recensioni verificate'})`;
+      r.classList.remove('hidden');
+      $('bookReviewsSummary').textContent = `Cosa dicono i clienti (${n})`;
+      $('bookReviews').innerHTML = (dati.reviews || []).map(x => `
+        <div class="border-t border-gray-100 pt-3 first:border-0 first:pt-0">
+          <p class="text-xs"><span class="font-bold text-amber-600">${stelleTestoRec(Number(x.rating) || 0)}</span> <span class="font-bold text-gray-900">${esc(x.name)}</span> <span class="text-gray-400">· ${esc(dataBreve(x.day))}</span></p>
+          ${x.comment ? `<p class="text-xs text-gray-600 mt-1">${esc(x.comment)}</p>` : ''}
+        </div>`).join('');
+      box.classList.remove('hidden');
+    }
+
+    // ---------- Pagina "lascia una recensione" ----------
+    let rvVoto = 0;
+    async function caricaPaginaRecensione() {
+      $('reviewPage').classList.remove('hidden');
+      const c = getSupabase();
+      let dati = null;
+      if (c && PARAM_RECENSIONE !== 'invalido') {
+        const { data, error } = await c.rpc('get_review_target', { p_ref: PARAM_RECENSIONE });
+        if (!error) dati = data;
+      }
+      $('rvLoading').classList.add('hidden');
+      if (!dati) { $('rvError').classList.remove('hidden'); return; }
+      document.title = 'Recensione per ' + dati.name + ' — ChairShare';
+      $('rvName').textContent = dati.name;
+      $('rvForm').classList.remove('hidden');
+    }
+    function disegnaStelleForm() {
+      document.querySelectorAll('#rvStars button').forEach(b => {
+        const on = Number(b.dataset.star) <= rvVoto;
+        b.classList.toggle('text-amber-500', on); b.classList.toggle('text-gray-300', !on);
+        b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(Number(b.dataset.star) === rvVoto));
+      });
+    }
+    function erroreRecensione(error) {
+      const m = String((error && (error.message || error.details)) || '');
+      const mappa = {
+        NON_VERIFICATO: "Non troviamo un appuntamento già concluso con questo numero. Usa lo stesso cellulare con cui hai prenotato, a servizio svolto.",
+        GIA_RECENSITO: "Hai già lasciato una recensione a questo professionista. Grazie!",
+        DATI_NON_VALIDI: "Controlla nome, cellulare e voto.",
+        TROPPE_RICHIESTE: "Troppi invii in questo momento: riprova tra un'ora.",
+        NON_TROVATO: "Il link non è valido."
+      };
+      for (const k of Object.keys(mappa)) if (m.includes(k)) return mappa[k];
+      return "Operazione non riuscita, riprova tra poco.";
+    }
+    async function inviaRecensione(e) {
+      e.preventDefault();
+      const c = getSupabase(); if (!c) return;
+      if (!(rvVoto >= 1 && rvVoto <= 5)) { mostraMessaggio("Scegli un voto da 1 a 5 stelle.", 'err'); return; }
+      if (!normalizzaTelefono($('rvTel').value)) { mostraMessaggio("Inserisci un numero di cellulare valido.", 'err'); return; }
+      const btn = $('btnRvSubmit'); btn.disabled = true; btn.textContent = 'Invio…';
+      try {
+        const { error } = await c.rpc('submit_freelance_review', { p_ref: PARAM_RECENSIONE, p_name: $('rvNome').value.trim(),
+          p_phone: $('rvTel').value.trim(), p_rating: rvVoto, p_comment: $('rvComment').value.trim() });
+        if (error) { mostraMessaggio(erroreRecensione(error), 'err'); return; }
+        $('rvForm').classList.add('hidden'); $('rvDone').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) { mostraMessaggio("Operazione non riuscita, riprova tra poco.", 'err'); }
+      finally { btn.disabled = false; btn.textContent = 'Pubblica recensione'; }
+    }
+    function initRecensione() {
+      $('rvStars').addEventListener('click', ev => { const t = ev.target.closest('button[data-star]'); if (t) { rvVoto = Number(t.dataset.star); disegnaStelleForm(); } });
+      $('rvForm').addEventListener('submit', inviaRecensione);
+      $('btnRvPrivacy').addEventListener('click', () => toggleModal('legalModal', true));
+      disegnaStelleForm();
+    }
+
     async function caricaPaginaPrenota() {
       $('bookPage').classList.remove('hidden');
       const c = getSupabase();
@@ -3332,6 +3608,8 @@
       bk.data = dati;
       document.title = 'Prenota con ' + dati.name + ' — ChairShare';
       $('bookName').textContent = dati.name;
+      $('bookAvatar').textContent = (dati.name || '?').trim().charAt(0).toUpperCase();
+      disegnaReputazionePubblica(dati);
       const saloni = [...new Set(dati.blocks.map(b => b.salon + (b.city ? ' (' + b.city + ')' : '')))];
       $('bookWhere').textContent = saloni.length ? 'Lavora presso: ' + saloni.slice(0, 3).join(', ') : '';
       $('bookMain').classList.remove('hidden');
@@ -3585,12 +3863,18 @@
 
       initAgenda();
       initPrenota();
+      initRecensione();
       $('btnEditProfile').addEventListener('click', apriModificaProfilo);
       $('formEditProfile').addEventListener('submit', salvaModificaProfilo);
       $('btnProfTaxId').addEventListener('click', salvaTaxIdProfilo);
       if (MODO_PRENOTA) {
         mostraPagina('bookPage');
         await caricaPaginaPrenota();
+        return;
+      }
+      if (MODO_RECENSIONE) {
+        mostraPagina('reviewPage');
+        await caricaPaginaRecensione();
         return;
       }
       aggiornaStatoAuth();
