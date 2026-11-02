@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
-  <title>Contratto Standard di Concessione Spazio Attrezzato - ChairShare</title>
+  <title>Contratto di Concessione Temporanea di Spazio Attrezzato - ChairShare</title>
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; background: #f3f4f6; color: #1f2937; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; padding: 16px; }
@@ -16,25 +16,39 @@
     .btn.p { background: #FF385C; color: #fff; }
     .btn.s { background: #f3f4f6; color: #374151; }
     .warn { max-width: 820px; margin: 0 auto 14px; background: #fffbeb; border: 1px solid #fde68a; color: #92400e; border-radius: 12px; padding: 10px 14px; font-size: 12px; line-height: 1.5; }
-    .sheet { border-radius: 20px; padding: 36px 40px; font-size: 13px; line-height: 1.6; }
-    .sheet h2 { text-align: center; font-size: 16px; text-transform: uppercase; letter-spacing: .05em; margin: 0; }
-    .sub { text-align: center; font-size: 11px; color: #6b7280; margin: 4px 0 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 14px; }
-    .box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
-    .box p { margin: 6px 0; }
-    .sheet p { margin: 0 0 10px; text-align: justify; }
-    .sign { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: center; margin-top: 26px; }
-    .sign .l { margin-top: 44px; color: #9ca3af; }
-    .cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; font-size: 12px; }
+    .pre { max-width: 820px; margin: 0 auto 14px; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; border-radius: 12px; padding: 10px 14px; font-size: 12px; line-height: 1.5; }
+    .sheet { border-radius: 20px; padding: 36px 40px; font-size: 13px; line-height: 1.55; }
+    .sheet h2 { text-align: center; font-size: 15px; text-transform: uppercase; letter-spacing: .04em; margin: 0; }
+    .sub { text-align: center; font-size: 11px; color: #6b7280; margin: 4px 0 14px; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; }
+    .box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 14px; margin: 8px 0; }
+    .box p { margin: 5px 0; }
+    .sheet p { margin: 0 0 8px; text-align: justify; }
+    .sheet h3 { font-size: 13px; margin: 14px 0 5px; }
+    .sheet ul { margin: 0 0 8px; padding-left: 20px; }
+    .sheet li { margin: 2px 0; text-align: justify; }
+    .sign { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: center; margin-top: 22px; }
+    .sign .l { margin-top: 38px; color: #9ca3af; }
+    .cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px 12px; font-size: 12px; }
     .cats label { display: flex; align-items: center; gap: 6px; }
-    .small { font-size: 10px; color: #9ca3af; text-align: center; margin-top: 18px; }
-    @media (max-width: 560px) { .cats { grid-template-columns: 1fr 1fr; } .sheet { padding: 22px 16px; } .sign { grid-template-columns: 1fr; } }
+    .fill { font-weight: 700; border-bottom: 1px solid #1f2937; padding: 0 4px; white-space: nowrap; }
+    .small { font-size: 10px; color: #9ca3af; text-align: center; margin-top: 14px; }
+    @media (max-width: 560px) { .cats { grid-template-columns: 1fr; } .sheet { padding: 22px 16px; } .sign { grid-template-columns: 1fr; } }
     @media print {
-      @page { size: A4; margin: 18mm; }
-      .bar, .warn { display: none !important; }
-      body { background: #fff; padding: 0; font-size: 11pt; line-height: 1.4; color: #000; }
-      .sheet { border: 0; border-radius: 0; box-shadow: none; padding: 0; max-width: 100%; }
-      .box { background: #fff; border-color: #999; break-inside: avoid; }
-      p, .sign { break-inside: avoid; }
+      @page { size: A4; margin: 9mm 11mm; }
+      .bar, .warn, .pre { display: none !important; }
+      body { background: #fff; padding: 0; font-size: 8pt; line-height: 1.2; color: #000; }
+      .sheet { border: 0; border-radius: 0; box-shadow: none; padding: 0; max-width: 100%; font-size: 9.2pt; line-height: 1.3; }
+      .sheet h2 { font-size: 11.5pt; }
+      .sheet h3 { font-size: 9pt; margin: 6px 0 2px; }
+      .sub { font-size: 8pt; margin-bottom: 8px; padding-bottom: 6px; }
+      .box { background: #fff; border-color: #999; break-inside: avoid; padding: 4px 9px; margin: 4px 0; }
+      .box p { margin: 2px 0; }
+      .sheet p { margin-bottom: 3px; }
+      .sheet ul { margin-bottom: 3px; } .sheet li { margin: 1px 0; }
+      .cats { font-size: 8.5pt; }
+      h3, .sign { break-after: avoid; break-inside: avoid; }
+      .sign { margin-top: 8px; } .sign .l { margin-top: 20px; }
+      .small { font-size: 8pt; margin-top: 8px; }
     }
   </style>
 </head>
@@ -42,7 +56,7 @@
 
   <div class="bar">
     <div>
-      <h1>Modello Contrattuale Universale ChairShare</h1>
+      <h1>Contratto di Concessione Temporanea di Spazio Attrezzato</h1>
       <p>Per poltrone, cabine, studi, set e scrivanie. Compila, stampa in doppio originale e firma.</p>
     </div>
     <div>
@@ -51,70 +65,141 @@
     </div>
   </div>
 
+  <div id="preBox" class="pre" hidden></div>
+
   <div class="warn">
-    <strong>Modello orientativo, non consulenza legale.</strong> Adattalo alla tua categoria e al tuo caso e fallo verificare da un consulente del lavoro, da un legale o dalla tua associazione di categoria. Un contratto firmato non basta da solo a escludere contestazioni: in caso di controlli contano le modalità reali di svolgimento del rapporto (autonomia, assenza di orari e direttive imposti, clientela e incassi propri) e il rispetto delle norme regionali e comunali applicabili alla tua attività (per le attività sanitarie, ad esempio, possono servire autorizzazioni specifiche del locale). Questo avviso non viene stampato.
+    <strong>Modello orientativo, non consulenza legale.</strong> Adattalo alla tua categoria e al tuo caso e fallo verificare da un consulente del lavoro, da un legale o dalla tua associazione di categoria. Un contratto firmato non basta da solo a escludere contestazioni: in caso di controlli contano le modalità reali di svolgimento del rapporto (autonomia, assenza di orari e direttive imposti, clientela e incassi propri) e il rispetto delle norme regionali e comunali applicabili alla tua attività, comprese le comunicazioni al SUAP/Comune. Questo avviso non viene stampato.
   </div>
 
   <main class="sheet">
-    <h2>Scrittura Privata di Concessione Temporanea di Postazione Attrezzata</h2>
-    <p class="sub" style="text-align:center">(Contratto atipico di godimento temporaneo di spazio e servizi accessori, ai sensi degli artt. 1322 e 1571 e ss. del Codice Civile; per i servizi alla persona con riferimento anche a L. 174/2005, L. 1/1990 e alle norme regionali)</p>
+    <h2>Contratto di Concessione Temporanea di Spazio Attrezzato e Servizi Accessori</h2>
+    <p class="sub" style="text-align:center">(Contratto atipico di prestazioni di servizi integrati e godimento temporaneo ex art. 1322 e 1571 ss. c.c.; con riferimento alle L. 174/2005, L. 1/1990 e normative regionali/comunali applicabili)</p>
 
     <p>Con la presente scrittura privata, redatta in duplice originale, tra le parti:</p>
 
     <div class="box">
       <p><strong>1. IL CONCEDENTE (HOST)</strong></p>
-      <p>Ragione sociale / Sig./Sig.ra: ___________________________________________________________</p>
-      <p>P.IVA / C.F.: ___________________________ Sede legale in: _______________________________</p>
-      <p>Rappresentato da: ___________________________ Telefono/Email: ____________________________</p>
+      <p>Ragione Sociale / Ditta Individuale / Sig./Sig.ra: ______________________________________________</p>
+      <p>P.IVA / C.F.: ____________________________ Sede Legale / Residenza in: ____________________________</p>
+      <p>Rappresentato da (se società): ____________________________________________</p>
+      <p>Email / PEC: ____________________________________ Telefono: ____________________</p>
     </div>
 
     <div class="box">
-      <p><strong>2. IL CONDUTTORE (FREELANCE)</strong></p>
-      <p>Sig./Sig.ra: __________________________________________________________________________</p>
-      <p>P.IVA: ___________________________ C.F.: ______________________________________________</p>
-      <p>Nato/a a: ___________________________ il: ______________ Residente in: ____________________</p>
-      <p>Albo / Ordine / Abilitazione n.: ____________________ Telefono/Email: ______________</p>
+      <p><strong>2. L'UTILIZZATORE (PROFESSIONISTA FREELANCE)</strong></p>
+      <p>Sig./Sig.ra: ______________________________________________________________</p>
+      <p>P.IVA: ____________________________ C.F.: ______________________________________</p>
+      <p>Nato/a a: ______________________________ il: ________________ Residente in: ______________________</p>
+      <p>Albo / Ordine / Qualifica Professionale n.: ______________________________________</p>
+      <p>Email / PEC: ____________________________________ Telefono: ____________________</p>
     </div>
 
     <div class="box">
-      <p><strong>Tipologia di postazione e attività concessa</strong> (barrare):</p>
+      <p><strong>Tipologia di postazione e attività concessa</strong> (selezionare):</p>
       <div class="cats">
-        <label><input type="checkbox"> Poltrona Hair &amp; Barber</label>
-        <label><input type="checkbox"> Cabina Estetica &amp; Nails</label>
-        <label><input type="checkbox"> Cabina Massaggi / Fisioterapia</label>
-        <label><input type="checkbox"> Studio Psicoterapia / Counseling</label>
-        <label><input type="checkbox"> Set Foto &amp; Video</label>
-        <label><input type="checkbox"> Postazione Coworking</label>
+        <label><input type="checkbox" id="t-hair"> Poltrona Hair &amp; Barber (L. 174/2005)</label>
+        <label><input type="checkbox" id="t-estetica"> Cabina Estetica, Nails &amp; PMU (L. 1/1990)</label>
+        <label><input type="checkbox" id="t-massaggi"> Cabina Massaggi &amp; Trattamenti Benessere</label>
+        <label><input type="checkbox" id="t-coworking"> Postazione Coworking &amp; Servizi Creativi (Foto/Video)</label>
+        <label style="grid-column:1/-1"><input type="checkbox" id="t-altro"> Altro: <span id="f-altro">______________________________________________</span></label>
       </div>
     </div>
 
-    <p><strong>Art. 1 - Oggetto e ubicazione.</strong> Il Concedente concede in godimento temporaneo e non esclusivo al Conduttore, che accetta, la postazione di lavoro n. ____ situata nel proprio locale in Via ______________________________, Città ________________, con accesso ai servizi igienici, alla sala d'attesa e agli impianti comuni, e con le seguenti attrezzature: ______________________________.</p>
+    <h3>Art. 1 - Oggetto, ubicazione e titolo dell'immobile</h3>
+    <p>1. Il Concedente concede in uso temporaneo e non esclusivo all’Utilizzatore, che accetta, la postazione di lavoro attrezzata n. _____ ubicata all'interno dei locali siti in Via <span id="f-via">__________________________________</span>, Città <span id="f-citta">____________________</span> (Prov. ____).</p>
+    <p>2. L'utilizzo comprende l'accesso a: servizi igienici, sala d'attesa, impianti tecnologici e di climatizzazione, nonché le seguenti attrezzature dedicate: ______________________________________________________________________.</p>
+    <p>3. <strong>Titolo di disponibilità:</strong> Il Concedente dichiara di avere la piena e legittima disponibilità dell’immobile e che la concessione d'uso a terzi professionisti è pienamente consentita in forza del titolo di proprietà o di contratto di locazione primaria ad uso commerciale.</p>
 
-    <p><strong>Art. 2 - Autonomia operativa.</strong> Il Conduttore opera in piena autonomia organizzativa e gestionale, con proprio rischio d'impresa, senza vincoli di orario o gerarchici verso il Concedente, salvi gli orari di apertura e le regole di uso del locale. Il Conduttore gestisce la propria clientela e i propri appuntamenti, determina liberamente i prezzi delle prestazioni, incassa direttamente e rilascia i documenti fiscali di propria competenza.</p>
+    <h3>Art. 2 - Autonomia operativa ed assenza di subordinazione</h3>
+    <p>1. L'Utilizzatore opera in regime di totale autonomia organizzativa, tecnica e gestionale, con proprio ed esclusivo rischio d’impresa, senza alcun vincolo di dipendenza, subordinazione, etero-direzione o coordinamento gerarchico nei confronti del Concedente.</p>
+    <p>2. L'Utilizzatore:</p>
+    <ul>
+      <li>Determina in piena libertà i prezzi applicati ai propri clienti.</li>
+      <li>Gestisce autonomamente la propria agenda, gli appuntamenti e il portafoglio clienti.</li>
+      <li>Incassa direttamente i corrispettivi dai propri clienti, emettendo la prescritta documentazione fiscale (fatture/corrispettivi telematici) a proprio nome e con la propria partita IVA.</li>
+      <li>È vincolato unicamente al rispetto del regolamento interno dei locali e dei limiti di orario di apertura generale dell'immobile.</li>
+    </ul>
 
-    <p><strong>Art. 3 - Requisiti di legge, igiene e riservatezza.</strong> Il Conduttore dichiara di possedere i titoli richiesti per la propria attività, di essere titolare di partita IVA attiva (o di operare nelle forme di legge) e di aver effettuato le comunicazioni previste. Il Concedente dichiara che il locale è autorizzato all'uso previsto, conforme alle norme urbanistiche, di sicurezza e igienico-sanitarie, e può essere utilizzato anche da terzi. In particolare: (a) <em>servizi alla persona, estetica e barber:</em> abilitazione professionale di legge (ad es. L. 174/2005 o L. 1/1990) e requisiti igienico-sanitari, con sanificazione di postazione e strumenti; (b) <em>attività sanitarie, psicoterapia e counseling:</em> rispetto del segreto professionale e della riservatezza dei dati dei pazienti (Reg. UE 2016/679), iscrizione all'albo ove richiesta e idoneità del locale all'attività; (c) <em>foto e video:</em> il Conduttore ottiene le liberatorie per immagine e diritti d'autore dei soggetti ripresi e risponde dell'uso dei materiali realizzati; (d) <em>coworking:</em> rispetto del regolamento del locale e delle regole di riservatezza degli spazi comuni. Il Conduttore usa i propri strumenti di lavoro e mantiene la postazione in ordine e pulita.</p>
+    <h3>Art. 3 - Requisiti abilitativi, iscrizioni e adempimenti SUAP / SCIA</h3>
+    <p>1. <strong>Dichiarazioni dell'Utilizzatore:</strong> Dichiara sotto la propria responsabilità di essere in possesso della regolare partita IVA attiva (con codice ATECO coerente con l'attività svolta), della qualifica professionale/abilitazione di legge (ove richiesta, ad es. qualifica professionale ex L. 174/2005 per acconciatori o L. 1/1990 per estetisti), nonché del DURC regolare.</p>
+    <p>2. <strong>Dichiarazioni del Concedente:</strong> Dichiara che i locali sono conformi alle normative urbanistiche, edilizie, di agibilità e igienico-sanitarie vigenti per l'attività esercitata.</p>
+    <p>3. <strong>Adempimenti amministrativi (SCIA):</strong> Per le attività di servizi alla persona (acconciatori ed estetisti), le Parti si danno reciprocamente atto dell'obbligo di comunicazione o presentazione della Segnalazione Certificata di Inizio Attività (SCIA) per affitto di poltrona/cabina presso il SUAP del Comune territorialmente competente prima dell'inizio delle attività, secondo le prescrizioni dei regolamenti locali.</p>
+    <p>4. <strong>Strumentario proprio:</strong> L'Utilizzatore impiega i propri attrezzi di lavoro e minuteria personale conforme alle norme di sicurezza CE, garantendo la pulizia e sanificazione continua degli stessi e della postazione al termine di ogni turno.</p>
 
-    <p><strong>Art. 4 - Durata e orari.</strong> Dal ____/____/______ al ____/____/______ (oppure nei giorni ________________ dalle ore ______ alle ore ______). Ciascuna parte può recedere con preavviso scritto di ____ giorni; è ammessa la risoluzione immediata per grave inadempimento, mancato pagamento o perdita delle abilitazioni.</p>
+    <h3>Art. 4 - Durata, canone e modalità temporali</h3>
+    <p>1. La concessione ha efficacia per il seguente periodo:</p>
+    <ul>
+      <li>Dal giorno <span id="f-dal">______________</span> al giorno <span id="f-al">______________</span></li>
+      <li><em>(oppure nelle seguenti date/giornate fisse concordate)</em>: __________________________________</li>
+      <li>Fascia oraria: dalle ore <span id="f-dalle">________</span> alle ore <span id="f-alle">________</span></li>
+    </ul>
+    <p>2. <strong>Unità minima di noleggio:</strong> Le Parti concordano che l'unità minima di noleggio per le postazioni di servizi alla persona è fissata su base giornaliera o di mezza giornata, con espressa esclusione del frazionamento ad ore singole a chiamata.</p>
+    <p>3. <strong>Corrispettivo:</strong> Il canone forfettario omnicomprensivo (comprensivo di uso postazione, arredi fissi, connessione internet e consumi forfettari di utenze idriche, elettriche e di climatizzazione) è concordato in:</p>
+    <ul>
+      <li><strong>€ <span id="f-importo">______________</span></strong> <em>( ☐ IVA inclusa &nbsp; ☐ IVA esclusa )</em></li>
+      <li>Modalità: <strong><span id="m-giorno">☐</span> Giornata intera &nbsp;|&nbsp; <span id="m-mezza">☐</span> Mezza giornata &nbsp;|&nbsp; <span id="m-mese">☐</span> Quota mensile / periodica &nbsp;|&nbsp; <span id="m-ora">☐</span> A ore (solo coworking e set foto/video)</strong></li>
+    </ul>
+    <p>4. Il pagamento del corrispettivo avverrà a mezzo ____________________ entro il ____________________. Il Concedente emetterà regolare fattura elettronica con causale di fornitura servizi di messa a disposizione spazi e postazioni attrezzate.</p>
 
-    <p><strong>Art. 5 - Corrispettivo e fatturazione.</strong> Il corrispettivo per la concessione della postazione e delle utenze (energia elettrica, acqua, climatizzazione) è di € ________ per ☐ ora ☐ mezza giornata ☐ giornata ☐ mese, IVA ☐ inclusa ☐ esclusa, da corrispondere con ________________ entro ________________. Il Concedente emette regolare fattura per il servizio di concessione spazi.</p>
+    <h3>Art. 5 - Sicurezza sul lavoro (D.Lgs. 81/2008)</h3>
+    <p>1. L'Utilizzatore dichiara di aver ricevuto, visionato e accettato le indicazioni relative ai rischi specifici presenti nell'ambiente di lavoro, alle vie di fuga e ai piani di emergenza e antincendio.</p>
+    <p>2. Ciascuna parte cura per quanto di propria competenza il rispetto delle norme in materia di salute e sicurezza dei luoghi di lavoro ex D.Lgs. 81/2008.</p>
 
-    <p><strong>Art. 6 - Sicurezza e igiene.</strong> Il Conduttore dichiara di aver preso visione del Documento di Valutazione dei Rischi (DVR) e delle misure di sicurezza dei locali e si impegna a rispettare il D.Lgs. 81/2008 e i regolamenti igienico-sanitari comunali, curando la sanificazione di postazione e strumenti.</p>
+    <h3>Art. 6 - Responsabilità civile ed assicurazioni</h3>
+    <p>1. L'Utilizzatore risponde in via esclusiva di qualunque danno cagionato a persone o cose nell'esercizio della propria prestazione professionale.</p>
+    <p>2. L'Utilizzatore attesta di disporre di idonea polizza di Assicurazione di Responsabilità Civile verso Terzi (RCT / Professionale):</p>
+    <ul>
+      <li><em>Compagnia Assicuratrice:</em> __________________________________________________</li>
+      <li><em>Polizza n.:</em> ________________________________________________________________</li>
+    </ul>
+    <p>3. Il Concedente garantisce l'esistenza di idonea copertura assicurativa RCT legata alla titolarità dell'immobile e dei beni aziendali.</p>
 
-    <p><strong>Art. 7 - Responsabilità e assicurazione.</strong> Ciascuna parte risponde dei danni causati con colpa a persone, cose e clienti. Il Conduttore è responsabile verso i terzi delle prestazioni che esegue ed è tenuto a mantenere una polizza di responsabilità civile verso terzi (RCT) adeguata (polizza n. ______________ presso ______________); è consigliata la responsabilità civile professionale. Il Concedente dichiara di avere analoga copertura per i locali (polizza n. ______________ presso ______________).</p>
+    <h3>Art. 7 - Trattamento dati personali (Regolamento UE 2016/679 - GDPR)</h3>
+    <p>1. Concedente e Utilizzatore agiscono come autonomi titolari del trattamento per i dati personali della rispettiva clientela.</p>
+    <p>2. Il Concedente non ha accesso all'anagrafica, ai recapiti o ai dati particolari dei clienti dell'Utilizzatore e si astiene da qualsiasi forma di sollecitazione o utilizzo di tali contatti.</p>
 
-    <p><strong>Art. 8 - Dati personali.</strong> Ciascuna parte tratta i dati personali dei propri clienti come autonomo titolare, nel rispetto del Reg. UE 2016/679. Il Concedente non accede alla clientela del Conduttore né ne utilizza i dati.</p>
+    <h3>Art. 8 - Ruolo della piattaforma tecnologica</h3>
+    <p>1. Le Parti riconoscono espressamente che la piattaforma <strong>ChairShare</strong> (e il dominio chairshare.it) eroga un servizio esclusivamente tecnologico volto a facilitare l'incontro tra domanda e offerta e la gestione delle prenotazioni.</p>
+    <p>2. ChairShare non è parte del presente contratto, non esercita alcuna attività di intermediazione di manodopera o agenzia d'affari, e declina ogni responsabilità inerente all'adempimento delle obbligazioni fiscali, amministrative (SCIA), assicurative e sanitarie che rimangono di esclusiva competenza delle Parti.</p>
 
-    <p><strong>Art. 9 - Ruolo della piattaforma ChairShare.</strong> Le parti riconoscono che la piattaforma ChairShare (chairshare.it) ha fornito solo strumenti tecnologici per il contatto e la gestione delle disponibilità ed è estranea al presente rapporto, nei limiti consentiti dalla legge.</p>
+    <h3>Art. 9 - Foro competente</h3>
+    <p>Per qualsiasi controversia derivante dall'interpretazione o esecuzione del presente contratto sarà competente in via esclusiva il Foro di ____________________.</p>
 
-    <p><strong>Art. 10 - Disposizioni finali.</strong> Ogni modifica deve essere fatta per iscritto. Per quanto non previsto valgono le norme del Codice civile. Legge italiana; foro competente: ______________________.</p>
+    <p style="margin-top:12px">Luogo: ________________________, Data: ____ / ____ / ________</p>
 
     <div class="sign">
       <div><strong>Firma del Concedente (Host)</strong><div class="l">______________________________</div></div>
-      <div><strong>Firma del Conduttore (Freelance)</strong><div class="l">______________________________</div></div>
+      <div><strong>Firma dell'Utilizzatore (Freelance)</strong><div class="l">______________________________</div></div>
     </div>
-
-    <p class="small">Luogo e data di sottoscrizione: ________________________, lì ______________</p>
   </main>
 
+  <script>
+    // Precompilazione da ChairShare: ?tipo=&dal=&dalle=&alle=&mod=&importo=&citta=&via=
+    // I valori vengono validati e inseriti come semplice testo.
+    (function () {
+      var q = new URLSearchParams(location.search);
+      function el(id) { return document.getElementById(id); }
+      function testo(id, v) { var e = el(id); if (e && v) { e.textContent = v; e.classList.add('fill'); } }
+      function pulito(v, max) { return String(v || '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, max); }
+      var dal = q.get('dal'), dalle = q.get('dalle'), alle = q.get('alle'), mod = q.get('mod'), tipo = q.get('tipo');
+      var ok = false;
+      if (dal && /^\d{4}-\d{2}-\d{2}$/.test(dal)) { var p = dal.split('-'); var d = p[2] + '/' + p[1] + '/' + p[0]; testo('f-dal', d); testo('f-al', d); ok = true; }
+      if (dalle && /^\d{2}:\d{2}$/.test(dalle)) { testo('f-dalle', dalle); ok = true; }
+      if (alle && /^\d{2}:\d{2}$/.test(alle)) { testo('f-alle', alle); ok = true; }
+      var imp = parseFloat(q.get('importo'));
+      if (isFinite(imp) && imp > 0 && imp < 100000) { testo('f-importo', imp.toFixed(2).replace('.', ',')); ok = true; }
+      var mappaMod = { giorno: 'm-giorno', mezza_giornata: 'm-mezza', ora: 'm-ora' };
+      if (mappaMod[mod]) { el(mappaMod[mod]).textContent = '☒'; ok = true; }
+      testo('f-citta', pulito(q.get('citta'), 60));
+      testo('f-via', pulito(q.get('via'), 120));
+      var mappaTipo = { barbiere: 't-hair', estetica: 't-estetica', massaggi: 't-massaggi', fotografia: 't-coworking', coworking: 't-coworking', scrivania: 't-coworking', ufficio: 't-coworking', sala_riunioni: 't-coworking', psicoterapia: 't-altro' };
+      if (mappaTipo[tipo]) { el(mappaTipo[tipo]).checked = true; ok = true; }
+      if (tipo === 'psicoterapia') testo('f-altro', 'Studio psicoterapia / counseling');
+      if (ok) {
+        var b = el('preBox'); b.hidden = false;
+        b.textContent = 'Data, orari, importo e tipologia sono stati precompilati dai dati della tua postazione su ChairShare: controllali prima di firmare, insieme agli altri campi che restano da completare.';
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -464,8 +464,14 @@
             <form id="formBlocco" class="grid grid-cols-2 gap-2">
               <select id="blSpace" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select>
               <input id="blDay" type="date" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
-              <label class="text-[11px] text-gray-500">Dalle<select id="blStart" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00" selected>14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00">19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
-              <label class="text-[11px] text-gray-500">Alle<select id="blEnd" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00">14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00" selected>19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
+              <div id="blHalf" class="hidden col-span-2 space-y-2">
+                <p class="text-[11px] font-bold text-gray-700">Mezza giornata (4 ore): scegli la fascia</p>
+                <div id="blHalfOpts" class="grid grid-cols-1 gap-1.5"></div>
+                <label id="blHalfCustomWrap" class="hidden text-[11px] text-gray-500">Orario di inizio<select id="blHalfStart" class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select></label>
+                <p id="blHalfMsg" class="text-[11px] text-gray-500"></p>
+              </div>
+              <label id="blStartLbl" class="text-[11px] text-gray-500">Dalle<select id="blStart" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00" selected>14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00">19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
+              <label id="blEndLbl" class="text-[11px] text-gray-500">Alle<select id="blEnd" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00">14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00" selected>19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
               <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold py-2.5 rounded-xl">Blocca postazione</button>
             </form>
             <p id="blAvail" class="text-[11px] text-gray-500"></p>
@@ -1122,6 +1128,7 @@
                 <option value="mezza_giornata">€ / Mezza giornata (es. 4 ore)</option>
                 <option value="ora">€ / Ora</option>
               </select>
+              <p id="priceUnitHint" class="hidden text-[11px] text-gray-500 mt-1">Per questa categoria l'affitto a ore non è disponibile: scegli mezza giornata o giornata intera.</p>
             </div>
             <div>
               <label for="newPrice" class="text-xs text-gray-500 uppercase font-bold">Prezzo (€)</label>
@@ -1285,6 +1292,15 @@
     const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 
     const TIPI_MIN_2_ORE = ['barbiere', 'estetica'];
+    // L'affitto "a ore" resta solo per coworking, scrivanie/uffici, foto/video e psicoterapia (le categorie dei servizi alla persona usano mezza giornata o giornata)
+    const TIPI_ORA_AMMESSA = ['coworking', 'scrivania', 'ufficio', 'sala_riunioni', 'fotografia', 'psicoterapia'];
+    function aggiornaModalitaPerCategoria() {
+      const ammessa = TIPI_ORA_AMMESSA.includes($('newType').value);
+      const opt = Array.from($('newPriceUnit').options).find(o => o.value === 'ora');
+      if (opt) { opt.disabled = !ammessa; opt.hidden = !ammessa; }
+      $('priceUnitHint').classList.toggle('hidden', ammessa);
+      if (!ammessa && $('newPriceUnit').value === 'ora') $('newPriceUnit').value = 'giorno';
+    }
     const NOMI_UNITA = { giorno: 'giorno', mezza_giornata: 'mezza giornata', ora: 'ora' };
 
     // es. "35 € / giorno", "20 € / mezza giornata", "15 € / ora (min. 2 ore)"
@@ -2546,6 +2562,7 @@
     let unitaToccata = false;
 
     function aggiornaCampoMinOre(impostaDefault) {
+      aggiornaModalitaPerCategoria();
       const tipo = $('newType').value;
       const unit = $('newPriceUnit').value;
       const wrap = $('minHoursWrap');
@@ -2563,7 +2580,7 @@
     // Preset in base alla tipologia: barbieri ed estetiste -> giornata, gli altri -> ora
     function applicaPresetTariffa() {
       if (!unitaToccata) {
-        $('newPriceUnit').value = TIPI_MIN_2_ORE.includes($('newType').value) ? 'giorno' : 'ora';
+        $('newPriceUnit').value = TIPI_ORA_AMMESSA.includes($('newType').value) ? 'ora' : 'giorno';
       }
       aggiornaCampoMinOre(true);
     }
@@ -2680,6 +2697,11 @@
       }
       const rTax = await salvaTaxId($('newTaxId').value);
       if (!rTax.ok) { goToStep(2); mostraMessaggio(rTax.msg, 'err'); return; }
+      if (priceUnit === 'ora' && !TIPI_ORA_AMMESSA.includes(type)) {
+        goToStep(2);
+        mostraMessaggio("Per questa categoria l'affitto a ore non è disponibile: scegli mezza giornata o giornata intera.", 'err');
+        return;
+      }
       const minimoTipo = TIPI_MIN_2_ORE.includes(type) ? 2 : 1;
       if (priceUnit === 'ora' && (!(minHours >= minimoTipo) || minHours > 12)) {
         goToStep(2);
@@ -3067,6 +3089,9 @@
       const mappa = {
         CONTATTO_NON_SBLOCCATO: "Prima sblocca i recapiti dell'annuncio di questo salone (dalla scheda dell'annuncio), poi potrai bloccare la postazione.",
         POSTAZIONI_ESAURITE: "In quella fascia tutte le postazioni di questo salone sono già occupate: scegli un altro orario o giorno.",
+        MEZZA_GIORNATA: "Per questo annuncio la mezza giornata dura esattamente 4 ore: scegli una fascia dall'elenco.",
+        GIORNO_CHIUSO: "Il salone è chiuso in quel giorno: scegli un'altra data.",
+        FUORI_ORARIO_HOST: "La fascia scelta è fuori dall'orario di apertura del salone: scegline un'altra.",
         BLOCCO_SOVRAPPOSTO: "Hai già una postazione bloccata in quell'orario.",
         DATA_NON_VALIDA: "Scegli una data da oggi in poi (massimo 120 giorni).",
         ORE_INTERE: "Scegli orari a ore piene (es. 14:00 - 19:00).",
@@ -3127,6 +3152,15 @@
       return agCaricamento;
     }
 
+    // Contratto con data, orari, importo e tipologia già compilati
+    function urlContratto(b, sp, ct) {
+      const q = new URLSearchParams();
+      if (sp) { q.set('tipo', sp.type); q.set('mod', sp.priceUnit); if (Number(sp.price) > 0) q.set('importo', String(sp.price)); if (sp.city) q.set('citta', sp.city); }
+      q.set('dal', b.day); q.set('dalle', oraBreve(b.start_time)); q.set('alle', oraBreve(b.end_time));
+      if (ct && ct.address) q.set('via', ct.address);
+      return '/contratto-affitto-poltrona.html?' + q.toString();
+    }
+
     function nomeSalone(spaceId) {
       const sp = spazi.find(x => x.id === spaceId);
       return sp ? sp.name + (sp.city ? ' — ' + sp.city : '') : 'Salone';
@@ -3148,6 +3182,7 @@
       sel.innerHTML = '<option value="">Scegli il salone…</option>' + spazi.filter(x => x.userId !== currentUser.id && x.active !== false)
         .map(x => `<option value="${esc(x.id)}">${esc(x.name)}${x.city ? ' — ' + esc(x.city) : ''}</option>`).join('');
       if (prec) sel.value = prec;
+      aggiornaMezzaGiornata(false);
       // blocchi
       $('agBlocks').innerHTML = agBlocchi.length ? agBlocchi.map(b => {
         const ct = contatti[b.space_id] || sbloccati[b.space_id];
@@ -3159,6 +3194,7 @@
             <span class="inline-block text-[11px] font-bold bg-pink-50 text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
             <p class="text-sm font-bold text-gray-900 truncate mt-1">${esc(sp ? sp.name : 'Salone')}</p>
             <p class="text-[11px] text-gray-500 truncate">📍 ${esc(indirizzo)}</p>
+            <a href="${esc(urlContratto(b, sp, ct))}" target="_blank" rel="noopener" class="inline-block mt-1 text-[11px] font-bold text-gray-700 underline">📄 Contratto precompilato</a>
           </div>
           ${cancellabile
             ? `<button type="button" data-del-bl="${esc(b.id)}" class="text-[11px] font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-full px-3 py-1.5 shrink-0">Annulla Postazione</button>`
@@ -3255,28 +3291,86 @@
       const punti = [A, ...blocks.map(x => minuti(x.start)).filter(t => t > A && t < B)];
       return Math.max(0, ...punti.map(t => blocks.filter(x => minuti(x.start) <= t && minuti(x.end) > t).length)) >= cap;
     }
+    // ---------- Mezza giornata: fasce Mattina / Pomeriggio / orario di inizio (+4 ore) ----------
+    let blHalfBlocca = false, blHalfScelta = '';
+    function orarioApertura(sp, day) {
+      const sched = sp.dailySchedule || {};
+      if (!Object.keys(sched).length) return { stato: 'nodati', open: 7 * 60, close: 22 * 60 };   // vecchi annunci senza orari: nessun vincolo
+      const nome = GIORNI_SETTIMANA[(parteData(day).getDay() + 6) % 7];
+      const m = /^(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})$/.exec(sched[nome] || '');
+      if (!m) return { stato: 'chiuso' };
+      return { stato: 'ok', open: (+m[1]) * 60 + (+m[2]), close: (+m[3]) * 60 + (+m[4]) };
+    }
+    function aggiornaMezzaGiornata(reset) {
+      const sp = spazi.find(x => x.id === $('blSpace').value);
+      const day = $('blDay').value;
+      const attiva = !!(sp && sp.priceUnit === 'mezza_giornata');
+      $('blHalf').classList.toggle('hidden', !attiva);
+      $('blStartLbl').classList.toggle('hidden', attiva);
+      $('blEndLbl').classList.toggle('hidden', attiva);
+      if (!attiva) { blHalfBlocca = false; return; }
+      if (reset) blHalfScelta = '';
+      const opts = $('blHalfOpts'), msg = $('blHalfMsg'), wrap = $('blHalfCustomWrap');
+      opts.innerHTML = ''; wrap.classList.add('hidden');
+      blHalfBlocca = true;
+      if (!day) { msg.textContent = 'Scegli prima il giorno.'; return; }
+      const o = orarioApertura(sp, day);
+      if (o.stato === 'chiuso') { msg.className = 'text-[11px] text-red-600 font-bold'; msg.textContent = 'Il salone è chiuso in questo giorno: scegli un\'altra data.'; return; }
+      const apOra = Math.ceil(o.open / 60) * 60, chOra = Math.floor(o.close / 60) * 60;
+      if (chOra - apOra < 240) { msg.className = 'text-[11px] text-red-600 font-bold'; msg.textContent = 'Il salone resta aperto meno di 4 ore in questo giorno: scegli un\'altra data.'; return; }
+      const fasce = [];
+      const mat = { id: 'mattina', nome: 'Mattina', a: apOra, b: apOra + 240 }, pom = { id: 'pomeriggio', nome: 'Pomeriggio', a: chOra - 240, b: chOra };
+      fasce.push(mat);
+      if (pom.a !== mat.a) fasce.push(pom); else mat.nome = 'Fascia unica';
+      fasce.push({ id: 'custom', nome: 'Scegli l\'orario di inizio' });
+      if (!fasce.some(f => f.id === blHalfScelta)) blHalfScelta = '';
+      fasce.forEach(f => {
+        const l = document.createElement('label');
+        l.className = 'flex items-center gap-2 p-2 bg-white border rounded-xl cursor-pointer text-xs ' + (blHalfScelta === f.id ? 'border-brand' : 'border-gray-200');
+        const r = document.createElement('input'); r.type = 'radio'; r.name = 'blHalfFascia'; r.value = f.id; r.checked = blHalfScelta === f.id;
+        const t = document.createElement('span'); t.className = 'font-bold text-gray-800'; t.textContent = f.nome + (f.a !== undefined ? ' · ' + hhmm(f.a) + ' – ' + hhmm(f.b) : '');
+        l.append(r, t); opts.appendChild(l);
+      });
+      let a = null;
+      if (blHalfScelta === 'mattina') a = mat.a; else if (blHalfScelta === 'pomeriggio') a = pom.a;
+      else if (blHalfScelta === 'custom') {
+        wrap.classList.remove('hidden');
+        const sel = $('blHalfStart'), prec = sel.value;
+        sel.innerHTML = '';
+        for (let m = apOra; m <= chOra - 240; m += 60) { const op = document.createElement('option'); op.value = hhmm(m); op.textContent = hhmm(m) + ' – ' + hhmm(m + 240); sel.appendChild(op); }
+        if (prec && Array.from(sel.options).some(x => x.value === prec)) sel.value = prec;
+        a = minuti(sel.value);
+      }
+      if (a === null) { msg.className = 'text-[11px] text-gray-500'; msg.textContent = 'Seleziona una fascia per continuare.'; return; }
+      $('blStart').value = hhmm(a); $('blEnd').value = hhmm(a + 240);
+      blHalfBlocca = false;
+      msg.className = 'text-[11px] text-green-700 font-bold';
+      msg.textContent = 'Fascia scelta: dalle ' + hhmm(a) + ' alle ' + hhmm(a + 240) + '.';
+    }
+
     async function aggiornaDispBlocco() {
       const c = getSupabase(), sp = $('blSpace').value, day = $('blDay').value, a = $('blStart').value, b = $('blEnd').value;
       const msg = $('blAvail'), btn = $('formBlocco').querySelector('button[type=submit]');
       const tok = ++blDispTok;
-      if (!c || !sp || !day) { msg.textContent = ''; btn.disabled = false; blDisp = null; return; }
+      if (!c || !sp || !day) { msg.textContent = ''; btn.disabled = blHalfBlocca; blDisp = null; return; }
       if (!blDisp || blDisp.key !== sp + day) {
         const { data } = await c.rpc('get_chair_availability', { p_space: sp, p_day: day });
         if (tok !== blDispTok) return;
         blDisp = data ? { key: sp + day, cap: data.capacity || 1, blocks: data.blocks || [] } : null;
       }
-      if (!blDisp) { msg.textContent = ''; btn.disabled = false; return; }
+      if (!blDisp) { msg.textContent = ''; btn.disabled = blHalfBlocca; return; }
       const occ = blDisp.blocks.length ? ' Fasce già bloccate: ' + blDisp.blocks.map(x => x.start + '-' + x.end).join(', ') + '.' : '';
       const esaurito = a && b && b > a && postiPieni(blDisp.blocks, blDisp.cap, a, b);
       msg.className = 'text-[11px] ' + (esaurito ? 'text-red-600 font-bold' : 'text-gray-500');
       msg.textContent = (esaurito ? '⛔ ESAURITO in questa fascia. ' : '') + 'Postazioni del salone: ' + blDisp.cap + '.' + occ;
-      btn.disabled = !!esaurito;
+      btn.disabled = !!esaurito || blHalfBlocca;
     }
 
     async function creaBlocco(e) {
       e.preventDefault();
       const c = getSupabase(); if (!c || !currentUser) return;
       const sp = $('blSpace').value, day = $('blDay').value, a = $('blStart').value, b = $('blEnd').value;
+      if (blHalfBlocca) { mostraMessaggio("Scegli una fascia per la mezza giornata (4 ore).", 'err'); return; }
       if (!sp || !day || !a || !b) { mostraMessaggio("Compila salone, giorno e fascia oraria.", 'err'); return; }
       if (b <= a) { mostraMessaggio("L'orario di fine deve essere dopo l'inizio.", 'err'); return; }
       const { error } = await c.rpc('create_chair_block', { p_space: sp, p_day: day, p_start: a, p_end: b });
@@ -3450,7 +3544,10 @@
       $('formServizio').addEventListener('submit', aggiungiServizio);
       $('formBlocco').addEventListener('submit', creaBlocco);
       $('blDay').min = isoOggi();
-      ['blSpace', 'blDay', 'blStart', 'blEnd'].forEach(id => $(id).addEventListener('change', aggiornaDispBlocco));
+      ['blSpace', 'blDay'].forEach(id => $(id).addEventListener('change', () => { aggiornaMezzaGiornata(id === 'blSpace'); aggiornaDispBlocco(); }));
+      ['blStart', 'blEnd'].forEach(id => $(id).addEventListener('change', aggiornaDispBlocco));
+      $('blHalfOpts').addEventListener('change', ev => { if (ev.target.name === 'blHalfFascia') { blHalfScelta = ev.target.value; aggiornaMezzaGiornata(false); aggiornaDispBlocco(); } });
+      $('blHalfStart').addEventListener('change', () => { aggiornaMezzaGiornata(false); aggiornaDispBlocco(); });
       $('btnAgCopy').addEventListener('click', async () => {
         const v = $('agLink').value;
         const btn = $('btnAgCopy');
