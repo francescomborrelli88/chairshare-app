@@ -160,15 +160,15 @@
         <span class="text-gray-300">|</span>
         <select id="typeSelect" aria-label="Tipologia" class="text-xs font-semibold text-gray-600 bg-transparent focus:outline-none cursor-pointer">
           <option value="">Tutti i Tipi</option>
-          <option value="psicoterapia">Psicoterapia</option>
-          <option value="massaggi">Massaggi</option>
-          <option value="barbiere">Hair & Barber</option>
-          <option value="estetica">Estetica</option>
-          <option value="fotografia">Foto/Video</option>
+          <option value="fotografia">Set Foto &amp; Video</option>
+          <option value="coworking">Postazione Coworking &amp; Desk</option>
+          <option value="psicoterapia">Studio Privato &amp; Consulenza</option>
+          <option value="sala_riunioni">Sala Riunioni &amp; Corsi</option>
           <option value="scrivania">Scrivania singola</option>
           <option value="ufficio">Ufficio riservato</option>
-          <option value="sala_riunioni">Sala riunioni</option>
-          <option value="coworking">Coworking</option>
+          <option value="barbiere">Poltrona Hair &amp; Barber</option>
+          <option value="estetica">Cabina Estetica &amp; Nails</option>
+          <option value="massaggi">Cabina Massaggi &amp; Fisioterapia</option>
         </select>
         <span class="text-gray-300">|</span>
 
@@ -257,7 +257,8 @@
     <div class="bg-white border-b border-gray-200 py-3 px-4 shadow-sm sticky top-[150px] md:top-[61px] z-20">
       <div class="max-w-7xl mx-auto flex justify-center mb-3">
         <div class="inline-flex bg-gray-100 p-1 rounded-full border border-gray-200/60 text-xs font-semibold" id="macroTabs" role="tablist">
-          <button type="button" id="tabBeauty" data-macro-tab="benessere" role="tab" class="macro-tab active px-4 py-1.5 rounded-full bg-white text-gray-900 shadow-sm transition-all flex items-center gap-1.5"><span>✂️</span> <span>Saloni &amp; Benessere</span></button>
+          <button type="button" id="tabAll" data-macro-tab="tutti" role="tab" class="macro-tab active px-4 py-1.5 rounded-full bg-white text-gray-900 shadow-sm transition-all flex items-center gap-1.5"><span>✨</span> <span>Tutti</span></button>
+          <button type="button" id="tabBeauty" data-macro-tab="benessere" role="tab" class="macro-tab px-4 py-1.5 rounded-full text-gray-500 hover:text-gray-900 transition-all flex items-center gap-1.5"><span>✂️</span> <span>Saloni &amp; Benessere</span></button>
           <button type="button" id="tabOffice" data-macro-tab="uffici" role="tab" class="macro-tab px-4 py-1.5 rounded-full text-gray-500 hover:text-gray-900 transition-all flex items-center gap-1.5"><span>💼</span> <span>Uffici &amp; Desk</span></button>
         </div>
       </div>
@@ -273,14 +274,34 @@
           <span>Tutti</span>
         </button>
 
-        <button data-cat="psicoterapia" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
-          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/></svg>
-          <span>Psicoterapia</span>
+        <button data-cat="fotografia" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
+          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
+          <span>Set Foto & Video</span>
         </button>
 
-        <button data-cat="massaggi" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
-          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
-          <span>Massaggi</span>
+        <button data-cat="coworking" data-macro="uffici" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
+          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+          <span>Postazione Coworking & Desk</span>
+        </button>
+
+        <button data-cat="psicoterapia" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
+          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.516 0c.85.493 1.508 1.333 1.508 2.316V18"/></svg>
+          <span>Studio Privato & Consulenza</span>
+        </button>
+
+        <button data-cat="sala_riunioni" data-macro="uffici" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
+          <span class="text-lg leading-5" aria-hidden="true">👥</span>
+          <span>Sala Riunioni & Corsi</span>
+        </button>
+
+        <button data-cat="scrivania" data-macro="uffici" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
+          <span class="text-lg leading-5" aria-hidden="true">🪑</span>
+          <span>Scrivania</span>
+        </button>
+
+        <button data-cat="ufficio" data-macro="uffici" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
+          <span class="text-lg leading-5" aria-hidden="true">🚪</span>
+          <span>Ufficio Privato</span>
         </button>
 
         <button data-cat="barbiere" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
@@ -291,37 +312,17 @@
             <line x1="14.5" y1="15.5" x2="5.5" y2="4.5" />
             <circle cx="12" cy="11.5" r="1" fill="currentColor" />
           </svg>
-          <span>Hair & Barber</span>
+          <span>Poltrona Hair & Barber</span>
         </button>
 
         <button data-cat="estetica" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
           <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
-          <span>Estetica & Nails</span>
+          <span>Cabina Estetica & Nails</span>
         </button>
 
-        <button data-cat="fotografia" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
-          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
-          <span>Foto & Video</span>
-        </button>
-
-        <button data-cat="scrivania" data-macro="uffici" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all hidden">
-          <span class="text-lg leading-5" aria-hidden="true">🪑</span>
-          <span>Scrivania</span>
-        </button>
-
-        <button data-cat="ufficio" data-macro="uffici" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all hidden">
-          <span class="text-lg leading-5" aria-hidden="true">🚪</span>
-          <span>Ufficio Privato</span>
-        </button>
-
-        <button data-cat="sala_riunioni" data-macro="uffici" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all hidden">
-          <span class="text-lg leading-5" aria-hidden="true">👥</span>
-          <span>Sala Riunioni</span>
-        </button>
-
-        <button data-cat="coworking" data-macro="uffici" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all hidden">
-          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
-          <span>Coworking</span>
+        <button data-cat="massaggi" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
+          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+          <span>Cabina Massaggi & Fisioterapia</span>
         </button>
       </div>
     </div>
@@ -346,8 +347,8 @@
       <!-- LISTA SPAZI -->
       <div id="listSection" class="lg:col-span-7 overflow-y-auto w-full pr-1">
         <div id="seoHead" class="mb-4">
-          <h1 id="seoH1" class="text-lg md:text-xl font-extrabold text-gray-900 tracking-tight">Affitto Poltrona e Cabina Attrezzata per Professionisti Beauty &amp; Hair</h1>
-          <h2 id="seoH2" class="text-xs text-gray-500 mt-0.5 font-normal">Monetizza le postazioni libere del tuo salone o prenota il tuo spazio di lavoro solo quando ne hai bisogno.</h2>
+          <h1 id="seoH1" class="text-lg md:text-xl font-extrabold text-gray-900 tracking-tight">Noleggio Spazi di Lavoro, Set Creativi e Postazioni Attrezzate</h1>
+          <h2 id="seoH2" class="text-xs text-gray-500 mt-0.5 font-normal">Trova e prenota desk coworking, sale posa e postazioni professionali a ore o a giornata. Zero costi fissi e contratto integrato.</h2>
         </div>
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-sm font-bold text-gray-900"><span id="resultsCount" class="text-brand">0</span> <span id="resultsLabel">spazi trovati</span></h3>
@@ -1093,15 +1094,15 @@
             <div>
               <label for="newType" class="text-xs text-gray-500 uppercase font-bold">Tipologia Spazio</label>
               <select id="newType" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900 bg-white font-bold">
+                <option value="fotografia">Studio Fotografico / Set Foto &amp; Video</option>
+                <option value="coworking">Postazione Coworking</option>
                 <option value="psicoterapia">Studio Psicoterapia / Counseling</option>
-                <option value="massaggi">Cabina Massaggi / Fisioterapia</option>
-                <option value="barbiere">Barbiere / Parrucchiere</option>
-                <option value="estetica">Centro Estetico / Tatuaggi</option>
-                <option value="fotografia">Studio Fotografico</option>
+                <option value="sala_riunioni">Sala riunioni</option>
                 <option value="scrivania">Scrivania singola (Ufficio / Desk)</option>
                 <option value="ufficio">Ufficio riservato</option>
-                <option value="sala_riunioni">Sala riunioni</option>
-                <option value="coworking">Postazione Coworking</option>
+                <option value="barbiere">Barbiere / Parrucchiere</option>
+                <option value="estetica">Centro Estetico / Tatuaggi</option>
+                <option value="massaggi">Cabina Massaggi / Fisioterapia</option>
               </select>
             </div>
             <div>
@@ -1292,11 +1293,12 @@
     };
     // Macro-settori della home
     const MACRO = {
+      tutti: ['fotografia', 'coworking', 'psicoterapia', 'sala_riunioni', 'scrivania', 'ufficio', 'barbiere', 'estetica', 'massaggi'],
       benessere: ['barbiere', 'estetica', 'massaggi', 'psicoterapia', 'fotografia'],
       uffici: ['scrivania', 'ufficio', 'sala_riunioni', 'coworking']
     };
     const TIPI_UFFICIO = MACRO.uffici;
-    let macroSettore = 'benessere';
+    let macroSettore = 'tutti';
     function macroDi(tipo) { return MACRO.uffici.includes(tipo) ? 'uffici' : 'benessere'; }
     const ICONE_TIPO = { psicoterapia: '🛋️', massaggi: '💆', barbiere: '✂️', estetica: '💅', fotografia: '📷', coworking: '💻', scrivania: '🪑', ufficio: '🚪', sala_riunioni: '👥' };
     const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
@@ -2096,8 +2098,8 @@
       home: {
         title: 'Affitto Poltrona Barber e Cabine Estetica | ChairShare',
         description: "Piattaforma per l'affitto di postazioni e cabine nei migliori saloni. Noleggia a mezza giornata o giornata intera con contratto a norma incluso. Zero costi fissi.",
-        h1: 'Affitto Poltrona e Cabina Attrezzata per Professionisti Beauty & Hair',
-        h2: 'Monetizza le postazioni libere del tuo salone o prenota il tuo spazio di lavoro solo quando ne hai bisogno.'
+        h1: 'Noleggio Spazi di Lavoro, Set Creativi e Postazioni Attrezzate',
+        h2: 'Trova e prenota desk coworking, sale posa e postazioni professionali a ore o a giornata. Zero costi fissi e contratto integrato.'
       },
       macro: {
         uffici: {
@@ -2262,18 +2264,18 @@
     function aggiornaVisibilitaPill() {
       document.querySelectorAll('#categoryPills .cat-pill').forEach(p => {
         const m = p.getAttribute('data-macro');
-        p.classList.toggle('hidden', m !== 'all' && m !== macroSettore);
+        p.classList.toggle('hidden', m !== 'all' && macroSettore !== 'tutti' && m !== macroSettore);
       });
     }
     function impostaMacro(m) {
-      macroSettore = m === 'uffici' ? 'uffici' : 'benessere';
+      macroSettore = (m === 'uffici' || m === 'benessere') ? m : 'tutti';
       selectedCategory = '';
       aggiornaMacroUI();
       selectCategory('');
     }
     function selectCategory(cat) {
       selectedCategory = cat || '';
-      if (selectedCategory && macroDi(selectedCategory) !== macroSettore) { macroSettore = macroDi(selectedCategory); aggiornaMacroUI(); }
+      if (selectedCategory && macroSettore !== 'tutti' && macroDi(selectedCategory) !== macroSettore) { macroSettore = macroDi(selectedCategory); aggiornaMacroUI(); }
       document.querySelectorAll('#categoryPills .cat-pill').forEach(pill => {
         if (pill.getAttribute('data-cat') === selectedCategory) {
           pill.className = "cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border-2 border-brand bg-pink-50 text-brand text-xs font-bold transition-all";
