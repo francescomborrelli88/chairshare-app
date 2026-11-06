@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Affitto Poltrona Barber e Cabine Estetica | ChairShare</title>
-  <meta name="description" content="Piattaforma per l'affitto di postazioni e cabine nei migliori saloni. Noleggia a mezza giornata o giornata intera con contratto a norma incluso. Zero costi fissi." />
+  <title>Noleggio Spazi di Lavoro e Postazioni Attrezzate | ChairShare</title>
+  <meta name="description" content="Prenota coworking, set foto e video, sale riunioni e studi a ore o a giornata. Anche poltrone barber ed estetica. Contratto integrato, zero costi fissi." />
   <link rel="canonical" href="https://chairshare.it/" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <!-- Google Search Console: togli i simboli di commento e incolla il codice che ti dà Google (Verifica proprietà > Tag HTML) -->
@@ -19,12 +19,12 @@
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Affitto Poltrona Barber e Cabine Estetica | ChairShare" />
-  <meta name="twitter:description" content="Piattaforma per l'affitto di postazioni e cabine nei migliori saloni. Noleggia a mezza giornata o giornata intera con contratto a norma incluso. Zero costi fissi." />
+  <meta name="twitter:title" content="Noleggio Spazi di Lavoro e Postazioni Attrezzate | ChairShare" />
+  <meta name="twitter:description" content="Prenota coworking, set foto e video, sale riunioni e studi a ore o a giornata. Anche poltrone barber ed estetica. Contratto integrato, zero costi fissi." />
   <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://chairshare.it/#org","name":"ChairShare","url":"https://chairshare.it/","logo":"https://chairshare.it/icon-512.png","sameAs":["https://www.instagram.com/chairshare.it/"]},{"@type":"WebSite","@id":"https://chairshare.it/#site","url":"https://chairshare.it/","name":"ChairShare","inLanguage":"it-IT","publisher":{"@id":"https://chairshare.it/#org"}}]}</script>
   <meta name="twitter:image" content="https://chairshare.it/og-image.png" />
-  <meta property="og:title" content="Affitto Poltrona Barber e Cabine Estetica | ChairShare" />
-  <meta property="og:description" content="Piattaforma per l'affitto di postazioni e cabine nei migliori saloni. Noleggia a mezza giornata o giornata intera con contratto a norma incluso. Zero costi fissi." />
+  <meta property="og:title" content="Noleggio Spazi di Lavoro e Postazioni Attrezzate | ChairShare" />
+  <meta property="og:description" content="Prenota coworking, set foto e video, sale riunioni e studi a ore o a giornata. Anche poltrone barber ed estetica. Contratto integrato, zero costi fissi." />
   <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=3" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=3" />
@@ -169,6 +169,7 @@
           <option value="barbiere">Poltrona Hair &amp; Barber</option>
           <option value="estetica">Cabina Estetica &amp; Nails</option>
           <option value="massaggi">Cabina Massaggi &amp; Fisioterapia</option>
+          <option value="studio_medico">Studio Medico &amp; Nutrizione</option>
         </select>
         <span class="text-gray-300">|</span>
 
@@ -323,6 +324,11 @@
         <button data-cat="massaggi" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
           <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
           <span>Cabina Massaggi & Fisioterapia</span>
+        </button>
+
+        <button data-cat="studio_medico" data-macro="benessere" class="cat-pill inline-flex items-center gap-2 shrink-0 whitespace-nowrap px-4 py-2 rounded-2xl border border-gray-200 bg-white text-gray-600 hover:border-gray-400 text-xs font-semibold transition-all">
+          <span class="text-lg leading-5" aria-hidden="true">🩺</span>
+          <span>Studio Medico &amp; Nutrizione</span>
         </button>
       </div>
     </div>
@@ -1103,6 +1109,7 @@
                 <option value="barbiere">Barbiere / Parrucchiere</option>
                 <option value="estetica">Centro Estetico / Tatuaggi</option>
                 <option value="massaggi">Cabina Massaggi / Fisioterapia</option>
+                <option value="studio_medico">Studio Medico / Nutrizione</option>
               </select>
             </div>
             <div>
@@ -1272,6 +1279,7 @@
       office: ["Fibra FTTH 1Gbps", "Prese multiple dedicate sul desk", "Uso Stampante / Scanner", "Area Break & Caffè compreso", "Ambiente silenzioso", "Aria condizionata autonoma", "Facilità di parcheggio"],
       // categorie senza elenco indicato: restano quelle di prima
       massaggi: ["Lettino professionale", "Scaldawater / Oli", "Cassa Bluetooth", "Lavatesta / Doccia", "Aria condizionata"],
+      medico: ["Lettino visita", "Scrivania studio", "Lavabo in studio", "Sala d'attesa separata", "Ambiente insonorizzato / Privacy", "Wi-Fi & Climatizzazione"],
       fotografia: ["Flash da studio / Stativi", "Fondali colorati a rullo", "Softbox & Modificatori", "Camerino / area trucco", "Wi-Fi per Tethering"]
     };
     // "Estetica & Nails" è un'unica categoria nel sito: unisce cabina estetica e postazione unghie
@@ -1281,6 +1289,7 @@
       barbiere: AMENITIES_BY_CATEGORY.barber,
       estetica: [...AMENITIES_BY_CATEGORY.estetica.slice(0, -1), ...AMENITIES_BY_CATEGORY.nails, "Wi-Fi & Climatizzazione"],
       fotografia: AMENITIES_BY_CATEGORY.fotografia,
+      studio_medico: AMENITIES_BY_CATEGORY.medico,
       coworking: AMENITIES_BY_CATEGORY.office,
       scrivania: AMENITIES_BY_CATEGORY.office,
       ufficio: AMENITIES_BY_CATEGORY.office,
@@ -1289,23 +1298,24 @@
     const TIPI = {
       psicoterapia: 'Psicoterapia', massaggi: 'Massaggi', barbiere: 'Hair & Barber',
       estetica: 'Estetica & Nails', fotografia: 'Foto & Video', coworking: 'Coworking',
-      scrivania: 'Scrivania singola', ufficio: 'Ufficio riservato', sala_riunioni: 'Sala riunioni'
+      scrivania: 'Scrivania singola', ufficio: 'Ufficio riservato', sala_riunioni: 'Sala riunioni',
+      studio_medico: 'Studio medico & Nutrizione'
     };
     // Macro-settori della home
     const MACRO = {
-      tutti: ['fotografia', 'coworking', 'psicoterapia', 'sala_riunioni', 'scrivania', 'ufficio', 'barbiere', 'estetica', 'massaggi'],
-      benessere: ['barbiere', 'estetica', 'massaggi', 'psicoterapia', 'fotografia'],
+      tutti: ['fotografia', 'coworking', 'psicoterapia', 'sala_riunioni', 'scrivania', 'ufficio', 'barbiere', 'estetica', 'massaggi', 'studio_medico'],
+      benessere: ['barbiere', 'estetica', 'massaggi', 'studio_medico', 'psicoterapia', 'fotografia'],
       uffici: ['scrivania', 'ufficio', 'sala_riunioni', 'coworking']
     };
     const TIPI_UFFICIO = MACRO.uffici;
     let macroSettore = 'tutti';
     function macroDi(tipo) { return MACRO.uffici.includes(tipo) ? 'uffici' : 'benessere'; }
-    const ICONE_TIPO = { psicoterapia: '🛋️', massaggi: '💆', barbiere: '✂️', estetica: '💅', fotografia: '📷', coworking: '💻', scrivania: '🪑', ufficio: '🚪', sala_riunioni: '👥' };
+    const ICONE_TIPO = { psicoterapia: '🛋️', massaggi: '💆', barbiere: '✂️', estetica: '💅', fotografia: '📷', coworking: '💻', scrivania: '🪑', ufficio: '🚪', sala_riunioni: '👥', studio_medico: '🩺' };
     const GIORNI_SETTIMANA = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 
     const TIPI_MIN_2_ORE = ['barbiere', 'estetica'];
-    // L'affitto "a ore" resta solo per coworking, scrivanie/uffici, foto/video e psicoterapia (le categorie dei servizi alla persona usano mezza giornata o giornata)
-    const TIPI_ORA_AMMESSA = ['coworking', 'scrivania', 'ufficio', 'sala_riunioni', 'fotografia', 'psicoterapia'];
+    // L'affitto "a ore" non è ammesso solo per Hair & Barber ed Estetica & Nails (mezza giornata o giornata intera)
+    const TIPI_ORA_AMMESSA = ['coworking', 'scrivania', 'ufficio', 'sala_riunioni', 'fotografia', 'psicoterapia', 'massaggi', 'studio_medico'];
     function aggiornaModalitaPerCategoria() {
       const ammessa = TIPI_ORA_AMMESSA.includes($('newType').value);
       const opt = Array.from($('newPriceUnit').options).find(o => o.value === 'ora');
@@ -2096,8 +2106,8 @@
     const SEO_IMG = SEO_BASE + '/og-image.png';
     const SEO_TESTI = {
       home: {
-        title: 'Affitto Poltrona Barber e Cabine Estetica | ChairShare',
-        description: "Piattaforma per l'affitto di postazioni e cabine nei migliori saloni. Noleggia a mezza giornata o giornata intera con contratto a norma incluso. Zero costi fissi.",
+        title: 'Noleggio Spazi di Lavoro e Postazioni Attrezzate | ChairShare',
+        description: "Prenota coworking, set foto e video, sale riunioni e studi a ore o a giornata. Anche poltrone barber ed estetica. Contratto integrato, zero costi fissi.",
         h1: 'Noleggio Spazi di Lavoro, Set Creativi e Postazioni Attrezzate',
         h2: 'Trova e prenota desk coworking, sale posa e postazioni professionali a ore o a giornata. Zero costi fissi e contratto integrato.'
       },

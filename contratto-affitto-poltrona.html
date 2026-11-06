@@ -192,7 +192,7 @@
       if (mappaMod[mod]) { el(mappaMod[mod]).textContent = '☒'; ok = true; }
       testo('f-citta', pulito(q.get('citta'), 60));
       testo('f-via', pulito(q.get('via'), 120));
-      var mappaTipo = { barbiere: 't-hair', estetica: 't-estetica', massaggi: 't-massaggi', fotografia: 't-coworking', coworking: 't-coworking', scrivania: 't-coworking', ufficio: 't-coworking', sala_riunioni: 't-coworking', psicoterapia: 't-altro' };
+      var mappaTipo = { barbiere: 't-hair', estetica: 't-estetica', massaggi: 't-massaggi', fotografia: 't-coworking', coworking: 't-coworking', scrivania: 't-coworking', ufficio: 't-coworking', sala_riunioni: 't-coworking', psicoterapia: 't-altro', studio_medico: 't-altro' };
       if (mappaTipo[tipo]) { el(mappaTipo[tipo]).checked = true; ok = true; }
       if (tipo === 'psicoterapia') testo('f-altro', 'Studio psicoterapia / counseling');
       if (ok) {
