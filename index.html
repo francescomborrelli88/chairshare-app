@@ -653,10 +653,10 @@
       </div>
       <textarea id="rvComment" rows="3" maxlength="500" placeholder="Com'è andata? (facoltativo)" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand"></textarea>
       <div class="grid grid-cols-2 gap-2">
-        <input id="rvNome" type="text" maxlength="80" required placeholder="Il tuo nome" autocomplete="given-name" class="px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+        <input id="rvNome" type="text" maxlength="80" required placeholder="Nome e cognome" autocomplete="name" class="px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
         <input id="rvTel" type="tel" inputmode="tel" maxlength="20" required placeholder="Il tuo cellulare" autocomplete="tel" class="px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
       </div>
-      <p class="text-[11px] text-gray-500">Usa lo stesso numero con cui hai prenotato: serve solo a verificare che l'appuntamento ci sia stato e non viene mostrato. Sulla pagina del professionista compariranno il tuo nome (abbreviato), il voto e il commento.</p>
+      <p class="text-[11px] text-gray-500">Usa lo stesso numero con cui hai prenotato: serve solo a verificare che l'appuntamento ci sia stato e non viene mostrato. Sulla pagina del professionista compariranno il tuo nome e l'iniziale del cognome (es. Laura T.), il voto e il commento.</p>
       <label class="flex items-start gap-2 text-[11px] text-gray-600"><input id="rvPrivacy" type="checkbox" required class="mt-0.5"><span>Ho letto l'<button type="button" id="btnRvPrivacy" class="underline font-bold">informativa privacy</button> e acconsento alla pubblicazione della recensione.</span></label>
       <button type="submit" id="btnRvSubmit" class="w-full bg-brand hover:bg-brand-hover text-white font-extrabold text-sm py-3.5 rounded-xl">Pubblica recensione</button>
     </form>
@@ -1108,6 +1108,11 @@
               <label for="newAddress" class="text-xs text-gray-500 uppercase font-bold">Indirizzo Riservato</label>
               <input id="newAddress" type="text" required maxlength="120" placeholder="Es. Via Roma 10 (senza CAP e città)" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:border-brand text-gray-900" />
             </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold text-gray-700">Istruzioni di accesso <span class="font-normal text-gray-400">(facoltative, le vede solo chi ha prenotato e pagato)</span></label>
+            <textarea id="newAccessNotes" maxlength="500" rows="2" placeholder="Es. Citofono Rossi, 2° piano, codice portone 1234, parcheggio nel cortile" class="w-full mt-1 border border-gray-300 rounded-xl p-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand"></textarea>
           </div>
 
           <div id="addrCheck" class="hidden text-xs rounded-xl p-3 border" role="status"></div>
@@ -1684,9 +1689,9 @@
       daRecensire = [];
       const client = getSupabase();
       if (!client || !currentUser) return;
-      const { data, error } = await client.from('space_contacts').select('space_id,address,phone');
+      const { data, error } = await client.from('space_contacts').select('space_id,address,phone,access_notes');
       if (error) { console.warn('Errore caricamento contatti:', error); return; }
-      data.forEach(c => { contatti[c.space_id] = { address: c.address, phone: c.phone }; });
+      data.forEach(c => { contatti[c.space_id] = { address: c.address, phone: c.phone, notes: c.access_notes }; });
       const st = await client.rpc('unlock_stats');
       if (!st.error && Array.isArray(st.data)) st.data.forEach(r => { statRichieste[r.space_id] = Number(r.richieste); });
       await caricaDaRecensire();
@@ -1699,7 +1704,7 @@
       if (error) throw error;
       const riga = Array.isArray(data) ? data[0] : data;
       if (!riga) throw new Error('NON_TROVATO');
-      sbloccati[spaceId] = { address: riga.address, phone: riga.phone };
+      sbloccati[spaceId] = { address: riga.address, phone: riga.phone, notes: riga.access_notes };
       return sbloccati[spaceId];
     }
 
@@ -2390,7 +2395,18 @@
       activeSelectedSpace = s;
 
       const isLoggedIn = !!currentUser;
+      // L'indirizzo è visibile a chi è registrato; con i pagamenti attivi il telefono dell'Host arriva solo dopo la prenotazione e il pagamento
       const c = contatti[s.id] || sbloccati[s.id];
+      if (!c && isLoggedIn && !tentatiContatti[s.id]) {
+        tentatiContatti[s.id] = true;
+        sbloccaContatti(s.id).then(() => {
+          if (activeSelectedSpace && activeSelectedSpace.id === s.id) mostraDettagliSpazio(s.id);
+        }).catch(e => {
+          tentatiContatti[s.id] = 'err';
+          console.warn('Indirizzo non disponibile:', e);
+          if (activeSelectedSpace && activeSelectedSpace.id === s.id) mostraDettagliSpazio(s.id);
+        });
+      }
 
       $('detailSpaceTitle').textContent = nomeVisualizzatoSpazio(s, isLoggedIn);
       $('detailSpacePrice').textContent = etichettaTariffa(s);
@@ -2444,7 +2460,9 @@
       hTitle.className = 'block font-bold mb-1';
       hTitle.textContent = '⏰ Orari di Apertura:';
       hoursContainer.appendChild(hTitle);
-      const entries = Object.entries(s.dailySchedule || {});
+      // giorni in ordine da Lunedì a Domenica (il database può restituirli in ordine sparso)
+      const posGiorno = g => { const i = GIORNI_SETTIMANA.indexOf(g); return i < 0 ? 99 : i; };
+      const entries = Object.entries(s.dailySchedule || {}).sort((x, y) => posGiorno(x[0]) - posGiorno(y[0]));
       if (entries.length === 0) {
         const p = document.createElement('div');
         p.className = 'text-[11px]';
@@ -2500,14 +2518,9 @@
         b.addEventListener('click', () => { toggleModal('detailModal', false); openModal('login-modal'); });
         actions.appendChild(b);
       } else if (!c && PAGAMENTI) {
-        phoneText.textContent = ruoloUtente === 'guest'
-          ? "Indirizzo esatto, telefono e WhatsApp dell'Host si sbloccano dopo la prenotazione e il pagamento online."
-          : "Le prenotazioni delle postazioni sono riservate ai profili Freelance.";
-        // chi ha già pagato in passato rivede subito i contatti
-        if (!tentatiContatti[s.id]) {
-          tentatiContatti[s.id] = true;
-          sbloccaContatti(s.id).then(() => { if (activeSelectedSpace && activeSelectedSpace.id === s.id) mostraDettagliSpazio(s.id); }).catch(() => {});
-        }
+        phoneText.textContent = tentatiContatti[s.id] === true
+          ? "Caricamento dell'indirizzo…"
+          : "Il telefono dell'Host si sblocca dopo la prenotazione e il pagamento online.";
       } else if (!c) {
         // Contatti ancora nascosti: si sbloccano su richiesta (con limite giornaliero)
         phoneText.textContent = "Indirizzo esatto, telefono e WhatsApp dell'Host sono riservati agli utenti registrati.";
@@ -2534,6 +2547,11 @@
           }
         });
         actions.appendChild(b);
+      } else if (PAGAMENTI && !c.phone) {
+        // indirizzo già visibile; il telefono si sblocca dopo il pagamento e si trova nella dashboard
+        phoneText.textContent = ruoloUtente === 'guest'
+          ? "📞 Il telefono dell'Host si sblocca dopo la prenotazione e il pagamento online: lo troverai nella tua dashboard, in «I miei Spazi Prenotati»."
+          : "Recapiti non disponibili per questo spazio.";
       } else {
         const wa = normalizzaTelefono(c.phone);
         phoneText.replaceChildren();
@@ -2872,6 +2890,7 @@
       // l'indirizzo è salvato come "Via Roma 10, 80131": separo via e CAP
       const mAddr = (c.address || '').match(/^(.*),\s*(\d{5})$/);
       $('newAddress').value = mAddr ? mAddr[1] : (c.address || '');
+      $('newAccessNotes').value = c.notes || '';
       $('newCap').value = mAddr ? mAddr[2] : '';
       $('addrCheck').classList.add('hidden');
       indirizzoVerificato = (mAddr && s.lat !== null && s.lat !== undefined && s.lon !== null && s.lon !== undefined)
@@ -2972,6 +2991,7 @@
         return;
       }
       const phone = '+' + waDigits;
+      const accessNotes = ($('newAccessNotes').value || '').trim().slice(0, 500) || null;
 
       const dailySchedule = {};
       GIORNI_SETTIMANA.forEach(giorno => {
@@ -3012,7 +3032,7 @@
           if (!data || !data.length) throw new Error('NON_AUTORIZZATO');
           fotoCaricate = []; // ormai collegate all'annuncio: da qui in poi non vanno più cancellate
 
-          const { error: e2 } = await client.from('space_contacts').upsert({ space_id: editId, address: indirizzoCompleto, phone });
+          const { error: e2 } = await client.from('space_contacts').upsert({ space_id: editId, address: indirizzoCompleto, phone, access_notes: accessNotes });
           if (e2) throw e2;
           // cancello dallo storage le foto tolte dall'annuncio
           const vecchie = (esistente && esistente.images) || [];
@@ -3033,7 +3053,7 @@
           }]).select().single();
           if (error) throw error;
 
-          const { error: e2 } = await client.from('space_contacts').insert([{ space_id: data.id, address: indirizzoCompleto, phone }]);
+          const { error: e2 } = await client.from('space_contacts').insert([{ space_id: data.id, address: indirizzoCompleto, phone, access_notes: accessNotes }]);
           if (e2) {
             // annulla l'annuncio per non lasciarlo senza contatti
             await client.from('spaces').delete().eq('id', data.id);
@@ -3527,6 +3547,11 @@
           if (currentUser?.id !== mio) return;
           agServizi = sv.data || []; agBlocchi = bl.data || []; agAppunt = ap.data || [];
           agPagati = {}; (pg && pg.data || []).forEach(x => { if (x.block_id) agPagati[x.block_id] = x; });
+          // contatti degli Host per le prenotazioni già pagate: si mostrano solo qui, nella dashboard
+          if (PAGAMENTI) {
+            const daCaricare = [...new Set(agBlocchi.filter(b => agPagati[b.id]).map(b => b.space_id))].filter(id => !(contatti[id] || sbloccati[id]));
+            await Promise.all(daCaricare.map(id => sbloccaContatti(id).catch(() => null)));
+          }
           agTelefono = pr.data?.phone || '';
           agRecensioni = rv.error ? null : { n: (rv.data || []).length, media: (rv.data || []).length ? rv.data.reduce((t, x) => t + x.rating, 0) / rv.data.length : 0 };
           if (!sl.error && typeof sl.data === 'string' && sl.data) { agSlug = sl.data; agSlugUid = mio; } else { agSlug = ''; agSlugUid = null; }
@@ -3575,8 +3600,10 @@
             <span class="inline-block text-[11px] font-bold bg-pink-50 text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
             <p class="text-sm font-bold text-gray-900 truncate mt-1">${esc(sp ? sp.name : 'Salone')}</p>
             <p class="text-[11px] text-gray-500 truncate">📍 ${esc(indirizzo)}</p>
+            ${(() => { const w = ct && ct.phone ? normalizzaTelefono(ct.phone) : ''; return w ? `<p class="text-[11px] text-gray-700 mt-0.5">📞 Host: <a href="tel:+${esc(w)}" class="font-bold underline">${esc(ct.phone)}</a> · <a href="https://wa.me/${esc(w)}" target="_blank" rel="noopener" class="font-bold underline">WhatsApp</a></p>` : ''; })()}
             ${agPagati[b.id] ? '<span class="inline-block mt-1 mr-1 text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 rounded-full px-2 py-0.5">✓ Pagata ' + euro(agPagati[b.id].amount_cents / 100) + '</span>' : ''}
             <a href="${esc(urlContratto(b, sp, ct))}" target="_blank" rel="noopener" class="inline-block mt-1 mr-3 text-[11px] font-bold text-gray-700 underline">📄 Contratto (stampa o salva in PDF)</a>
+            ${ct && ct.notes && agPagati[b.id] ? `<p class="text-[11px] text-gray-700 mt-0.5 whitespace-pre-line">🔑 Accesso: ${esc(ct.notes)}</p>` : ''}
             ${ct && ct.address ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(indirizzo)}" target="_blank" rel="noopener" class="inline-block mt-1 text-[11px] font-bold text-gray-700 underline">🧭 Indicazioni</a>` : ''}
           </div>
           ${cancellabile
@@ -4074,6 +4101,7 @@
         NON_VERIFICATO: "Non troviamo un appuntamento già concluso con questo numero. Usa lo stesso cellulare con cui hai prenotato, a servizio svolto.",
         GIA_RECENSITO: "Hai già lasciato una recensione a questo professionista. Grazie!",
         DATI_NON_VALIDI: "Controlla nome, cellulare e voto.",
+        NOME_INCOMPLETO: "Scrivi nome e cognome (es. Laura Tedesco): sulla pagina comparirà solo l'iniziale del cognome.",
         TROPPE_RICHIESTE: "Troppi invii in questo momento: riprova tra un'ora.",
         NON_TROVATO: "Il link non è valido."
       };
@@ -4085,6 +4113,7 @@
       const c = getSupabase(); if (!c) return;
       if (!(rvVoto >= 1 && rvVoto <= 5)) { mostraMessaggio("Scegli un voto da 1 a 5 stelle.", 'err'); return; }
       if (!normalizzaTelefono($('rvTel').value)) { mostraMessaggio("Inserisci un numero di cellulare valido.", 'err'); return; }
+      if ($('rvNome').value.trim().split(/\s+/).filter(Boolean).length < 2) { mostraMessaggio("Scrivi nome e cognome (es. Laura Tedesco): sulla pagina comparirà solo l'iniziale del cognome.", 'err'); return; }
       const btn = $('btnRvSubmit'); btn.disabled = true; btn.textContent = 'Invio…';
       try {
         const { error } = await c.rpc('submit_freelance_review', { p_ref: PARAM_RECENSIONE, p_name: $('rvNome').value.trim(),
