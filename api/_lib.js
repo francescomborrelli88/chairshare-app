@@ -52,6 +52,19 @@ async function stripe(metodo, percorso, params, idempotenza) {
   return dati;
 }
 
+// Stripe API v2 (account collegati): richieste in JSON
+async function stripeV2(metodo, percorso, corpo, idempotenza) {
+  const headers = { Authorization: 'Bearer ' + env('STRIPE_SECRET_KEY'), 'Stripe-Version': '2026-10-28.endive', 'Content-Type': 'application/json' };
+  if (idempotenza) headers['Idempotency-Key'] = idempotenza;
+  const r = await fetch('https://api.stripe.com' + percorso, { method: metodo, headers, body: corpo === undefined ? undefined : JSON.stringify(corpo) });
+  const dati = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const e = new Error('STRIPE ' + ((dati.error && (dati.error.code || dati.error.type)) || r.status) + ': ' + ((dati.error && dati.error.message) || ''));
+    e.stripe = true; e.status = r.status; throw e;
+  }
+  return dati;
+}
+
 // Supabase con la chiave di servizio (solo sul server)
 async function sb(percorso, opts) {
   const chiave = env('SUPABASE_SERVICE_ROLE_KEY');
@@ -120,4 +133,4 @@ function verificaFirma(corpo, intestazione, segreto, tolleranza) {
   return firme.some(f => { const b = Buffer.from(f); return b.length === atteso.length && crypto.timingSafeEqual(b, atteso); });
 }
 
-module.exports = { SITE, COMMISSIONE, env, codifica, stripe, sb, rpc, aggiorna, utente, corpoJson, corpoGrezzo, rispondi, gestisciErrore, verificaFirma };
+module.exports = { SITE, COMMISSIONE, env, codifica, stripe, stripeV2, sb, rpc, aggiorna, utente, corpoJson, corpoGrezzo, rispondi, gestisciErrore, verificaFirma };
