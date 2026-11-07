@@ -483,23 +483,11 @@
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
-          <h3 class="text-base font-extrabold text-gray-900">📍 Le mie Postazioni Prenotate</h3>
-          <p id="blIntro" class="text-[11px] text-gray-500">Seleziona lo spazio, le date e la fascia (mezza giornata o giornata intera per saloni ecc.; a ore per coworking, set foto, ecc.).</p>
-            <form id="formBlocco" class="grid grid-cols-2 gap-2">
-              <select id="blSpace" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select>
-              <input id="blDay" type="date" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
-              <div id="blHalf" class="hidden col-span-2 space-y-2">
-                <p class="text-[11px] font-bold text-gray-700">Mezza giornata (4 ore): scegli la fascia</p>
-                <div id="blHalfOpts" class="grid grid-cols-1 gap-1.5"></div>
-                <label id="blHalfCustomWrap" class="hidden text-[11px] text-gray-500">Orario di inizio<select id="blHalfStart" class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select></label>
-                <p id="blHalfMsg" class="text-[11px] text-gray-500"></p>
-              </div>
-              <label id="blStartLbl" class="text-[11px] text-gray-500">Dalle<select id="blStart" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00" selected>14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00">19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
-              <label id="blEndLbl" class="text-[11px] text-gray-500">Alle<select id="blEnd" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00">14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00" selected>19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
-              <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold py-2.5 rounded-xl">Blocca postazione</button>
-            </form>
-            <p id="blAvail" class="text-[11px] text-gray-500"></p>
-          <div id="agBlocks" class="space-y-2"></div>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-base font-extrabold text-gray-900">📍 I miei Spazi Prenotati</h3>
+            <button type="button" id="btnPrenotaSpazio" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-4 py-2 rounded-full">+ Prenota uno Spazio</button>
+          </div>
+<div id="agBlocks" class="space-y-2"></div>
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
@@ -1039,6 +1027,27 @@
           </div>
         </div>
       </div>
+
+      <div id="detailBookSection" class="hidden bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
+          <h4 class="text-sm font-extrabold text-gray-900">📅 Prenota questa postazione</h4>
+          <p id="blIntro" class="text-[11px] text-gray-500">Seleziona lo spazio, le date e la fascia (mezza giornata o giornata intera per saloni ecc.; a ore per coworking, set foto, ecc.).</p>
+            <form id="formBlocco" class="grid grid-cols-2 gap-2">
+              <select id="blSpace" required class="hidden" aria-hidden="true" tabindex="-1"></select>
+              <label for="blDay" class="col-span-2 text-[11px] text-gray-500">Giorno</label>
+              <input id="blDay" type="date" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
+              <div id="blHalf" class="hidden col-span-2 space-y-2">
+                <p class="text-[11px] font-bold text-gray-700">Mezza giornata (4 ore): scegli la fascia</p>
+                <div id="blHalfOpts" class="grid grid-cols-1 gap-1.5"></div>
+                <label id="blHalfCustomWrap" class="hidden text-[11px] text-gray-500">Orario di inizio<select id="blHalfStart" class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select></label>
+                <p id="blHalfMsg" class="text-[11px] text-gray-500"></p>
+              </div>
+              <label id="blStartLbl" class="text-[11px] text-gray-500">Dalle<select id="blStart" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00" selected>14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00">19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
+              <label id="blEndLbl" class="text-[11px] text-gray-500">Alle<select id="blEnd" required class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"><option value="00:00">00:00</option><option value="01:00">01:00</option><option value="02:00">02:00</option><option value="03:00">03:00</option><option value="04:00">04:00</option><option value="05:00">05:00</option><option value="06:00">06:00</option><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00">14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option><option value="19:00" selected>19:00</option><option value="20:00">20:00</option><option value="21:00">21:00</option><option value="22:00">22:00</option><option value="23:00">23:00</option></select></label>
+              <button type="submit" class="col-span-2 bg-brand hover:bg-brand-hover text-white text-xs font-bold py-2.5 rounded-xl">Blocca postazione</button>
+            </form>
+            <p id="blAvail" class="text-[11px] text-gray-500"></p>
+          <button type="button" id="blGoTax" class="hidden text-[11px] font-bold text-brand underline">Vai al Profilo e inserisci il Codice Fiscale o la P.IVA</button>
+                </div>
 
       <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
         <div>
@@ -2467,6 +2476,18 @@
       actions.replaceChildren();
       $('detailWaPlanner').classList.add('hidden');
       const phoneText = $('detailPhoneText');
+      // Prenotazione e pagamento: iniziano e finiscono qui, sulla scheda dell'annuncio
+      const boxPren = $('detailBookSection');
+      const puoPrenotare = !!(isLoggedIn && ruoloUtente === 'guest' && currentUser && s.userId !== currentUser.id && s.active !== false);
+      boxPren.classList.toggle('hidden', !puoPrenotare);
+      if (puoPrenotare) {
+        const selSp = $('blSpace');
+        if (selSp.value !== s.id) {
+          selSp.innerHTML = `<option value="${esc(s.id)}">${esc(s.name)}</option>`; selSp.value = s.id;
+          blDisp = null; aggiornaMezzaGiornata(true);
+        }
+        aggiornaDispBlocco();
+      }
 
       if (!isLoggedIn) {
         phoneText.textContent = PAGAMENTI
@@ -2482,14 +2503,6 @@
         phoneText.textContent = ruoloUtente === 'guest'
           ? "Indirizzo esatto, telefono e WhatsApp dell'Host si sbloccano dopo la prenotazione e il pagamento online."
           : "Le prenotazioni delle postazioni sono riservate ai profili Freelance.";
-        if (ruoloUtente === 'guest') {
-          const b = document.createElement('button');
-          b.type = 'button';
-          b.className = 'px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md';
-          b.textContent = 'Prenota e paga';
-          b.addEventListener('click', () => vaiAPrenotare(s.id));
-          actions.appendChild(b);
-        }
         // chi ha già pagato in passato rivede subito i contatti
         if (!tentatiContatti[s.id]) {
           tentatiContatti[s.id] = true;
@@ -3330,7 +3343,7 @@
         if ($('hostBlocksIntro')) $('hostBlocksIntro').textContent = "Qui compaiono le prenotazioni già pagate dai freelance nei tuoi spazi. L'importo, al netto della commissione ChairShare, ti viene accreditato da Stripe.";
       }
     }
-    // Testo sotto "Le mie Postazioni Prenotate": cambia in base al tipo di tariffa dello spazio scelto
+    // Testo sotto "I miei Spazi Prenotati": cambia in base al tipo di tariffa dello spazio scelto
     function testoIntroBlocco() {
       const el = $('blIntro'); if (!el) return;
       const spz = spazi.find(x => x.id === ($('blSpace') ? $('blSpace').value : ''));
@@ -3377,14 +3390,11 @@
         btn.disabled = false; blDisp = null; aggiornaDispBlocco();
       }
     }
-    async function vaiAPrenotare(id) {
+    // Porta al Profilo, dove si inserisce il Codice Fiscale o la P.IVA
+    function vaiADatiFiscali() {
       toggleModal('detailModal', false);
-      if (ruoloUtente !== 'guest') { mostraMessaggio("Per prenotare una postazione serve un profilo Freelance.", 'err'); return; }
       mostraPagina('profilePage');
-      await caricaAgenda();
-      const sel = $('blSpace'); sel.value = id;
-      aggiornaMezzaGiornata(true); aggiornaDispBlocco();
-      $('formBlocco').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => { const f = $('profTaxId'); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.focus(); } }, 400);
     }
     // Host: collegamento del conto Stripe
     async function aggiornaStatoStripeHost() {
@@ -3435,7 +3445,7 @@
           else await new Promise(ok => setTimeout(ok, 2000));
         }
         await caricaAgenda();
-        if (!trovato) { mostraMessaggio("Il pagamento è in elaborazione: la prenotazione comparirà tra poco in «Le mie Postazioni Prenotate».", 'err'); return; }
+        if (!trovato) { mostraMessaggio("Il pagamento è in elaborazione: la prenotazione comparirà tra poco in «I miei Spazi Prenotati».", 'err'); return; }
         const spz = spazi.find(x => x.id === trovato.space_id);
         if (spz) await riepilogoAccessoUfficio(spz, trovato.day, oraBreve(trovato.start_time), oraBreve(trovato.end_time));
         else mostraMessaggio("Prenotazione confermata.");
@@ -3553,12 +3563,6 @@
           <div class="min-w-0"><p class="text-sm font-bold text-gray-900 truncate">${esc(x.name)}</p><p class="text-[11px] text-gray-500">Durata: ${etichettaOre(x.duration_min)} · ${euro(x.price)}</p></div>
           <button type="button" data-del-sv="${esc(x.id)}" class="text-xs font-bold text-red-600 hover:underline shrink-0">Elimina</button>
         </div>`).join('') : '<p class="text-[11px] text-gray-400">Nessun servizio: aggiungine almeno uno.</p>';
-      // select saloni
-      const sel = $('blSpace');
-      const prec = sel.value;
-      sel.innerHTML = '<option value="">Scegli il salone…</option>' + spazi.filter(x => x.userId !== currentUser.id && x.active !== false)
-        .map(x => `<option value="${esc(x.id)}">${esc(x.name)}${x.city ? ' — ' + esc(x.city) : ''}</option>`).join('');
-      if (prec) sel.value = prec;
       aggiornaMezzaGiornata(false);
       // blocchi
       $('agBlocks').innerHTML = agBlocchi.length ? agBlocchi.map(b => {
@@ -3572,12 +3576,13 @@
             <p class="text-sm font-bold text-gray-900 truncate mt-1">${esc(sp ? sp.name : 'Salone')}</p>
             <p class="text-[11px] text-gray-500 truncate">📍 ${esc(indirizzo)}</p>
             ${agPagati[b.id] ? '<span class="inline-block mt-1 mr-1 text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 rounded-full px-2 py-0.5">✓ Pagata ' + euro(agPagati[b.id].amount_cents / 100) + '</span>' : ''}
-            <a href="${esc(urlContratto(b, sp, ct))}" target="_blank" rel="noopener" class="inline-block mt-1 text-[11px] font-bold text-gray-700 underline">📄 Contratto precompilato</a>
+            <a href="${esc(urlContratto(b, sp, ct))}" target="_blank" rel="noopener" class="inline-block mt-1 mr-3 text-[11px] font-bold text-gray-700 underline">📄 Contratto (stampa o salva in PDF)</a>
+            ${ct && ct.address ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(indirizzo)}" target="_blank" rel="noopener" class="inline-block mt-1 text-[11px] font-bold text-gray-700 underline">🧭 Indicazioni</a>` : ''}
           </div>
           ${cancellabile
             ? `<button type="button" data-del-bl="${esc(b.id)}" class="text-[11px] font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-full px-3 py-1.5 shrink-0">${agPagati[b.id] ? 'Annulla e rimborsa' : 'Annulla Postazione'}</button>`
             : `<span class="text-[10px] text-gray-400 shrink-0 text-right">Non annullabile<br>entro 24 ore</span>`}
-        </div>`; }).join('') : '<p class="text-[11px] text-gray-400">Nessuna postazione bloccata.</p>';
+        </div>`; }).join('') : '<p class="text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center">Nessuno spazio prenotato al momento.</p>';
       // link
       const blocchiSaloni = agBlocchi.filter(b => { const sp = spazi.find(x => x.id === b.space_id); return !(sp && TIPI_UFFICIO.includes(sp.type)); });
       const ok = agServizi.length > 0 && blocchiSaloni.length > 0;
@@ -3745,7 +3750,8 @@
       let nonPronto = false;
       if (PAGAMENTI) { nonPronto = await infoPagamentoBlocco(sp, a, b, msg); if (tok !== blDispTok) return; }
       const noFisc = datiFiscaliMancanti(sp);
-      if (noFisc) { msg.className = 'text-[11px] text-red-600 font-bold'; msg.textContent += ' ⚠ Per prenotare inserisci prima il tuo Codice Fiscale o P.IVA nella sezione «Partita IVA o Codice Fiscale» qui sotto: serve per generare il contratto di noleggio.'; }
+      if (noFisc) { msg.className = 'text-[11px] text-red-600 font-bold'; msg.textContent += ' ⚠ Per prenotare inserisci prima il tuo Codice Fiscale o la P.IVA nel Profilo: serve per generare il contratto di noleggio.'; }
+      if ($('blGoTax')) $('blGoTax').classList.toggle('hidden', !noFisc);
       btn.disabled = !!esaurito || blHalfBlocca || nonPronto || noFisc;
     }
 
@@ -3758,7 +3764,7 @@
       if (b <= a) { mostraMessaggio("L'orario di fine deve essere dopo l'inizio.", 'err'); return; }
       if (datiFiscaliMancanti(sp)) {
         mostraMessaggio("Inserisci il tuo Codice Fiscale o la P.IVA nella sezione dati fiscali: serve per generare il contratto di noleggio a norma.", 'err');
-        const f = $('profTaxId'); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.focus(); }
+        vaiADatiFiscali();
         return;
       }
       if (PAGAMENTI) {
@@ -4285,6 +4291,8 @@
       $('btnBackHome').addEventListener('click', () => mostraPagina('homePage'));
       $('btnAddSpaceProfile').addEventListener('click', apriAggiungiSpazio);
       $('btnGuestExplore').addEventListener('click', () => mostraPagina('homePage'));
+      $('btnPrenotaSpazio').addEventListener('click', () => mostraPagina('homePage'));
+      $('blGoTax').addEventListener('click', vaiADatiFiscali);
 
       // Ricerca e filtri
       $('searchBtnDesktop').addEventListener('click', cercaSpazi);
