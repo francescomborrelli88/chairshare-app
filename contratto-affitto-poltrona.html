@@ -88,7 +88,7 @@
     <div class="box">
       <p><strong>2. L'UTILIZZATORE (PROFESSIONISTA FREELANCE)</strong></p>
       <p>Sig./Sig.ra: ______________________________________________________________</p>
-      <p>P.IVA: ____________________________ C.F.: ______________________________________</p>
+      <p>P.IVA: <span id="f-fl-piva">____________________________</span> C.F.: <span id="f-fl-cf">______________________________________</span></p>
       <p>Nato/a a: ______________________________ il: ________________ Residente in: ______________________</p>
       <p>Albo / Ordine / Qualifica Professionale n.: ______________________________________</p>
       <p>Email / PEC: ____________________________________ Telefono: ____________________</p>
@@ -174,7 +174,7 @@
   </main>
 
   <script>
-    // Precompilazione da ChairShare: ?tipo=&dal=&dalle=&alle=&mod=&importo=&citta=&via=
+    // Precompilazione da ChairShare: ?tipo=&dal=&dalle=&alle=&mod=&importo=&citta=&via=&cf=
     // I valori vengono validati e inseriti come semplice testo.
     (function () {
       var q = new URLSearchParams(location.search);
@@ -190,6 +190,10 @@
       if (isFinite(imp) && imp > 0 && imp < 100000) { testo('f-importo', imp.toFixed(2).replace('.', ',')); ok = true; }
       var mappaMod = { giorno: 'm-giorno', mezza_giornata: 'm-mezza', ora: 'm-ora' };
       if (mappaMod[mod]) { el(mappaMod[mod]).textContent = '☒'; ok = true; }
+      // Codice Fiscale o P.IVA dell'Utilizzatore (11 cifre = P.IVA, altrimenti C.F.)
+      var cf = String(q.get('cf') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (/^\d{11}$/.test(cf)) { testo('f-fl-piva', cf); ok = true; }
+      else if (/^[A-Z0-9]{16}$/.test(cf)) { testo('f-fl-cf', cf); ok = true; }
       testo('f-citta', pulito(q.get('citta'), 60));
       testo('f-via', pulito(q.get('via'), 120));
       var mappaTipo = { barbiere: 't-hair', estetica: 't-estetica', massaggi: 't-massaggi', fotografia: 't-coworking', coworking: 't-coworking', scrivania: 't-coworking', ufficio: 't-coworking', sala_riunioni: 't-coworking', psicoterapia: 't-altro', studio_medico: 't-altro' };
