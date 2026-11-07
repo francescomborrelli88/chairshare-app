@@ -18,6 +18,10 @@ module.exports = async (req, res) => {
     }
     const fine = b.end;
 
+    // il freelance deve avere Codice Fiscale o P.IVA nel profilo (serve per il contratto di noleggio)
+    const prof = (await L.sb('/profiles?id=eq.' + u.id + '&select=tax_id'))[0];
+    if (!prof || !prof.tax_id) return L.rispondi(res, 400, { error: 'DATI_FISCALI_MANCANTI' });
+
     // 1) tiene la fascia (controlli su orari, posti, Host collegato a Stripe, importo)
     const r = await L.rpc('reserve_paid_slot', { p_user: u.id, p_space: b.space_id, p_day: b.day, p_start: b.start, p_end: fine, p_fee_pct: L.COMMISSIONE });
     for (const s of (r.to_expire || [])) { try { await L.stripe('POST', '/checkout/sessions/' + s + '/expire', {}); } catch (e) { /* già chiusa */ } }
