@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
         capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
         business_profile: { product_description: 'Affitto di postazioni e spazi di lavoro su ChairShare' },
         metadata: { user_id: u.id }
-      }, 'acct-' + u.id);
+      }, 'acct-' + u.id + '-' + Math.floor(Date.now() / 60000)); // cambia ogni minuto: evita doppioni da doppio clic, ma un errore passato non resta "memorizzato" da Stripe
       await L.sb('/host_stripe?on_conflict=user_id', {
         method: 'POST', headers: { Prefer: 'resolution=ignore-duplicates,return=minimal' },
         body: { user_id: u.id, stripe_account_id: acc.id }
