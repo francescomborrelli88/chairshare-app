@@ -3971,7 +3971,11 @@
 
     function selezionaSlot(btn) {
       bk.slot = { block: btn.dataset.blk, start: btn.dataset.slot };
-      document.querySelectorAll('#bookSlots button').forEach(x => { const on = x === btn; x.classList.toggle('bg-brand', on); x.classList.toggle('text-white', on); x.classList.toggle('border-brand', on); });
+      document.querySelectorAll('#bookSlots button').forEach(x => { const on = x === btn;
+        // i colori "spenti" vanno tolti quando il bottone è selezionato: con entrambe le classi bianco su bianco rendeva l'ora invisibile
+        x.classList.toggle('bg-brand', on); x.classList.toggle('text-white', on); x.classList.toggle('border-brand', on);
+        x.classList.toggle('bg-white', !on); x.classList.toggle('text-gray-800', !on); x.classList.toggle('border-gray-200', !on);
+      });
       const blocco = bk.data.blocks.find(b => b.id === bk.slot.block);
       $('bookRiepilogo').textContent = `${bk.servizio.name} · ${dataLunga(blocco.day)} alle ${bk.slot.start} · ${euro(bk.servizio.price)}`;
       $('bookStep3').classList.remove('hidden');
