@@ -426,10 +426,16 @@
         </div>
       </div>
 
+      <div id="hostPaySection" class="hidden bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
+        <h3 class="text-base font-extrabold text-gray-900">💳 Pagamenti e incassi</h3>
+        <p id="hostPayText" class="text-[11px] text-gray-500"></p>
+        <button id="hostPayBtn" type="button" class="bg-brand hover:bg-brand-hover text-white text-xs font-bold px-5 py-2.5 rounded-xl"></button>
+      </div>
+
       <div id="hostBlocksSection" class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
         <div>
           <h3 class="text-base font-extrabold text-gray-900">📅 Prenotazioni Postazioni Ricevute</h3>
-          <p class="text-[11px] text-gray-500 mt-1">I freelance che hanno sbloccato i tuoi recapiti segnano qui giorno e fascia in cui lavoreranno da te. È un'annotazione loro: confermate sempre direttamente.</p>
+          <p id="hostBlocksIntro" class="text-[11px] text-gray-500 mt-1">I freelance che hanno sbloccato i tuoi recapiti segnano qui giorno e fascia in cui lavoreranno da te. È un'annotazione loro: confermate sempre direttamente.</p>
         </div>
         <div id="hostBlocksList" class="space-y-2"></div>
       </div>
@@ -478,7 +484,7 @@
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] p-5 space-y-3">
           <h3 class="text-base font-extrabold text-gray-900">📍 Le mie Postazioni Prenotate</h3>
-          <p class="text-[11px] text-gray-500">A ore intere. Dopo esserti accordato con l'host (contatto sbloccato dall'annuncio), segna giorno e fascia in cui lavori lì. L'host non riceve nulla: l'accordo resta tra voi.</p>
+          <p id="blIntro" class="text-[11px] text-gray-500">A ore intere. Dopo esserti accordato con l'host (contatto sbloccato dall'annuncio), segna giorno e fascia in cui lavori lì. L'host non riceve nulla: l'accordo resta tra voi.</p>
             <form id="formBlocco" class="grid grid-cols-2 gap-2">
               <select id="blSpace" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand bg-white"></select>
               <input id="blDay" type="date" required class="col-span-2 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-brand">
@@ -1861,11 +1867,14 @@
       const { data, error } = await c.rpc('get_host_blocks');
       if (currentUser?.id !== mio) return;
       if (error) { box.innerHTML = '<p class="text-[11px] text-gray-400">Elenco non disponibile al momento.</p>'; return; }
+      const pagati = {};
+      if (PAGAMENTI) { try { const r = await c.from('space_payments').select('block_id,amount_cents,fee_cents').eq('host_id', mio).eq('status', 'paid'); (r.data || []).forEach(x => { if (x.block_id) pagati[x.block_id] = x; }); } catch (e) {} }
       disegnaMetricheHost(data || []);
       if (!data || !data.length) { box.innerHTML = '<p class="text-[11px] text-gray-400">Nessuna postazione segnata dai freelance per ora.</p>'; return; }
       box.innerHTML = data.map(b => {
         const wa = normalizzaTelefono(b.freelance_phone);
         const quando = dataLunga(b.day) + ' dalle ' + oraBreve(b.start_time) + ' alle ' + oraBreve(b.end_time);
+        const pgh = pagati[b.block_id];
         const msg = `Ciao ${String(b.freelance_name).split(' ')[0]}, ti scrivo per la postazione di ${b.space_name} che hai segnato per ${quando}. Ti scrivo per organizzarci: va bene?`;
         return `<div class="border border-gray-100 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div class="min-w-0">
@@ -1874,7 +1883,8 @@
             <p class="text-xs text-gray-600 truncate">${esc(b.freelance_name)}${b.freelance_phone ? ' · ' + esc(b.freelance_phone) : ''}</p>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <span class="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2 py-1">Bloccata dal freelance</span>
+            ${pgh ? `<span class="text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 rounded-full px-2 py-1">✓ Pagata · netto ${euro((pgh.amount_cents - pgh.fee_cents) / 100)}</span><button type="button" data-host-cancel="${esc(b.block_id)}" class="text-[11px] font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-full px-3 py-1.5">Annulla e rimborsa</button>`
+              : `<span class="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2 py-1">Bloccata dal freelance</span>`}
             ${wa ? `<a target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}" class="text-[11px] font-bold bg-green-600 text-white px-3 py-1.5 rounded-full">💬 WhatsApp</a>` : '<span class="text-[10px] text-gray-400">Nessun numero</span>'}
           </div></div>`;
       }).join('');
@@ -2322,7 +2332,7 @@
       $('bookPage').classList.toggle('hidden', pageId !== 'bookPage');
       if (pageId === 'profilePage') applicaSeo({ title: 'Il mio profilo | ChairShare', description: 'Area personale ChairShare.', noindex: true });
       if (pageId === 'homePage' && !MODO_PRENOTA && !MODO_RECENSIONE) { try { aggiornaSeoLista(parseInt($('resultsCount').textContent, 10) || 0); } catch (e) {} }
-      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); caricaAgenda(); caricaBlocchiHost(); caricaTaxId(); }
+      if (pageId === 'profilePage') { renderizzaSpaziUtente(); renderizzaProfiloRecensioni(); caricaAgenda(); caricaBlocchiHost(); caricaTaxId(); aggiornaStatoStripeHost(); }
       if (pageId === 'homePage') setTimeout(adattaMappa, 50);
     }
 
@@ -2441,13 +2451,32 @@
       const phoneText = $('detailPhoneText');
 
       if (!isLoggedIn) {
-        phoneText.textContent = "Accedi gratuitamente per sbloccare l'indirizzo esatto, il telefono e WhatsApp dell'Host.";
+        phoneText.textContent = PAGAMENTI
+          ? "Accedi per prenotare: indirizzo esatto, telefono e WhatsApp dell'Host si sbloccano dopo la prenotazione e il pagamento online."
+          : "Accedi gratuitamente per sbloccare l'indirizzo esatto, il telefono e WhatsApp dell'Host.";
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md';
         b.textContent = 'Accedi per Sbloccare';
         b.addEventListener('click', () => { toggleModal('detailModal', false); openModal('login-modal'); });
         actions.appendChild(b);
+      } else if (!c && PAGAMENTI) {
+        phoneText.textContent = ruoloUtente === 'guest'
+          ? "Indirizzo esatto, telefono e WhatsApp dell'Host si sbloccano dopo la prenotazione e il pagamento online."
+          : "Le prenotazioni delle postazioni sono riservate ai profili Freelance.";
+        if (ruoloUtente === 'guest') {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'px-5 py-2.5 bg-brand hover:bg-brand-hover text-white font-bold rounded-xl text-xs shadow-md';
+          b.textContent = 'Prenota e paga';
+          b.addEventListener('click', () => vaiAPrenotare(s.id));
+          actions.appendChild(b);
+        }
+        // chi ha già pagato in passato rivede subito i contatti
+        if (!tentatiContatti[s.id]) {
+          tentatiContatti[s.id] = true;
+          sbloccaContatti(s.id).then(() => { if (activeSelectedSpace && activeSelectedSpace.id === s.id) mostraDettagliSpazio(s.id); }).catch(() => {});
+        }
       } else if (!c) {
         // Contatti ancora nascosti: si sbloccano su richiesta (con limite giornaliero)
         phoneText.textContent = "Indirizzo esatto, telefono e WhatsApp dell'Host sono riservati agli utenti registrati.";
@@ -3267,6 +3296,123 @@
     function oraBreve(t) { return String(t).slice(0, 5); }
     function etichettaOre(min) { const h = Math.round(Number(min) / 60); return h + (h === 1 ? ' ora' : ' ore'); }
     function euro(n) { const v = Number(n); return (Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',')) + ' €'; }
+    // ---------- Pagamenti online (Stripe Connect) ----------
+    // Restano spenti finché sul database l'interruttore "pagamenti_attivi" è 'false': il sito si comporta come prima.
+    let PAGAMENTI = false, agPagati = {}, hostPronto = {}, tentatiContatti = {};
+    async function caricaConfigPagamenti() {
+      const c = getSupabase(); if (!c) return;
+      try { const r = await c.rpc('pagamenti_attivi'); PAGAMENTI = !r.error && r.data === true; } catch (e) { PAGAMENTI = false; }
+      aggiornaTestiPagamenti();
+    }
+    function aggiornaTestiPagamenti() {
+      const btn = $('formBlocco') && $('formBlocco').querySelector('button[type=submit]');
+      if (btn) btn.textContent = PAGAMENTI ? 'Prenota e paga' : 'Blocca postazione';
+      if (PAGAMENTI) {
+        if ($('blIntro')) $('blIntro').textContent = "A ore intere. Scegli spazio, giorno e fascia e paga online: dopo il pagamento si sbloccano indirizzo e telefono dell'Host e puoi scaricare il contratto.";
+        if ($('hostBlocksIntro')) $('hostBlocksIntro').textContent = "Qui compaiono le prenotazioni già pagate dai freelance nei tuoi spazi. L'importo, al netto della commissione ChairShare, ti viene accreditato da Stripe.";
+      }
+    }
+    async function apiServer(percorso, corpo) {
+      const c = getSupabase();
+      const sess = c ? (await c.auth.getSession()).data.session : null;
+      if (!sess) { const e = new Error('NON_AUTENTICATO'); e.codice = 'NON_AUTENTICATO'; throw e; }
+      const r = await fetch(percorso, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sess.access_token }, body: JSON.stringify(corpo || {}) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { const e = new Error(j.error || 'ERRORE'); e.codice = j.error || 'ERRORE'; throw e; }
+      return j;
+    }
+    function totalePostazione(spz, a, b) {
+      if (!a || !b || b <= a) return null;
+      const ore = (minuti(b) - minuti(a)) / 60, p = Number(spz.price);
+      if (!isFinite(p)) return null;
+      return spz.priceUnit === 'ora' ? p * ore : p;
+    }
+    async function infoPagamentoBlocco(sp, a, b, msg) {
+      const spz = spazi.find(x => x.id === sp); if (!spz) return false;
+      if (!(sp in hostPronto)) { try { const r = await getSupabase().rpc('host_puo_incassare', { p_space: sp }); hostPronto[sp] = r.data === true; } catch (e) { hostPronto[sp] = false; } }
+      if (!hostPronto[sp]) { msg.className = 'text-[11px] text-red-600 font-bold'; msg.textContent = "Questo annuncio non ha ancora attivato i pagamenti online: al momento non è prenotabile."; return true; }
+      const tot = totalePostazione(spz, a, b);
+      if (tot !== null) msg.textContent += ' Totale da pagare: ' + euro(tot) + '.';
+      return false;
+    }
+    async function avviaPagamento(sp, day, a, b) {
+      const btn = $('formBlocco').querySelector('button[type=submit]');
+      btn.disabled = true;
+      mostraMessaggio("Ti porto al pagamento sicuro di Stripe…");
+      try {
+        const r = await apiServer('/api/stripe-checkout', { space_id: sp, day, start: a, end: b });
+        if (r.url) { window.location.href = r.url; return; }
+        throw new Error('ERRORE');
+      } catch (e) {
+        mostraMessaggio(erroreAgenda({ message: e.codice || '' }), 'err');
+        btn.disabled = false; blDisp = null; aggiornaDispBlocco();
+      }
+    }
+    async function vaiAPrenotare(id) {
+      toggleModal('detailModal', false);
+      if (ruoloUtente !== 'guest') { mostraMessaggio("Per prenotare una postazione serve un profilo Freelance.", 'err'); return; }
+      mostraPagina('profilePage');
+      await caricaAgenda();
+      const sel = $('blSpace'); sel.value = id;
+      aggiornaMezzaGiornata(true); aggiornaDispBlocco();
+      $('formBlocco').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    // Host: collegamento del conto Stripe
+    async function aggiornaStatoStripeHost() {
+      const box = $('hostPaySection'); if (!box) return;
+      if (!PAGAMENTI || !currentUser || ruoloUtente !== 'host') { box.classList.add('hidden'); return; }
+      box.classList.remove('hidden');
+      const txt = $('hostPayText'), btn = $('hostPayBtn');
+      txt.textContent = 'Controllo lo stato…'; btn.classList.add('hidden');
+      let st;
+      try { st = await apiServer('/api/stripe-connect', { azione: 'stato' }); }
+      catch (e) { txt.textContent = "Stato dei pagamenti non disponibile al momento. Riprova tra poco."; return; }
+      btn.classList.remove('hidden'); btn.disabled = false;
+      if (st.charges_enabled) {
+        txt.textContent = "✅ Pagamenti attivi. I freelance possono prenotare e pagare i tuoi spazi: ChairShare trattiene una commissione del 10% e Stripe ti accredita il resto sul conto che hai indicato.";
+        btn.textContent = 'Apri i miei incassi su Stripe'; btn.onclick = () => collegaStripe('dashboard', btn);
+      } else {
+        txt.textContent = st.details_submitted
+          ? "Stripe sta verificando i tuoi dati. Quando ha finito i tuoi spazi diventano prenotabili online."
+          : "Per ricevere prenotazioni a pagamento collega il tuo conto con Stripe (pochi minuti: dati personali o dell'attività e IBAN). ChairShare trattiene una commissione del 10% su ogni prenotazione e ti accredita il resto.";
+        btn.textContent = st.collegato ? 'Completa i dati su Stripe' : 'Collega i pagamenti con Stripe'; btn.onclick = () => collegaStripe('collega', btn);
+      }
+    }
+    async function collegaStripe(azione, btn) {
+      btn.disabled = true;
+      try { const r = await apiServer('/api/stripe-connect', { azione }); if (r.url) { window.location.href = r.url; return; } await aggiornaStatoStripeHost(); }
+      catch (e) { mostraMessaggio(erroreAgenda({ message: e.codice || '' }), 'err'); btn.disabled = false; }
+    }
+    async function annullaDaHost(id) {
+      if (!confirm("Annullare questa prenotazione? Il freelance verrà rimborsato per intero (commissione compresa), la fascia tornerà libera e gli eventuali appuntamenti dei suoi clienti in quella fascia verranno annullati.")) return;
+      try { await apiServer('/api/stripe-cancel', { block_id: id }); mostraMessaggio("Prenotazione annullata: il rimborso al freelance è stato avviato."); await caricaBlocchiHost(); }
+      catch (e) { mostraMessaggio(erroreAgenda({ message: e.codice || '' }), 'err'); }
+    }
+    // Ritorno da Stripe (?pagamento=ok | annullato, ?stripe=ok | riprova)
+    async function gestisciRitorniPagamento() {
+      if (!PAGAMENTI || !currentUser) return;
+      let q; try { q = new URLSearchParams(SEO_QS_INIZIALE); } catch (e) { return; }
+      const pag = q.get('pagamento'), stripeRit = q.get('stripe');
+      if (stripeRit && ruoloUtente === 'host') { mostraPagina('profilePage'); mostraMessaggio(stripeRit === 'ok' ? "Dati inviati a Stripe: controllo lo stato del tuo conto." : "Il collegamento con Stripe non è stato completato: puoi riprendere quando vuoi."); }
+      if (pag === 'annullato') { mostraMessaggio("Pagamento annullato: non ti è stato addebitato nulla. La fascia resta riservata per qualche minuto."); }
+      if (pag === 'ok' && ruoloUtente === 'guest') {
+        mostraPagina('profilePage');
+        mostraMessaggio("Pagamento ricevuto. Sto confermando la prenotazione…");
+        const c = getSupabase(); const mio = currentUser.id; let trovato = null;
+        for (let i = 0; i < 12 && !trovato; i++) {
+          const r = await c.from('space_payments').select('block_id,space_id,day,start_time,end_time,paid_at').eq('user_id', mio).eq('status', 'paid').order('paid_at', { ascending: false }).limit(1);
+          const x = r.data && r.data[0];
+          if (x && x.paid_at && Date.now() - new Date(x.paid_at).getTime() < 30 * 60000) trovato = x;
+          else await new Promise(ok => setTimeout(ok, 2000));
+        }
+        await caricaAgenda();
+        if (!trovato) { mostraMessaggio("Il pagamento è in elaborazione: la prenotazione comparirà tra poco in «Le mie Postazioni Prenotate».", 'err'); return; }
+        const spz = spazi.find(x => x.id === trovato.space_id);
+        if (spz) await riepilogoAccessoUfficio(spz, trovato.day, oraBreve(trovato.start_time), oraBreve(trovato.end_time));
+        else mostraMessaggio("Prenotazione confermata.");
+      }
+    }
+
     function erroreAgenda(error) {
       const m = String((error && (error.message || error.details)) || '');
       const mappa = {
@@ -3289,7 +3435,22 @@
         SLOT_NON_DISPONIBILE: "Questa disponibilità non esiste più: ricarica la pagina.",
         SERVIZIO_NON_TROVATO: "Questo servizio non è più disponibile: ricarica la pagina.",
         TROPPE_PRENOTAZIONI: "Hai raggiunto il numero massimo di prenotazioni: contatta direttamente il professionista.",
-        DATI_NON_VALIDI: "Controlla nome e numero di cellulare."
+        DATI_NON_VALIDI: "Controlla nome e numero di cellulare.",
+        PAGAMENTO_RICHIESTO: "Per prenotare questa postazione devi pagare online: usa «Prenota e paga».",
+        HOST_NON_PRONTO: "Questo annuncio non ha ancora attivato i pagamenti online: al momento non è prenotabile.",
+        TROPPE_RICHIESTE: "Hai già diversi pagamenti in corso: completali o attendi qualche minuto.",
+        MINIMO_ORE: "Per questo annuncio c'è un minimo di ore: allunga la fascia.",
+        SPAZIO_PROPRIO: "Non puoi prenotare un tuo stesso spazio.",
+        SPAZIO_NON_ATTIVO: "Questo annuncio non è più attivo.",
+        IMPORTO_NON_VALIDO: "L'importo di questo annuncio non permette il pagamento online.",
+        ANNULLO_CON_PAGAMENTO: "Questa prenotazione è pagata: si annulla con il rimborso dal pulsante «Annulla e rimborsa».",
+        GIA_CONCLUSA: "Questa prenotazione è già conclusa.",
+        NON_AUTORIZZATO: "Non puoi annullare questa prenotazione.",
+        PAGAMENTO_NON_TROVATO: "Pagamento non trovato: ricarica la pagina.",
+        PAGAMENTI_NON_CONFIGURATI: "I pagamenti online non sono ancora attivi. Riprova più tardi.",
+        STRIPE_ERRORE: "Il servizio di pagamento non risponde: riprova tra poco.",
+        SOLO_HOST: "Questa funzione è riservata agli Host.",
+        NON_AUTENTICATO: "Accedi di nuovo e riprova."
       };
       for (const k of Object.keys(mappa)) if (m.includes(k)) return mappa[k];
       return "Operazione non riuscita, riprova tra poco.";
@@ -3313,17 +3474,19 @@
         try {
           const ieri = new Date(Date.now() - 7 * 86400000);
           const da = ieri.getFullYear() + '-' + String(ieri.getMonth() + 1).padStart(2, '0') + '-' + String(ieri.getDate()).padStart(2, '0');
-          const [sv, bl, ap, pr, sl, rv] = await Promise.all([
+          const [sv, bl, ap, pr, sl, rv, pg] = await Promise.all([
             c.from('freelance_services').select('id,name,duration_min,price').order('created_at'),
             c.from('chair_blocks').select('id,space_id,day,start_time,end_time').gte('day', isoOggi()).order('day').order('start_time'),
             c.from('client_appointments').select('id,block_id,service_name,service_duration,service_price,client_name,client_phone,day,start_time,end_time,status,private_notes')
               .gte('day', da).order('day').order('start_time'),
             c.from('profiles').select('phone').eq('id', mio).maybeSingle(),
             c.rpc('ensure_my_slug'),
-            c.from('freelance_reviews').select('rating')
+            c.from('freelance_reviews').select('rating'),
+            PAGAMENTI ? c.from('space_payments').select('block_id,amount_cents,fee_cents').eq('user_id', mio).eq('status', 'paid') : Promise.resolve({ data: [] })
           ]);
           if (currentUser?.id !== mio) return;
           agServizi = sv.data || []; agBlocchi = bl.data || []; agAppunt = ap.data || [];
+          agPagati = {}; (pg && pg.data || []).forEach(x => { if (x.block_id) agPagati[x.block_id] = x; });
           agTelefono = pr.data?.phone || '';
           agRecensioni = rv.error ? null : { n: (rv.data || []).length, media: (rv.data || []).length ? rv.data.reduce((t, x) => t + x.rating, 0) / rv.data.length : 0 };
           if (!sl.error && typeof sl.data === 'string' && sl.data) { agSlug = sl.data; agSlugUid = mio; } else { agSlug = ''; agSlugUid = null; }
@@ -3377,10 +3540,11 @@
             <span class="inline-block text-[11px] font-bold bg-pink-50 text-brand rounded-full px-2.5 py-0.5">${esc(dataBreve(b.day))} · ${oraBreve(b.start_time)} - ${oraBreve(b.end_time)}</span>
             <p class="text-sm font-bold text-gray-900 truncate mt-1">${esc(sp ? sp.name : 'Salone')}</p>
             <p class="text-[11px] text-gray-500 truncate">📍 ${esc(indirizzo)}</p>
+            ${agPagati[b.id] ? '<span class="inline-block mt-1 mr-1 text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 rounded-full px-2 py-0.5">✓ Pagata ' + euro(agPagati[b.id].amount_cents / 100) + '</span>' : ''}
             <a href="${esc(urlContratto(b, sp, ct))}" target="_blank" rel="noopener" class="inline-block mt-1 text-[11px] font-bold text-gray-700 underline">📄 Contratto precompilato</a>
           </div>
           ${cancellabile
-            ? `<button type="button" data-del-bl="${esc(b.id)}" class="text-[11px] font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-full px-3 py-1.5 shrink-0">Annulla Postazione</button>`
+            ? `<button type="button" data-del-bl="${esc(b.id)}" class="text-[11px] font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-full px-3 py-1.5 shrink-0">${agPagati[b.id] ? 'Annulla e rimborsa' : 'Annulla Postazione'}</button>`
             : `<span class="text-[10px] text-gray-400 shrink-0 text-right">Non annullabile<br>entro 24 ore</span>`}
         </div>`; }).join('') : '<p class="text-[11px] text-gray-400">Nessuna postazione bloccata.</p>';
       // link
@@ -3546,7 +3710,9 @@
       const esaurito = a && b && b > a && postiPieni(blDisp.blocks, blDisp.cap, a, b);
       msg.className = 'text-[11px] ' + (esaurito ? 'text-red-600 font-bold' : 'text-gray-500');
       msg.textContent = (esaurito ? '⛔ ESAURITO in questa fascia. ' : '') + 'Postazioni del salone: ' + blDisp.cap + '.' + occ;
-      btn.disabled = !!esaurito || blHalfBlocca;
+      let nonPronto = false;
+      if (PAGAMENTI) { nonPronto = await infoPagamentoBlocco(sp, a, b, msg); if (tok !== blDispTok) return; }
+      btn.disabled = !!esaurito || blHalfBlocca || nonPronto;
     }
 
     async function creaBlocco(e) {
@@ -3556,13 +3722,17 @@
       if (blHalfBlocca) { mostraMessaggio("Scegli una fascia per la mezza giornata (4 ore).", 'err'); return; }
       if (!sp || !day || !a || !b) { mostraMessaggio("Compila salone, giorno e fascia oraria.", 'err'); return; }
       if (b <= a) { mostraMessaggio("L'orario di fine deve essere dopo l'inizio.", 'err'); return; }
+      if (PAGAMENTI) {
+        const spzPag = spazi.find(x => x.id === sp);
+        if (spzPag && spzPag.userId !== currentUser.id) { await avviaPagamento(sp, day, a, b); return; }
+      }
       const { error } = await c.rpc('create_chair_block', { p_space: sp, p_day: day, p_start: a, p_end: b });
       if (error) { mostraMessaggio(erroreAgenda(error), 'err'); blDisp = null; aggiornaDispBlocco(); return; }
       blDisp = null;
       await caricaAgenda();
       aggiornaDispBlocco();
       const spz = spazi.find(x => x.id === sp);
-      if (spz && TIPI_UFFICIO.includes(spz.type)) { await riepilogoAccessoUfficio(spz, day, a, b); }
+      if (spz && (TIPI_UFFICIO.includes(spz.type) || ['fotografia', 'psicoterapia', 'studio_medico'].includes(spz.type))) { await riepilogoAccessoUfficio(spz, day, a, b); }
       else mostraMessaggio("Postazione bloccata.");
     }
 
@@ -3589,20 +3759,26 @@
       const c = getSupabase(); if (!c) return;
       const b = agBlocchi.find(x => x.id === id);
       if (!b) return;
-      if (!confirm("Cancellare questa prenotazione di postazione? La postazione tornerà libera per altri.")) return;
+      const inf = agPagati[id];
+      const testoConferma = inf
+        ? "Annullare questa prenotazione? Ti verranno rimborsati " + euro((inf.amount_cents - inf.fee_cents) / 100) + ": la commissione di servizio ChairShare (" + euro(inf.fee_cents / 100) + ") non è rimborsabile."
+        : "Cancellare questa prenotazione di postazione? La postazione tornerà libera per altri.";
+      if (!confirm(testoConferma)) return;
       // recupero il numero dell'Host prima di cancellare (i recapiti sono già sbloccati)
       let tel = null;
       try {
         const ct = contatti[b.space_id] || sbloccati[b.space_id] || await sbloccaContatti(b.space_id);
         tel = normalizzaTelefono(ct && ct.phone);
       } catch (e) { tel = null; }
-      const { error } = await c.rpc('delete_chair_block', { p_block: id });
+      let error = null;
+      if (inf) { try { await apiServer('/api/stripe-cancel', { block_id: id }); } catch (e) { error = { message: e.codice || '' }; } }
+      else { const r = await c.rpc('delete_chair_block', { p_block: id }); error = r.error; }
       if (error) { mostraMessaggio(erroreAgenda(error), 'err'); return; }
       blDisp = null;
       await caricaAgenda();
       const sp = spazi.find(x => x.id === b.space_id);
       const msg = `Ciao! Ti avviso tramite ChairShare che ho dovuto annullare la prenotazione della postazione presso ${sp ? sp.name : 'il tuo spazio'} per il giorno ${dataLunga(b.day)} fascia ${oraBreve(b.start_time)}-${oraBreve(b.end_time)}. La postazione è ora di nuovo libera sulla piattaforma.`;
-      mostraAvvisoAnnullo('Prenotazione postazione cancellata', 'La postazione è tornata libera.', "Notifica cancellazione all'Host su WhatsApp", tel, msg);
+      mostraAvvisoAnnullo('Prenotazione postazione cancellata', 'La postazione è tornata libera.' + (inf ? ' Rimborso di ' + euro((inf.amount_cents - inf.fee_cents) / 100) + ' avviato: i tempi di accredito dipendono dalla tua banca.' : ''), "Notifica cancellazione all'Host su WhatsApp", tel, msg);
     }
 
     function mostraAvvisoAnnullo(titolo, testo, etichettaWa, waNumero, messaggio) {
@@ -3726,6 +3902,7 @@
       $('btnAgPhone').addEventListener('click', salvaTelefonoAgenda);
       $('formServizio').addEventListener('submit', aggiungiServizio);
       $('formBlocco').addEventListener('submit', creaBlocco);
+      $('hostBlocksList').addEventListener('click', e => { const t = e.target.closest('[data-host-cancel]'); if (t) annullaDaHost(t.dataset.hostCancel); });
       $('blDay').min = isoOggi();
       ['blSpace', 'blDay'].forEach(id => $(id).addEventListener('change', () => { aggiornaMezzaGiornata(id === 'blSpace'); aggiornaDispBlocco(); }));
       ['blStart', 'blEnd'].forEach(id => $(id).addEventListener('change', aggiornaDispBlocco));
@@ -4161,8 +4338,10 @@
       }
       aggiornaStatoAuth();
       await caricaRuolo();
+      await caricaConfigPagamenti();
       await caricaSpazi();
       applicaParametriUrl();
+      gestisciRitorniPagamento();
 
       // Registrazione
       $('form-register').addEventListener('submit', async e => {
