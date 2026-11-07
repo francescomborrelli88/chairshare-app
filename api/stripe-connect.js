@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
         use_case: {
           type: 'account_onboarding',
           account_onboarding: {
-            configurations: ['merchant', 'recipient'],
+            collection_options: { fields: 'eventually_due' }, // raccoglie subito tutti i dati richiesti
             refresh_url: L.SITE + '/?stripe=riprova', return_url: L.SITE + '/?stripe=ok'
           }
         }
